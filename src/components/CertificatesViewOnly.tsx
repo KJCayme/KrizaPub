@@ -22,6 +22,21 @@ const CertificatesViewOnly = ({ isDarkMode, onToggleDarkMode, onBack }: Certific
   const { certificates, loading, error } = useCertificates();
   const { user } = useAuth();
 
+  const handleBack = () => {
+    onBack();
+    // Use a more reliable approach to scroll to certificates section
+    setTimeout(() => {
+      const element = document.getElementById('certificates');
+      if (element) {
+        const elementTop = element.getBoundingClientRect().top + window.pageYOffset;
+        window.scrollTo({ 
+          top: elementTop - 80, // Account for fixed navigation
+          behavior: 'smooth' 
+        });
+      }
+    }, 100);
+  };
+
   const handleViewCertificate = (url: string) => {
     if (url && url !== '#') {
       window.open(url, '_blank');
@@ -42,7 +57,7 @@ const CertificatesViewOnly = ({ isDarkMode, onToggleDarkMode, onBack }: Certific
         <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-yellow-400 to-orange-500 shadow-lg">
           <div className="container mx-auto px-6">
             <div className="flex items-center justify-between h-16">
-              <Button onClick={onBack} variant="ghost" className="text-white hover:bg-white/20 transition-colors">
+              <Button onClick={handleBack} variant="ghost" className="text-white hover:bg-white/20 transition-colors">
                 <ArrowLeft className="w-5 h-5 mr-2" />
                 Back
               </Button>
@@ -63,7 +78,7 @@ const CertificatesViewOnly = ({ isDarkMode, onToggleDarkMode, onBack }: Certific
           <div className="container mx-auto px-6">
             <div className="flex items-center justify-between h-16">
               <Button
-                onClick={onBack}
+                onClick={handleBack}
                 variant="ghost"
                 className="text-white hover:bg-white/20 transition-colors"
               >

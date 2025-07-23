@@ -82,24 +82,12 @@ const Index = () => {
 
   const handleBackFromCertificates = () => {
     setShowCertificatesOnly(false);
-    // Scroll to certificates section after a brief delay with reduced motion
-    setTimeout(() => {
-      const element = document.getElementById('certificates');
-      if (element) {
-        element.scrollIntoView({ behavior: 'auto' });
-      }
-    }, 100);
+    // No immediate scrolling - let the component handle it
   };
 
   const handleBackFromTestimonials = () => {
     setShowTestimonialsOnly(false);
-    // Scroll to testimonials section after a brief delay with reduced motion
-    setTimeout(() => {
-      const element = document.getElementById('testimonials');
-      if (element) {
-        element.scrollIntoView({ behavior: 'auto' });
-      }
-    }, 100);
+    // No immediate scrolling - let the component handle it
   };
 
   // Show certificates-only view
