@@ -37,19 +37,17 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!formData.code.trim()) {
+      toast.error('Please enter a valid code');
+      return;
+    }
+
+    if (!formData.feedback.trim()) {
+      toast.error('Please enter your testimonial');
+      return;
+    }
+
     try {
-      if (!formData.code.trim()) {
-        toast.error('Please enter a valid code');
-        return;
-      }
-
-      if (!formData.feedback.trim()) {
-        toast.error('Please enter your testimonial');
-        return;
-      }
-
-      console.log('Submitting testimonial with data:', formData);
-
       await updateClientTestimonial.mutateAsync({
         code: formData.code,
         name: formData.name || undefined,
@@ -63,59 +61,30 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
         email_censored: formData.email_censored,
         company_censored: formData.company_censored,
       });
-      
-      toast.success('Testimonial submitted successfully!');
       onClose();
     } catch (error) {
       console.error('Error submitting testimonial:', error);
-      toast.error('Failed to submit testimonial. Please try again.');
     }
   };
 
   const handleRatingClick = (rating: number) => {
-    try {
-      setFormData(prev => ({ ...prev, rate: rating }));
-    } catch (error) {
-      console.error('Error updating rating:', error);
-    }
+    setFormData(prev => ({ ...prev, rate: rating }));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, type: 'image' | 'feedback_picture') => {
-    try {
-      const file = e.target.files?.[0];
-      if (file) {
-        // Validate file size (5MB limit)
-        if (file.size > 5 * 1024 * 1024) {
-          toast.error('File size must be less than 5MB');
-          return;
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (type === 'image') {
+          setImagePreview(e.target?.result as string);
+        } else {
+          setFeedbackImagePreview(e.target?.result as string);
         }
-
-        // Validate file type
-        if (!file.type.startsWith('image/')) {
-          toast.error('Please select a valid image file');
-          return;
-        }
-
-        const reader = new FileReader();
-        reader.onload = (e) => {
-          const result = e.target?.result as string;
-          if (type === 'image') {
-            setImagePreview(result);
-          } else {
-            setFeedbackImagePreview(result);
-          }
-        };
-        reader.onerror = (error) => {
-          console.error('Error reading file:', error);
-          toast.error('Error reading file. Please try again.');
-        };
-        reader.readAsDataURL(file);
-        
-        setFormData(prev => ({ ...prev, [type]: file }));
-      }
-    } catch (error) {
-      console.error('Error handling image change:', error);
-      toast.error('Error processing image. Please try again.');
+      };
+      reader.readAsDataURL(file);
+      
+      setFormData(prev => ({ ...prev, [type]: file }));
     }
   };
 
@@ -136,102 +105,90 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
     return stars;
   };
 
-  const PreviewCard = () => {
-    try {
-      return (
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 p-4">
-          <h3 className="text-lg font-semibold mb-4 text-slate-800 dark:text-white">Preview</h3>
-          
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-4 relative">
-            <div className="absolute top-4 right-4 text-blue-200 dark:text-blue-800">
-              <Quote className="w-5 h-5" />
-            </div>
+  const PreviewCard = () => (
+    <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 p-6">
+      <h3 className="text-lg font-semibold mb-4 text-slate-800 dark:text-white">Preview</h3>
+      
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 relative">
+        <div className="absolute top-6 right-6 text-blue-200 dark:text-blue-800">
+          <Quote className="w-6 h-6" />
+        </div>
 
-            {/* User Section */}
-            <div className="flex items-center mb-4">
-              <div className="w-10 h-10 rounded-full overflow-hidden mr-3 bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
-                {imagePreview ? (
-                  <img
-                    src={imagePreview}
-                    alt={formData.name || 'User'}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
-                    {(formData.name || 'U').charAt(0).toUpperCase()}
-                  </div>
-                )}
-              </div>
-              <div className="min-w-0 flex-1">
-                <h4 className="font-bold text-slate-800 dark:text-white text-sm truncate">
-                  {formData.name_censored && formData.name ? 
-                    formData.name.substring(0, 2) + '*'.repeat(formData.name.length - 2) : 
-                    formData.name || '**********************'
-                  }
-                </h4>
-                {formData.company && (
-                  <p className="text-slate-600 dark:text-slate-400 text-xs truncate">
-                    {formData.company_censored ? 
-                      formData.company.substring(0, 2) + '*'.repeat(formData.company.length - 2) : 
-                      formData.company
-                    }
-                  </p>
-                )}
-                {formData.email && (
-                  <p className="text-slate-500 dark:text-slate-500 text-xs truncate">
-                    {formData.email_censored ? 
-                      formData.email.substring(0, 2) + '*'.repeat(formData.email.length - 2) : 
-                      formData.email
-                    }
-                  </p>
-                )}
-              </div>
-            </div>
-
-            {/* Rating Section */}
-            <div className="flex mb-4">
-              {renderStars(formData.rate)}
-            </div>
-
-            {/* Feedback Section */}
-            {formData.feedback && (
-              <div className={feedbackImagePreview ? 'mb-4' : ''}>
-                <p className="text-slate-700 dark:text-slate-300 leading-relaxed italic text-sm">
-                  "{formData.feedback || 'Your testimonial will appear here...'}"
-                </p>
-              </div>
-            )}
-
-            {/* Evidence Section */}
-            {feedbackImagePreview && (
-              <div className="flex-grow flex items-center justify-center overflow-hidden">
-                <div className="w-full rounded-lg overflow-hidden flex items-center justify-center bg-gray-50 dark:bg-gray-900 h-40">
-                  <img
-                    src={feedbackImagePreview}
-                    alt="Feedback Evidence"
-                    className="max-w-full max-h-full object-contain rounded-lg"
-                  />
-                </div>
+        {/* User Section */}
+        <div className="flex items-center mb-6">
+          <div className="w-10 h-10 rounded-full overflow-hidden mr-3 bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+            {imagePreview ? (
+              <img
+                src={imagePreview}
+                alt={formData.name || 'User'}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
+                {(formData.name || 'U').charAt(0).toUpperCase()}
               </div>
             )}
           </div>
+          <div className="min-w-0 flex-1">
+            <h4 className="font-bold text-slate-800 dark:text-white text-base truncate">
+              {formData.name_censored && formData.name ? 
+                formData.name.substring(0, 2) + '*'.repeat(formData.name.length - 2) : 
+                formData.name || '**********************'
+              }
+            </h4>
+            {formData.company && (
+              <p className="text-slate-600 dark:text-slate-400 text-sm truncate">
+                {formData.company_censored ? 
+                  formData.company.substring(0, 2) + '*'.repeat(formData.company.length - 2) : 
+                  formData.company
+                }
+              </p>
+            )}
+            {formData.email && (
+              <p className="text-slate-500 dark:text-slate-500 text-sm truncate">
+                {formData.email_censored ? 
+                  formData.email.substring(0, 2) + '*'.repeat(formData.email.length - 2) : 
+                  formData.email
+                }
+              </p>
+            )}
+          </div>
         </div>
-      );
-    } catch (error) {
-      console.error('Error rendering preview:', error);
-      return (
-        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 p-4">
-          <h3 className="text-lg font-semibold mb-4 text-slate-800 dark:text-white">Preview</h3>
-          <p className="text-slate-600 dark:text-slate-400">Error loading preview</p>
+
+        {/* Rating Section */}
+        <div className="flex mb-6">
+          {renderStars(formData.rate)}
         </div>
-      );
-    }
-  };
+
+        {/* Feedback Section */}
+        {formData.feedback && (
+          <div className={feedbackImagePreview ? 'mb-6' : ''}>
+            <p className="text-slate-700 dark:text-slate-300 leading-relaxed italic text-base">
+              "{formData.feedback || 'Your testimonial will appear here...'}"
+            </p>
+          </div>
+        )}
+
+        {/* Evidence Section */}
+        {feedbackImagePreview && (
+          <div className="flex-grow flex items-center justify-center overflow-hidden">
+            <div className="w-full rounded-lg overflow-hidden flex items-center justify-center bg-gray-50 dark:bg-gray-900 h-64">
+              <img
+                src={feedbackImagePreview}
+                alt="Feedback Evidence"
+                className="max-w-full max-h-full object-contain rounded-lg"
+              />
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-slate-800 rounded-lg max-w-6xl w-full max-h-[90vh] overflow-hidden flex">
-        {/* Form Section */}
+      <div className="bg-white dark:bg-slate-800 rounded-lg max-w-7xl w-full max-h-[90vh] overflow-hidden flex">
+        {/* Form Section - Made smaller */}
         <div className="w-96 p-6 overflow-y-auto border-r border-slate-200 dark:border-slate-700">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-slate-800 dark:text-white">
@@ -461,8 +418,8 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
           </form>
         </div>
 
-        {/* Preview Section - Made smaller */}
-        <div className={`w-80 p-4 overflow-y-auto ${showPreview ? 'block' : 'hidden lg:block'}`}>
+        {/* Preview Section - Made bigger */}
+        <div className={`flex-1 p-6 overflow-y-auto ${showPreview ? 'block' : 'hidden lg:block'}`}>
           <PreviewCard />
         </div>
       </div>
