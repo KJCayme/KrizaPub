@@ -17,6 +17,7 @@ export interface Testimonial {
   company_censored: boolean | null;
   user_id: string | null;
   created_at: string;
+  source: 'testimonials' | 'client_testimonials';
 }
 
 // Utility function to censor text
@@ -41,27 +42,54 @@ export const useTestimonials = (limit?: number) => {
   return useQuery({
     queryKey: ['testimonials', limit],
     queryFn: async () => {
-      console.log('Fetching testimonials...', limit ? `(limit: ${limit})` : '(all)');
-      let query = supabase
+      console.log('Fetching testimonials from both tables...', limit ? `(limit: ${limit})` : '(all)');
+      
+      // Fetch from testimonials table
+      const { data: testimonialsData, error: testimonialsError } = await supabase
         .from('testimonials')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (limit) {
-        query = query.limit(limit);
+      if (testimonialsError) {
+        console.error('Error fetching testimonials:', testimonialsError);
+        throw testimonialsError;
       }
 
-      const { data, error } = await query;
+      // Fetch from client_testimonials table
+      const { data: clientTestimonialsData, error: clientTestimonialsError } = await supabase
+        .from('client_testimonials')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-      if (error) {
-        console.error('Error fetching testimonials:', error);
-        throw error;
+      if (clientTestimonialsError) {
+        console.error('Error fetching client testimonials:', clientTestimonialsError);
+        throw clientTestimonialsError;
       }
 
-      console.log('Fetched testimonials:', data);
+      // Combine and normalize data
+      const normalizedTestimonials = testimonialsData.map(item => ({
+        ...item,
+        source: 'testimonials' as const
+      }));
+
+      const normalizedClientTestimonials = clientTestimonialsData.map(item => ({
+        ...item,
+        source: 'client_testimonials' as const
+      }));
+
+      // Combine both arrays
+      const allTestimonials = [...normalizedTestimonials, ...normalizedClientTestimonials];
+
+      // Sort by created_at date (latest first)
+      allTestimonials.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+      // Apply limit if specified
+      const limitedTestimonials = limit ? allTestimonials.slice(0, limit) : allTestimonials;
+
+      console.log('Fetched combined testimonials:', limitedTestimonials);
       
       // Apply censoring to the data
-      const processedData = data.map(testimonial => ({
+      const processedData = limitedTestimonials.map(testimonial => ({
         ...testimonial,
         name: testimonial.name_censored && testimonial.name ? censorText(testimonial.name) : testimonial.name,
         company: testimonial.company_censored && testimonial.company ? censorText(testimonial.company) : testimonial.company,
