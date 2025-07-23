@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Award, ExternalLink, Calendar, ChevronDown, Plus } from 'lucide-react';
+import { Award, ExternalLink, Calendar, Plus } from 'lucide-react';
 import { Button } from './ui/button';
 import { useIsMobile } from '../hooks/use-mobile';
 import { useCertificates } from '../hooks/useCertificates';
@@ -17,7 +17,7 @@ const Certificates = ({ onShowCertificatesOnly }: CertificatesProps) => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   
-  const { certificates, loading, error } = useCertificates();
+  const { certificates, loading, error } = useCertificates(3);
   const { user } = useAuth();
 
   const handleViewCertificate = (url: string) => {
@@ -34,38 +34,41 @@ const Certificates = ({ onShowCertificatesOnly }: CertificatesProps) => {
     setShowAddForm(true);
   };
 
-  const handleSeeMoreCertificates = () => {
-    onShowCertificatesOnly(true);
-    window.scrollTo({ top: 0, behavior: 'auto' });
-  };
-
   if (loading) {
     return (
-      <section id="certificates" className="py-20 bg-white dark:bg-slate-900 transition-colors duration-300">
+      <section className="py-20 bg-white dark:bg-slate-900">
         <div className="container mx-auto px-6">
           <div className="text-center">
-            <div className="animate-pulse">Loading certificates...</div>
+            <p className="text-slate-600 dark:text-slate-300">Loading certificates...</p>
           </div>
         </div>
       </section>
     );
   }
 
-  // Show only first 3 certificates
-  const displayedCertificates = certificates.slice(0, 3);
-
   return (
     <>
-      <section id="certificates" className="py-20 bg-white dark:bg-slate-900 transition-colors duration-300">
+      <section className="py-20 bg-white dark:bg-slate-900">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
-            <div className="flex items-center justify-center gap-3 mb-6">
+            <div className="flex items-center justify-center gap-3 mb-6 relative">
               <div className="w-12 h-12 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 flex items-center justify-center">
                 <Award className="w-6 h-6 text-white" />
               </div>
               <h2 className="text-4xl md:text-5xl font-bold text-slate-800 dark:text-white">
                 Certificates
               </h2>
+              
+              {/* Add Certificate Button - Now matching View All Certificates button color */}
+              {user && (
+                <Button
+                  onClick={handleAddCertificate}
+                  className="absolute right-0 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-semibold hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex items-center gap-2"
+                >
+                  <Plus className="w-5 h-5" />
+                  <span>Add Certificate</span>
+                </Button>
+              )}
             </div>
             <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
               Professional certifications that validate my expertise and commitment to continuous learning
@@ -78,8 +81,8 @@ const Certificates = ({ onShowCertificatesOnly }: CertificatesProps) => {
             </div>
           )}
 
-          <div className="flex flex-wrap gap-8 justify-center">
-            {displayedCertificates.map((cert) => (
+          <div className="flex flex-wrap gap-8 justify-center mb-12">
+            {certificates.map((cert) => (
               <div
                 key={cert.id}
                 className={`group bg-white dark:bg-slate-800 rounded-2xl shadow-lg transition-all duration-300 overflow-hidden border border-slate-200 dark:border-slate-700 flex flex-col w-full max-w-sm flex-shrink-0 ${
@@ -161,26 +164,13 @@ const Certificates = ({ onShowCertificatesOnly }: CertificatesProps) => {
             ))}
           </div>
 
-          {/* Action buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mt-12">
-            {/* Add Certificate Button - matching the View All Certificates button style */}
+          <div className="text-center">
             <Button
-              onClick={handleAddCertificate}
-              className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+              onClick={() => onShowCertificatesOnly(true)}
+              className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-semibold py-3 px-8 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
             >
-              <Plus className="w-5 h-5 mr-2" />
-              Add Certificate
+              View All Certificates
             </Button>
-
-            {certificates.length > 3 && (
-              <button
-                onClick={handleSeeMoreCertificates}
-                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-              >
-                <span>View All Certificates</span>
-                <ChevronDown className="w-5 h-5" />
-              </button>
-            )}
           </div>
         </div>
       </section>

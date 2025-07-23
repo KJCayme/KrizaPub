@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { X, Star, Upload, Eye } from 'lucide-react';
 import { Button } from './ui/button';
@@ -8,7 +7,6 @@ import { Label } from './ui/label';
 import { Checkbox } from './ui/checkbox';
 import { useUpdateClientTestimonial } from '../hooks/useClientTestimonials';
 import { toast } from 'sonner';
-import TestimonialCard from './testimonials/TestimonialCard';
 
 interface AddClientTestimonialFormProps {
   onClose: () => void;
@@ -89,33 +87,79 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
     }
   };
 
-  // Create testimonial object for preview
-  const previewTestimonial = {
-    id: 'preview',
-    name: formData.name_censored && formData.name ? 
-      formData.name.substring(0, 2) + '*'.repeat(formData.name.length - 2) : 
-      formData.name || null,
-    company: formData.company_censored && formData.company ? 
-      formData.company.substring(0, 2) + '*'.repeat(formData.company.length - 2) : 
-      formData.company || null,
-    email: formData.email_censored && formData.email ? 
-      formData.email.substring(0, 2) + '*'.repeat(formData.email.length - 2) : 
-      formData.email || null,
-    rate: formData.rate,
-    feedback: formData.feedback,
-    image: imagePreview || null,
-    feedback_picture: feedbackImagePreview || null,
-    created_at: new Date().toISOString(),
-    source: 'client_testimonials' as const,
-  };
+  const PreviewCard = () => (
+    <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-lg border border-slate-200 dark:border-slate-700">
+      <h3 className="text-lg font-semibold mb-4 text-slate-800 dark:text-white">Preview</h3>
+      
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-700 dark:to-slate-800 rounded-lg p-6">
+        <div className="flex items-start space-x-4">
+          {(imagePreview || formData.image) && (
+            <div className="flex-shrink-0">
+              <img
+                src={imagePreview}
+                alt="Profile preview"
+                className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-md"
+              />
+            </div>
+          )}
+          
+          <div className="flex-1">
+            <div className="flex items-center space-x-2 mb-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <Star
+                  key={star}
+                  className={`w-4 h-4 ${
+                    star <= formData.rate
+                      ? 'text-yellow-400 fill-yellow-400'
+                      : 'text-gray-300'
+                  }`}
+                />
+              ))}
+            </div>
+            
+            <p className="text-slate-700 dark:text-slate-300 mb-4 italic">
+              "{formData.feedback || 'Your testimonial will appear here...'}"
+            </p>
+            
+            <div className="text-sm text-slate-600 dark:text-slate-400">
+              <p className="font-medium">
+                {formData.name_censored && formData.name ? 
+                  formData.name.substring(0, 2) + '*'.repeat(formData.name.length - 2) : 
+                  formData.name || 'Anonymous'
+                }
+              </p>
+              {formData.company && (
+                <p>
+                  {formData.company_censored ? 
+                    formData.company.substring(0, 2) + '*'.repeat(formData.company.length - 2) : 
+                    formData.company
+                  }
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+        
+        {(feedbackImagePreview || formData.feedback_picture) && (
+          <div className="mt-4">
+            <img
+              src={feedbackImagePreview}
+              alt="Feedback preview"
+              className="max-w-full h-32 object-cover rounded-lg border border-slate-200 dark:border-slate-600"
+            />
+          </div>
+        )}
+      </div>
+    </div>
+  );
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-slate-800 rounded-lg max-w-7xl w-full max-h-[90vh] overflow-hidden flex">
-        {/* Form Section - Made smaller */}
-        <div className="w-2/5 p-6 overflow-y-auto border-r border-slate-200 dark:border-slate-700">
+      <div className="bg-white dark:bg-slate-800 rounded-lg max-w-6xl w-full max-h-[90vh] overflow-hidden flex">
+        {/* Form Section */}
+        <div className="flex-1 p-6 overflow-y-auto">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-slate-800 dark:text-white">
+            <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
               Add Client Testimonial
             </h2>
             <div className="flex items-center gap-2">
@@ -157,7 +201,7 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
                 value={formData.feedback}
                 onChange={(e) => setFormData(prev => ({ ...prev, feedback: e.target.value }))}
                 placeholder="Share your experience working with Kenneth..."
-                rows={3}
+                rows={4}
                 required
               />
             </div>
@@ -306,7 +350,7 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
                     <img
                       src={feedbackImagePreview}
                       alt="Feedback preview"
-                      className="max-w-full h-20 object-cover rounded-lg border border-slate-200 dark:border-slate-600"
+                      className="max-w-full h-32 object-cover rounded-lg border border-slate-200 dark:border-slate-600"
                     />
                   </div>
                 )}
@@ -333,25 +377,9 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
           </form>
         </div>
 
-        {/* Preview Section - Made bigger */}
-        <div className={`flex-1 p-6 overflow-y-auto bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-800 dark:to-slate-900 ${showPreview ? 'block' : 'hidden lg:block'}`}>
-          <div className="mb-4">
-            <h3 className="text-lg font-semibold text-slate-800 dark:text-white">Preview</h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400">See how your testimonial will look</p>
-          </div>
-          
-          <div className="max-w-md mx-auto">
-            <TestimonialCard 
-              testimonial={previewTestimonial}
-              padding={16}
-            />
-          </div>
-          
-          {!formData.feedback && (
-            <div className="mt-4 text-center text-slate-500 dark:text-slate-400 text-sm">
-              Start typing your testimonial to see the preview
-            </div>
-          )}
+        {/* Preview Section - Hidden on mobile, shown on desktop */}
+        <div className={`w-80 border-l border-slate-200 dark:border-slate-700 p-6 overflow-y-auto ${showPreview ? 'block' : 'hidden lg:block'}`}>
+          <PreviewCard />
         </div>
       </div>
     </div>

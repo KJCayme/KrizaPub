@@ -30,16 +30,17 @@ const TestimonialsViewOnly = ({ isDarkMode, onToggleDarkMode, onBack }: Testimon
 
   const handleBack = () => {
     onBack();
-    // Add a small delay to ensure the component has rendered before scrolling
+    // Use a more reliable approach to scroll to testimonials section
     setTimeout(() => {
-      const testimonialsSection = document.getElementById('testimonials');
-      if (testimonialsSection) {
-        testimonialsSection.scrollIntoView({ 
-          behavior: 'smooth',
-          block: 'start'
+      const element = document.getElementById('testimonials');
+      if (element) {
+        const elementTop = element.getBoundingClientRect().top + window.pageYOffset;
+        window.scrollTo({ 
+          top: elementTop - 80, // Account for fixed navigation
+          behavior: 'smooth' 
         });
       }
-    }, 100);
+    }, 100); // Increased delay for better reliability
   };
 
   const handleAddTestimonial = () => {
