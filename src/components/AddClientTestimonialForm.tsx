@@ -188,8 +188,8 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white dark:bg-slate-800 rounded-lg max-w-7xl w-full max-h-[90vh] overflow-hidden flex">
-        {/* Form Section - Made smaller */}
-        <div className="w-96 p-6 overflow-y-auto border-r border-slate-200 dark:border-slate-700">
+        {/* Form Section - Made wider */}
+        <div className="w-[500px] p-6 overflow-y-auto border-r border-slate-200 dark:border-slate-700">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-slate-800 dark:text-white">
               Add Client Testimonial

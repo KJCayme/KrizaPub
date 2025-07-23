@@ -70,6 +70,22 @@ export const useUpdateClientTestimonial = () => {
       email_censored?: boolean;
       company_censored?: boolean;
     }) => {
+      // First, check if the code exists
+      const { data: existingRecord, error: selectError } = await supabase
+        .from('client_testimonials')
+        .select('id')
+        .eq('code', testimonial.code)
+        .maybeSingle();
+
+      if (selectError) {
+        console.error('Error checking code:', selectError);
+        throw new Error('Error validating testimonial code');
+      }
+
+      if (!existingRecord) {
+        throw new Error('INVALID_CODE');
+      }
+
       let imageUrl = '';
       let feedbackPictureUrl = '';
 
@@ -113,7 +129,11 @@ export const useUpdateClientTestimonial = () => {
     },
     onError: (error) => {
       console.error('Error updating client testimonial:', error);
-      toast.error('Failed to update testimonial. Please check your code and try again.');
+      if (error.message === 'INVALID_CODE') {
+        toast.error('Testimonial code is incorrect. Please check your code and try again.');
+      } else {
+        toast.error('Failed to update testimonial. Please try again.');
+      }
     },
   });
 };
