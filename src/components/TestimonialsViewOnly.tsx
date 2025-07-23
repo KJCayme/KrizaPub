@@ -1,11 +1,11 @@
 
 import React from 'react';
-import { useClientTestimonials } from '@/hooks/useClientTestimonials';
+import { useTestimonials } from '@/hooks/useTestimonials';
 import { TestimonialsViewOnlyHeader } from './testimonials/TestimonialsViewOnlyHeader';
 import { TestimonialsViewOnlyGrid } from './testimonials/TestimonialsViewOnlyGrid';
 
 export const TestimonialsViewOnly = () => {
-  const { testimonials, isLoading } = useClientTestimonials();
+  const { data: testimonials, isLoading } = useTestimonials();
 
   const handleBack = () => {
     // Navigate back to portfolio and scroll to testimonials section
@@ -35,3 +35,5 @@ export const TestimonialsViewOnly = () => {
     </div>
   );
 };
+
+export default TestimonialsViewOnly;

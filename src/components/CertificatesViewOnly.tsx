@@ -5,7 +5,7 @@ import { CertificatesViewOnlyHeader } from './certificates/CertificatesViewOnlyH
 import { CertificatesViewOnlyGrid } from './certificates/CertificatesViewOnlyGrid';
 
 export const CertificatesViewOnly = () => {
-  const { certificates, isLoading } = useCertificates();
+  const { certificates, loading } = useCertificates();
 
   const handleBack = () => {
     // Navigate back to portfolio and scroll to certificates section
@@ -20,7 +20,7 @@ export const CertificatesViewOnly = () => {
     }, 100);
   };
 
-  if (isLoading) {
+  if (loading) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">Loading certificates...</div>
@@ -35,3 +35,5 @@ export const CertificatesViewOnly = () => {
     </div>
   );
 };
+
+export default CertificatesViewOnly;

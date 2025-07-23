@@ -1,15 +1,7 @@
 
 import React from 'react';
-import { TestimonialCard } from './TestimonialCard';
-
-interface Testimonial {
-  id: string;
-  name: string;
-  company: string;
-  message: string;
-  rating: number;
-  image_url?: string;
-}
+import TestimonialCard from './TestimonialCard';
+import { Testimonial } from '@/hooks/useTestimonials';
 
 interface TestimonialsViewOnlyGridProps {
   testimonials: Testimonial[];

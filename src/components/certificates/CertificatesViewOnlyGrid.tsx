@@ -1,15 +1,7 @@
 
 import React from 'react';
-import { CertificateCard } from './CertificateCard';
-
-interface Certificate {
-  id: string;
-  title: string;
-  issuer: string;
-  date_issued: string;
-  image_url?: string;
-  description?: string;
-}
+import CertificateCard from './CertificateCard';
+import { Certificate } from '@/hooks/useCertificates';
 
 interface CertificatesViewOnlyGridProps {
   certificates: Certificate[];

@@ -19,7 +19,7 @@ export const AddClientTestimonialForm = () => {
     image_url: ''
   });
 
-  const { addTestimonial, isLoading } = useClientTestimonials();
+  const { data: testimonials, isLoading } = useClientTestimonials();
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -39,7 +39,6 @@ export const AddClientTestimonialForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await addTestimonial(formData);
       toast.success('Testimonial added successfully!');
       setFormData({
         name: '',
@@ -55,9 +54,9 @@ export const AddClientTestimonialForm = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 p-6">
-      {/* Form Section - Smaller */}
-      <Card className="lg:max-w-md">
+    <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 p-6">
+      {/* Form Section - Smaller (2 columns) */}
+      <Card className="lg:col-span-2">
         <CardHeader>
           <CardTitle>Add Client Testimonial</CardTitle>
         </CardHeader>
@@ -145,59 +144,60 @@ export const AddClientTestimonialForm = () => {
         </CardContent>
       </Card>
 
-      {/* Preview Section - Bigger */}
-      <div className="flex-1">
+      {/* Preview Section - Bigger (3 columns) */}
+      <div className="lg:col-span-3">
         <Card className="h-fit">
           <CardHeader>
             <CardTitle>Preview</CardTitle>
           </CardHeader>
           <CardContent>
             {/* Preview matching the testimonials card design */}
-            <div className="bg-card rounded-lg p-6 border shadow-sm">
-              <div className="flex items-start gap-4">
+            <div className="bg-white/50 backdrop-blur-sm rounded-xl p-6 border border-white/20 shadow-lg">
+              <div className="flex items-center mb-4">
                 <div className="relative">
                   {formData.image_url ? (
                     <img
                       src={formData.image_url}
                       alt={formData.name}
-                      className="w-16 h-16 rounded-full object-cover"
+                      className="w-16 h-16 rounded-full object-cover border-2 border-white/30"
                     />
                   ) : (
-                    <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center">
-                      <span className="text-muted-foreground text-sm">No Image</span>
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center border-2 border-white/30">
+                      <span className="text-slate-500 text-sm font-medium">
+                        {(formData.name || 'John Doe').split(' ').map(n => n[0]).join('').toUpperCase()}
+                      </span>
                     </div>
                   )}
                 </div>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-2">
-                    <h3 className="font-semibold text-lg">
-                      {formData.name || 'John Doe'}
-                    </h3>
-                    <span className="text-muted-foreground">•</span>
-                    <span className="text-muted-foreground">
-                      {formData.company || 'Company Name'}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1 mb-3">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <Star
-                        key={star}
-                        className={`w-4 h-4 ${
-                          star <= formData.rating
-                            ? 'text-yellow-400 fill-yellow-400'
-                            : 'text-gray-300'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                  <p className="text-muted-foreground mb-3 leading-relaxed">
-                    "{formData.message || 'Your testimonial message will appear here...'}"
+                <div className="ml-4 flex-1">
+                  <h3 className="font-semibold text-slate-800">
+                    {formData.name || 'John Doe'}
+                  </h3>
+                  <p className="text-slate-600 text-sm">
+                    {formData.company || 'Company Name'}
                   </p>
-                  <div className="text-sm text-muted-foreground">
-                    <strong>Email:</strong> {formData.email || 'email@example.com'}
-                  </div>
+                  <p className="text-slate-500 text-sm">
+                    {formData.email || 'email@example.com'}
+                  </p>
                 </div>
               </div>
+              
+              <div className="flex items-center gap-1 mb-4">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <Star
+                    key={star}
+                    className={`w-5 h-5 ${
+                      star <= formData.rating
+                        ? 'text-yellow-400 fill-yellow-400'
+                        : 'text-gray-300'
+                    }`}
+                  />
+                ))}
+              </div>
+              
+              <p className="text-slate-600 leading-relaxed">
+                "{formData.message || 'Your testimonial message will appear here...'}"
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -205,3 +205,5 @@ export const AddClientTestimonialForm = () => {
     </div>
   );
 };
+
+export default AddClientTestimonialForm;

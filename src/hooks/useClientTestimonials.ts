@@ -1,5 +1,5 @@
 
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
@@ -21,6 +21,25 @@ const uploadFile = async (file: File, path: string): Promise<string> => {
     .getPublicUrl(data.path);
 
   return publicUrl;
+};
+
+export const useClientTestimonials = () => {
+  return useQuery({
+    queryKey: ['client-testimonials'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('client_testimonials')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching client testimonials:', error);
+        throw error;
+      }
+
+      return data;
+    },
+  });
 };
 
 export const useGenerateCode = () => {
