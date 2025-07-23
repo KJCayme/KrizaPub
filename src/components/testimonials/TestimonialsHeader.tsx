@@ -4,15 +4,15 @@ import { Plus } from 'lucide-react';
 import { Button } from '../ui/button';
 
 interface TestimonialsHeaderProps {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   showAddButton?: boolean;
   onAddClick?: () => void;
 }
 
 const TestimonialsHeader = ({ 
-  title, 
-  description, 
+  title = "What People Say", 
+  description = "Here's what clients and colleagues have to say about working with me.", 
   showAddButton = false, 
   onAddClick 
 }: TestimonialsHeaderProps) => {
