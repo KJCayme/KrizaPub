@@ -1,0 +1,135 @@
+
+import React, { useState } from 'react';
+import { ChevronDown, Plus } from 'lucide-react';
+import { Button } from './ui/button';
+import { handleBookCall } from '../utils/bookCall';
+import { useTestimonials } from '../hooks/useTestimonials';
+import { useAuth } from '../hooks/useAuth';
+import AddTestimonialForm from './AddTestimonialForm';
+import TestimonialsHeader from './testimonials/TestimonialsHeader';
+import TestimonialsGrid from './testimonials/TestimonialsGrid';
+
+interface TestimonialsProps {
+  onShowTestimonialsOnly: (show: boolean) => void;
+}
+
+const Testimonials = ({ onShowTestimonialsOnly }: TestimonialsProps) => {
+  const [showAddForm, setShowAddForm] = useState(false);
+  const { data: testimonials = [], isLoading } = useTestimonials(6);
+  const { user } = useAuth();
+
+  const scrollToSection = (sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'auto' });
+    }
+  };
+
+  const handleSeeMoreTestimonials = () => {
+    onShowTestimonialsOnly(true);
+    window.scrollTo({ top: 0, behavior: 'auto' });
+  };
+
+  const displayedTestimonials = testimonials;
+
+  if (isLoading) {
+    return (
+      <section id="testimonials" className="py-20 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-800 dark:to-slate-900 transition-colors duration-300">
+        <div className="container mx-auto px-6">
+          <div className="text-center">
+            <div className="animate-pulse">Loading testimonials...</div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <>
+      <section id="testimonials" className="py-20 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-800 dark:to-slate-900 transition-colors duration-300">
+        <div className="container mx-auto px-6">
+          <div className="text-center mb-16">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex-1"></div>
+              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-800 dark:text-white">
+                What Clients Say
+              </h2>
+              <div className="flex-1 flex justify-end">
+                {user && (
+                  <Button
+                    onClick={() => setShowAddForm(true)}
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                  >
+                    <Plus className="w-5 h-5 mr-2" />
+                    Add Testimonial
+                  </Button>
+                )}
+              </div>
+            </div>
+            <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
+              Don't just take my word for it. Here's what my clients have to say about working with me and the results we've achieved together.
+            </p>
+          </div>
+
+          {displayedTestimonials.length > 0 ? (
+            <TestimonialsGrid testimonials={displayedTestimonials} isLoading={false} />
+          ) : (
+            <div className="text-center text-slate-600 dark:text-slate-300">
+              <p className="text-lg mb-4">No testimonials yet.</p>
+              <Button
+                onClick={() => setShowAddForm(true)}
+                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Be the First to Add a Testimonial
+              </Button>
+            </div>
+          )}
+
+          {testimonials.length >= 6 && (
+            <div className="text-center mt-12">
+              <button
+                onClick={handleSeeMoreTestimonials}
+                className="inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+              >
+                <span>See More Testimonials</span>
+                <ChevronDown className="w-5 h-5" />
+              </button>
+            </div>
+          )}
+
+          <div className="text-center mt-12">
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-8 text-white inline-block">
+              <h3 className="text-2xl font-bold mb-4">
+                Ready to see similar results for your business?
+              </h3>
+              <p className="text-blue-100 mb-6 max-w-xl">
+                Experience the same level of excellence and results that my clients rave about.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <button 
+                  onClick={handleBookCall}
+                  className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-full hover:shadow-lg transform hover:-translate-y-1 transition-all duration-300"
+                >
+                  Book a Call
+                </button>
+                <button 
+                  onClick={() => scrollToSection('contact')}
+                  className="px-8 py-4 border-2 border-white text-white font-semibold rounded-full hover:bg-white/10 transform hover:-translate-y-1 transition-all duration-300"
+                >
+                  Get in Touch
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {showAddForm && (
+        <AddTestimonialForm onClose={() => setShowAddForm(false)} />
+      )}
+    </>
+  );
+};
+
+export default Testimonials;
