@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ArrowLeft, Plus, Code } from 'lucide-react';
 import { Button } from './ui/button';
@@ -30,17 +29,17 @@ const TestimonialsViewOnly = ({ isDarkMode, onToggleDarkMode, onBack }: Testimon
 
   const handleBack = () => {
     onBack();
-    // Use a more reliable approach to scroll to testimonials section
+    // Scroll to testimonials section specifically
     setTimeout(() => {
-      const element = document.getElementById('testimonials');
-      if (element) {
-        const elementTop = element.getBoundingClientRect().top + window.pageYOffset;
+      const testimonialsElement = document.getElementById('testimonials');
+      if (testimonialsElement) {
+        const elementTop = testimonialsElement.getBoundingClientRect().top + window.pageYOffset;
         window.scrollTo({ 
           top: elementTop - 80, // Account for fixed navigation
           behavior: 'smooth' 
         });
       }
-    }, 100); // Increased delay for better reliability
+    }, 100);
   };
 
   const handleAddTestimonial = () => {

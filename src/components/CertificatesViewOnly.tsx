@@ -24,11 +24,11 @@ const CertificatesViewOnly = ({ isDarkMode, onToggleDarkMode, onBack }: Certific
 
   const handleBack = () => {
     onBack();
-    // Use a more reliable approach to scroll to certificates section
+    // Scroll to certificates section specifically
     setTimeout(() => {
-      const element = document.getElementById('certificates');
-      if (element) {
-        const elementTop = element.getBoundingClientRect().top + window.pageYOffset;
+      const certificatesElement = document.getElementById('certificates');
+      if (certificatesElement) {
+        const elementTop = certificatesElement.getBoundingClientRect().top + window.pageYOffset;
         window.scrollTo({ 
           top: elementTop - 80, // Account for fixed navigation
           behavior: 'smooth' 
