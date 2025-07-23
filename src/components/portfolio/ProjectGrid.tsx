@@ -22,7 +22,6 @@ const ProjectGrid = forwardRef<ProjectGridRef, ProjectGridProps>(
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [showLeftArrow, setShowLeftArrow] = useState(false);
     const [showRightArrow, setShowRightArrow] = useState(false);
-    const [hoveredProjectId, setHoveredProjectId] = useState<string | null>(null);
 
     useImperativeHandle(ref, () => ({
       scrollToProject: (projectId: number) => {
@@ -93,14 +92,6 @@ const ProjectGrid = forwardRef<ProjectGridRef, ProjectGridProps>(
       };
     }, [projects, activeCategory]); // Re-run when projects or category changes
 
-    const handleProjectHover = (projectId: string, isHovered: boolean) => {
-      if (isHovered) {
-        setHoveredProjectId(projectId);
-      } else {
-        setHoveredProjectId(null);
-      }
-    };
-
     const scrollLeft = () => {
       scrollContainerRef.current?.scrollBy({ left: -300, behavior: 'smooth' });
     };
@@ -161,10 +152,7 @@ const ProjectGrid = forwardRef<ProjectGridRef, ProjectGridProps>(
             >
               <ProjectCard
                 project={project}
-                onViewProject={onViewProject}
-                source={source}
-                isHovered={hoveredProjectId === project.id}
-                onHover={handleProjectHover}
+                onProjectClick={onViewProject}
               />
             </div>
           ))}
