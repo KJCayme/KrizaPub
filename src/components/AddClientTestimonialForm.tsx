@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { X, Star, Upload, Eye } from 'lucide-react';
+import { X, Star, Upload, Eye, Quote } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
@@ -87,66 +88,97 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
     }
   };
 
+  const renderStars = (rating: number) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+      stars.push(
+        <Star
+          key={i}
+          className={`w-5 h-5 ${
+            i <= rating
+              ? 'fill-yellow-400 text-yellow-400'
+              : 'text-gray-300'
+          }`}
+        />
+      );
+    }
+    return stars;
+  };
+
   const PreviewCard = () => (
-    <div className="bg-white dark:bg-slate-800 rounded-lg p-6 shadow-lg border border-slate-200 dark:border-slate-700">
+    <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg border border-slate-200 dark:border-slate-700 p-6">
       <h3 className="text-lg font-semibold mb-4 text-slate-800 dark:text-white">Preview</h3>
       
-      <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-700 dark:to-slate-800 rounded-lg p-6">
-        <div className="flex items-start space-x-4">
-          {(imagePreview || formData.image) && (
-            <div className="flex-shrink-0">
+      <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 relative">
+        <div className="absolute top-6 right-6 text-blue-200 dark:text-blue-800">
+          <Quote className="w-6 h-6" />
+        </div>
+
+        {/* User Section */}
+        <div className="flex items-center mb-6">
+          <div className="w-10 h-10 rounded-full overflow-hidden mr-3 bg-gray-200 dark:bg-gray-700 flex items-center justify-center flex-shrink-0">
+            {imagePreview ? (
               <img
                 src={imagePreview}
-                alt="Profile preview"
-                className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-md"
+                alt={formData.name || 'User'}
+                className="w-full h-full object-cover"
               />
-            </div>
-          )}
-          
-          <div className="flex-1">
-            <div className="flex items-center space-x-2 mb-2">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  className={`w-4 h-4 ${
-                    star <= formData.rate
-                      ? 'text-yellow-400 fill-yellow-400'
-                      : 'text-gray-300'
-                  }`}
-                />
-              ))}
-            </div>
-            
-            <p className="text-slate-700 dark:text-slate-300 mb-4 italic">
-              "{formData.feedback || 'Your testimonial will appear here...'}"
-            </p>
-            
-            <div className="text-sm text-slate-600 dark:text-slate-400">
-              <p className="font-medium">
-                {formData.name_censored && formData.name ? 
-                  formData.name.substring(0, 2) + '*'.repeat(formData.name.length - 2) : 
-                  formData.name || 'Anonymous'
+            ) : (
+              <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-600 flex items-center justify-center text-white font-bold text-sm">
+                {(formData.name || 'U').charAt(0).toUpperCase()}
+              </div>
+            )}
+          </div>
+          <div className="min-w-0 flex-1">
+            <h4 className="font-bold text-slate-800 dark:text-white text-base truncate">
+              {formData.name_censored && formData.name ? 
+                formData.name.substring(0, 2) + '*'.repeat(formData.name.length - 2) : 
+                formData.name || '**********************'
+              }
+            </h4>
+            {formData.company && (
+              <p className="text-slate-600 dark:text-slate-400 text-sm truncate">
+                {formData.company_censored ? 
+                  formData.company.substring(0, 2) + '*'.repeat(formData.company.length - 2) : 
+                  formData.company
                 }
               </p>
-              {formData.company && (
-                <p>
-                  {formData.company_censored ? 
-                    formData.company.substring(0, 2) + '*'.repeat(formData.company.length - 2) : 
-                    formData.company
-                  }
-                </p>
-              )}
-            </div>
+            )}
+            {formData.email && (
+              <p className="text-slate-500 dark:text-slate-500 text-sm truncate">
+                {formData.email_censored ? 
+                  formData.email.substring(0, 2) + '*'.repeat(formData.email.length - 2) : 
+                  formData.email
+                }
+              </p>
+            )}
           </div>
         </div>
-        
-        {(feedbackImagePreview || formData.feedback_picture) && (
-          <div className="mt-4">
-            <img
-              src={feedbackImagePreview}
-              alt="Feedback preview"
-              className="max-w-full h-32 object-cover rounded-lg border border-slate-200 dark:border-slate-600"
-            />
+
+        {/* Rating Section */}
+        <div className="flex mb-6">
+          {renderStars(formData.rate)}
+        </div>
+
+        {/* Feedback Section */}
+        {formData.feedback && (
+          <div className={feedbackImagePreview ? 'mb-6' : ''}>
+            <p className="text-slate-700 dark:text-slate-300 leading-relaxed italic text-base">
+              "{formData.feedback || 'Your testimonial will appear here...'}"
+            </p>
+          </div>
+        )}
+
+        {/* Evidence Section */}
+        {feedbackImagePreview && (
+          <div className="flex-grow flex items-center justify-center overflow-hidden">
+            <div className="w-full rounded-lg overflow-hidden flex items-center justify-center bg-gray-50 dark:bg-gray-900 h-64">
+              <img
+                src={feedbackImagePreview}
+                alt="Feedback Evidence"
+                className="max-w-full max-h-full object-contain rounded-lg"
+              />
+            </div>
           </div>
         )}
       </div>
@@ -155,11 +187,11 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-slate-800 rounded-lg max-w-6xl w-full max-h-[90vh] overflow-hidden flex">
-        {/* Form Section */}
-        <div className="flex-1 p-6 overflow-y-auto">
+      <div className="bg-white dark:bg-slate-800 rounded-lg max-w-7xl w-full max-h-[90vh] overflow-hidden flex">
+        {/* Form Section - Made smaller */}
+        <div className="w-96 p-6 overflow-y-auto border-r border-slate-200 dark:border-slate-700">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold text-slate-800 dark:text-white">
+            <h2 className="text-xl font-bold text-slate-800 dark:text-white">
               Add Client Testimonial
             </h2>
             <div className="flex items-center gap-2">
@@ -184,40 +216,42 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="code">Testimonial Code *</Label>
+              <Label htmlFor="code" className="text-sm">Testimonial Code *</Label>
               <Input
                 id="code"
                 value={formData.code}
                 onChange={(e) => setFormData(prev => ({ ...prev, code: e.target.value }))}
                 placeholder="Enter your testimonial code"
                 required
+                className="mt-1"
               />
             </div>
 
             <div>
-              <Label htmlFor="feedback">Testimonial *</Label>
+              <Label htmlFor="feedback" className="text-sm">Testimonial *</Label>
               <Textarea
                 id="feedback"
                 value={formData.feedback}
                 onChange={(e) => setFormData(prev => ({ ...prev, feedback: e.target.value }))}
                 placeholder="Share your experience working with Kenneth..."
-                rows={4}
+                rows={3}
                 required
+                className="mt-1"
               />
             </div>
 
             <div>
-              <Label>Rating *</Label>
-              <div className="flex items-center space-x-1 mt-2">
+              <Label className="text-sm">Rating *</Label>
+              <div className="flex items-center space-x-1 mt-1">
                 {[1, 2, 3, 4, 5].map((star) => (
                   <button
                     key={star}
                     type="button"
                     onClick={() => handleRatingClick(star)}
-                    className="text-2xl focus:outline-none"
+                    className="text-lg focus:outline-none"
                   >
                     <Star
-                      className={`w-6 h-6 ${
+                      className={`w-5 h-5 ${
                         star <= formData.rate
                           ? 'text-yellow-400 fill-yellow-400'
                           : 'text-gray-300'
@@ -229,14 +263,15 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
             </div>
 
             <div>
-              <Label htmlFor="name">Your Name (optional)</Label>
+              <Label htmlFor="name" className="text-sm">Your Name (optional)</Label>
               <Input
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                 placeholder="Enter your full name"
+                className="mt-1"
               />
-              <div className="flex items-center space-x-2 mt-2">
+              <div className="flex items-center space-x-2 mt-1">
                 <Checkbox
                   id="name_censored"
                   checked={formData.name_censored}
@@ -244,22 +279,23 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
                     setFormData(prev => ({ ...prev, name_censored: checked as boolean }))
                   }
                 />
-                <Label htmlFor="name_censored" className="text-sm text-slate-600 dark:text-slate-400">
+                <Label htmlFor="name_censored" className="text-xs text-slate-600 dark:text-slate-400">
                   Keep my name private
                 </Label>
               </div>
             </div>
 
             <div>
-              <Label htmlFor="email">Email (optional)</Label>
+              <Label htmlFor="email" className="text-sm">Email (optional)</Label>
               <Input
                 id="email"
                 type="email"
                 value={formData.email}
                 onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                 placeholder="Enter your email"
+                className="mt-1"
               />
-              <div className="flex items-center space-x-2 mt-2">
+              <div className="flex items-center space-x-2 mt-1">
                 <Checkbox
                   id="email_censored"
                   checked={formData.email_censored}
@@ -267,21 +303,22 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
                     setFormData(prev => ({ ...prev, email_censored: checked as boolean }))
                   }
                 />
-                <Label htmlFor="email_censored" className="text-sm text-slate-600 dark:text-slate-400">
+                <Label htmlFor="email_censored" className="text-xs text-slate-600 dark:text-slate-400">
                   Keep my email private
                 </Label>
               </div>
             </div>
 
             <div>
-              <Label htmlFor="company">Company (optional)</Label>
+              <Label htmlFor="company" className="text-sm">Company (optional)</Label>
               <Input
                 id="company"
                 value={formData.company}
                 onChange={(e) => setFormData(prev => ({ ...prev, company: e.target.value }))}
                 placeholder="Enter your company name"
+                className="mt-1"
               />
-              <div className="flex items-center space-x-2 mt-2">
+              <div className="flex items-center space-x-2 mt-1">
                 <Checkbox
                   id="company_censored"
                   checked={formData.company_censored}
@@ -289,15 +326,15 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
                     setFormData(prev => ({ ...prev, company_censored: checked as boolean }))
                   }
                 />
-                <Label htmlFor="company_censored" className="text-sm text-slate-600 dark:text-slate-400">
+                <Label htmlFor="company_censored" className="text-xs text-slate-600 dark:text-slate-400">
                   Keep my company private
                 </Label>
               </div>
             </div>
 
             <div>
-              <Label htmlFor="image">Profile Image (optional)</Label>
-              <div className="mt-2">
+              <Label htmlFor="image" className="text-sm">Profile Image (optional)</Label>
+              <div className="mt-1">
                 <Input
                   id="image"
                   type="file"
@@ -309,7 +346,8 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
                   type="button"
                   variant="outline"
                   onClick={() => document.getElementById('image')?.click()}
-                  className="w-full"
+                  className="w-full text-sm"
+                  size="sm"
                 >
                   <Upload className="w-4 h-4 mr-2" />
                   Upload Profile Image
@@ -319,7 +357,7 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
                     <img
                       src={imagePreview}
                       alt="Profile preview"
-                      className="w-16 h-16 rounded-full object-cover border-2 border-slate-200 dark:border-slate-600"
+                      className="w-12 h-12 rounded-full object-cover border-2 border-slate-200 dark:border-slate-600"
                     />
                   </div>
                 )}
@@ -327,8 +365,8 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
             </div>
 
             <div>
-              <Label htmlFor="feedback_picture">Feedback Screenshot (optional)</Label>
-              <div className="mt-2">
+              <Label htmlFor="feedback_picture" className="text-sm">Feedback Screenshot (optional)</Label>
+              <div className="mt-1">
                 <Input
                   id="feedback_picture"
                   type="file"
@@ -340,7 +378,8 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
                   type="button"
                   variant="outline"
                   onClick={() => document.getElementById('feedback_picture')?.click()}
-                  className="w-full"
+                  className="w-full text-sm"
+                  size="sm"
                 >
                   <Upload className="w-4 h-4 mr-2" />
                   Upload Feedback Screenshot
@@ -350,19 +389,20 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
                     <img
                       src={feedbackImagePreview}
                       alt="Feedback preview"
-                      className="max-w-full h-32 object-cover rounded-lg border border-slate-200 dark:border-slate-600"
+                      className="max-w-full h-20 object-cover rounded-lg border border-slate-200 dark:border-slate-600"
                     />
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="flex gap-3 pt-4">
+            <div className="flex gap-2 pt-4">
               <Button
                 type="button"
                 variant="outline"
                 onClick={onClose}
                 className="flex-1"
+                size="sm"
               >
                 Cancel
               </Button>
@@ -370,15 +410,16 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
                 type="submit"
                 disabled={updateClientTestimonial.isPending}
                 className="flex-1"
+                size="sm"
               >
-                {updateClientTestimonial.isPending ? 'Submitting...' : 'Submit Testimonial'}
+                {updateClientTestimonial.isPending ? 'Submitting...' : 'Submit'}
               </Button>
             </div>
           </form>
         </div>
 
-        {/* Preview Section - Hidden on mobile, shown on desktop */}
-        <div className={`w-80 border-l border-slate-200 dark:border-slate-700 p-6 overflow-y-auto ${showPreview ? 'block' : 'hidden lg:block'}`}>
+        {/* Preview Section - Made bigger */}
+        <div className={`flex-1 p-6 overflow-y-auto ${showPreview ? 'block' : 'hidden lg:block'}`}>
           <PreviewCard />
         </div>
       </div>
