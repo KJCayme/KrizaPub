@@ -194,7 +194,7 @@ export type Database = {
       client_testimonials: {
         Row: {
           caption: string | null
-          code: string | null
+          code: string
           company: string | null
           company_censored: boolean | null
           created_at: string
@@ -210,7 +210,7 @@ export type Database = {
         }
         Insert: {
           caption?: string | null
-          code?: string | null
+          code: string
           company?: string | null
           company_censored?: boolean | null
           created_at?: string
@@ -226,7 +226,7 @@ export type Database = {
         }
         Update: {
           caption?: string | null
-          code?: string | null
+          code?: string
           company?: string | null
           company_censored?: boolean | null
           created_at?: string
