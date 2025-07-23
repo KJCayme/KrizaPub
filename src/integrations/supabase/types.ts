@@ -191,57 +191,6 @@ export type Database = {
         }
         Relationships: []
       }
-      client_testimonials: {
-        Row: {
-          caption: string | null
-          code: string | null
-          company: string | null
-          company_censored: boolean | null
-          created_at: string
-          email: string | null
-          email_censored: boolean | null
-          feedback: string | null
-          feedback_picture: string | null
-          id: number
-          image: string | null
-          name: string | null
-          name_censored: boolean | null
-          rate: number | null
-        }
-        Insert: {
-          caption?: string | null
-          code?: string | null
-          company?: string | null
-          company_censored?: boolean | null
-          created_at?: string
-          email?: string | null
-          email_censored?: boolean | null
-          feedback?: string | null
-          feedback_picture?: string | null
-          id?: number
-          image?: string | null
-          name?: string | null
-          name_censored?: boolean | null
-          rate?: number | null
-        }
-        Update: {
-          caption?: string | null
-          code?: string | null
-          company?: string | null
-          company_censored?: boolean | null
-          created_at?: string
-          email?: string | null
-          email_censored?: boolean | null
-          feedback?: string | null
-          feedback_picture?: string | null
-          id?: number
-          image?: string | null
-          name?: string | null
-          name_censored?: boolean | null
-          rate?: number | null
-        }
-        Relationships: []
-      }
       key_service: {
         Row: {
           created_at: string
@@ -558,10 +507,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      generate_random_code: {
-        Args: { length?: number }
-        Returns: string
-      }
+      [_ in never]: never
     }
     Enums: {
       [_ in never]: never
