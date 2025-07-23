@@ -29,6 +29,11 @@ const Index = () => {
       setIsDarkMode(JSON.parse(savedMode));
     }
 
+    // Disable browser scroll restoration to prevent conflicts
+    if ('scrollRestoration' in history) {
+      history.scrollRestoration = 'manual';
+    }
+
     // Disable right-click globally
     const handleContextMenu = (e: MouseEvent) => {
       e.preventDefault();
