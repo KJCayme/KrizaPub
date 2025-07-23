@@ -7,7 +7,7 @@ import { useTestimonials } from '../hooks/useTestimonials';
 import { useAuth } from '../hooks/useAuth';
 import { useGenerateCode } from '../hooks/useClientTestimonials';
 import AddTestimonialForm from './AddTestimonialForm';
-import { AddClientTestimonialForm } from './AddClientTestimonialForm';
+import AddClientTestimonialForm from './AddClientTestimonialForm';
 import CodeGenerationPopup from './CodeGenerationPopup';
 import TestimonialsHeader from './testimonials/TestimonialsHeader';
 import TestimonialsGrid from './testimonials/TestimonialsGrid';
