@@ -19,6 +19,7 @@ const Index = () => {
   const [showAllProjects, setShowAllProjects] = useState(false);
   const [showCertificatesOnly, setShowCertificatesOnly] = useState(false);
   const [showTestimonialsOnly, setShowTestimonialsOnly] = useState(false);
+  const [cameFromTestimonials, setCameFromTestimonials] = useState(false);
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -87,19 +88,30 @@ const Index = () => {
 
   const handleBackFromTestimonials = () => {
     console.log('handleBackFromTestimonials: Setting showTestimonialsOnly to false');
+    setCameFromTestimonials(true);
     setShowTestimonialsOnly(false);
-    // Scroll to testimonials section after state change
-    setTimeout(() => {
-      console.log('handleBackFromTestimonials: Attempting to scroll to testimonials');
-      const element = document.getElementById('testimonials');
-      if (element) {
-        console.log('handleBackFromTestimonials: Found testimonials element, scrolling');
-        element.scrollIntoView({ behavior: 'smooth' });
-      } else {
-        console.log('handleBackFromTestimonials: testimonials element not found');
-      }
-    }, 100);
   };
+
+  // Handle scrolling to testimonials after returning from testimonials-only view
+  useEffect(() => {
+    if (cameFromTestimonials && !showTestimonialsOnly) {
+      const scrollToTestimonials = () => {
+        const element = document.getElementById('testimonials');
+        if (element) {
+          console.log('useEffect: Scrolling to testimonials after render');
+          window.scrollTo({ 
+            top: element.offsetTop - 80, 
+            behavior: 'auto'
+          });
+          setCameFromTestimonials(false); // Reset the flag
+        }
+      };
+      
+      // Wait for the DOM to be ready
+      const timeoutId = setTimeout(scrollToTestimonials, 50);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [cameFromTestimonials, showTestimonialsOnly]);
 
   // Show certificates-only view
   if (showCertificatesOnly) {
