@@ -1,11 +1,14 @@
 
 import React, { useState } from 'react';
-import { ChevronDown, Plus } from 'lucide-react';
+import { ChevronDown, Plus, Code } from 'lucide-react';
 import { Button } from './ui/button';
 import { handleBookCall } from '../utils/bookCall';
 import { useTestimonials } from '../hooks/useTestimonials';
 import { useAuth } from '../hooks/useAuth';
+import { useGenerateCode } from '../hooks/useClientTestimonials';
 import AddTestimonialForm from './AddTestimonialForm';
+import AddClientTestimonialForm from './AddClientTestimonialForm';
+import CodeGenerationPopup from './CodeGenerationPopup';
 import TestimonialsHeader from './testimonials/TestimonialsHeader';
 import TestimonialsGrid from './testimonials/TestimonialsGrid';
 
@@ -15,8 +18,12 @@ interface TestimonialsProps {
 
 const Testimonials = ({ onShowTestimonialsOnly }: TestimonialsProps) => {
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showClientForm, setShowClientForm] = useState(false);
+  const [showCodePopup, setShowCodePopup] = useState(false);
+  const [generatedCode, setGeneratedCode] = useState('');
   const { data: testimonials = [], isLoading } = useTestimonials(6);
   const { user } = useAuth();
+  const generateCode = useGenerateCode();
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -28,6 +35,16 @@ const Testimonials = ({ onShowTestimonialsOnly }: TestimonialsProps) => {
   const handleSeeMoreTestimonials = () => {
     onShowTestimonialsOnly(true);
     window.scrollTo({ top: 0, behavior: 'auto' });
+  };
+
+  const handleGenerateCode = async () => {
+    try {
+      const code = await generateCode.mutateAsync();
+      setGeneratedCode(code);
+      setShowCodePopup(true);
+    } catch (error) {
+      console.error('Error generating code:', error);
+    }
   };
 
   const displayedTestimonials = testimonials;
@@ -54,15 +71,25 @@ const Testimonials = ({ onShowTestimonialsOnly }: TestimonialsProps) => {
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-800 dark:text-white">
                 What Clients Say
               </h2>
-              <div className="flex-1 flex justify-end">
+              <div className="flex-1 flex justify-end gap-2">
                 {user && (
-                  <Button
-                    onClick={() => setShowAddForm(true)}
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-                  >
-                    <Plus className="w-5 h-5 mr-2" />
-                    Add Testimonial
-                  </Button>
+                  <>
+                    <Button
+                      onClick={handleGenerateCode}
+                      disabled={generateCode.isPending}
+                      className="bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                    >
+                      <Code className="w-5 h-5 mr-2" />
+                      {generateCode.isPending ? 'Generating...' : 'Generate Code'}
+                    </Button>
+                    <Button
+                      onClick={() => setShowAddForm(true)}
+                      className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                    >
+                      <Plus className="w-5 h-5 mr-2" />
+                      Add Testimonial
+                    </Button>
+                  </>
                 )}
               </div>
             </div>
@@ -72,17 +99,41 @@ const Testimonials = ({ onShowTestimonialsOnly }: TestimonialsProps) => {
           </div>
 
           {displayedTestimonials.length > 0 ? (
-            <TestimonialsGrid testimonials={displayedTestimonials} isLoading={false} />
+            <>
+              <TestimonialsGrid testimonials={displayedTestimonials} isLoading={false} />
+              
+              {/* Add Client Testimonial Button - positioned dynamically */}
+              <div className="mt-8 flex justify-center">
+                <Button
+                  onClick={() => setShowClientForm(true)}
+                  variant="outline"
+                  className="bg-white/80 backdrop-blur-sm border-2 border-blue-200 text-blue-600 font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:bg-blue-50"
+                >
+                  <Plus className="w-5 h-5 mr-2" />
+                  Add Client Testimonial
+                </Button>
+              </div>
+            </>
           ) : (
             <div className="text-center text-slate-600 dark:text-slate-300">
               <p className="text-lg mb-4">No testimonials yet.</p>
-              <Button
-                onClick={() => setShowAddForm(true)}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                Be the First to Add a Testimonial
-              </Button>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button
+                  onClick={() => setShowAddForm(true)}
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                >
+                  <Plus className="w-5 h-5 mr-2" />
+                  Be the First to Add a Testimonial
+                </Button>
+                <Button
+                  onClick={() => setShowClientForm(true)}
+                  variant="outline"
+                  className="bg-white/80 backdrop-blur-sm border-2 border-blue-200 text-blue-600 font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:bg-blue-50"
+                >
+                  <Plus className="w-5 h-5 mr-2" />
+                  Add Client Testimonial
+                </Button>
+              </div>
             </div>
           )}
 
@@ -127,6 +178,17 @@ const Testimonials = ({ onShowTestimonialsOnly }: TestimonialsProps) => {
 
       {showAddForm && (
         <AddTestimonialForm onClose={() => setShowAddForm(false)} />
+      )}
+
+      {showClientForm && (
+        <AddClientTestimonialForm onClose={() => setShowClientForm(false)} />
+      )}
+
+      {showCodePopup && (
+        <CodeGenerationPopup
+          code={generatedCode}
+          onClose={() => setShowCodePopup(false)}
+        />
       )}
     </>
   );
