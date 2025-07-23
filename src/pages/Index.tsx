@@ -86,12 +86,17 @@ const Index = () => {
   };
 
   const handleBackFromTestimonials = () => {
+    console.log('handleBackFromTestimonials: Setting showTestimonialsOnly to false');
     setShowTestimonialsOnly(false);
     // Scroll to testimonials section after state change
     setTimeout(() => {
+      console.log('handleBackFromTestimonials: Attempting to scroll to testimonials');
       const element = document.getElementById('testimonials');
       if (element) {
+        console.log('handleBackFromTestimonials: Found testimonials element, scrolling');
         element.scrollIntoView({ behavior: 'smooth' });
+      } else {
+        console.log('handleBackFromTestimonials: testimonials element not found');
       }
     }, 100);
   };

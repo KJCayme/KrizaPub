@@ -54,7 +54,10 @@ const Navigation = () => {
           const height = element.offsetHeight;
           
           if (scrollPosition >= offsetTop && scrollPosition < offsetTop + height) {
-            setActiveSection(section);
+            if (activeSection !== section) {
+              console.log('Navigation: Active section changed from', activeSection, 'to', section, 'scrollPosition:', scrollPosition);
+              setActiveSection(section);
+            }
             break;
           }
         }
