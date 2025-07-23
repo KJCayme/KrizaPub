@@ -99,11 +99,23 @@ const Index = () => {
         const element = document.getElementById('testimonials');
         if (element) {
           console.log('useEffect: Scrolling to testimonials after render');
+          const targetScroll = element.offsetTop - 80;
+          console.log('useEffect: Target scroll position:', targetScroll);
           window.scrollTo({ 
-            top: element.offsetTop - 80, 
+            top: targetScroll, 
             behavior: 'auto'
           });
-          setCameFromTestimonials(false); // Reset the flag
+          
+          // Check if scroll actually happened
+          setTimeout(() => {
+            console.log('useEffect: Current scroll after 100ms:', window.scrollY);
+            setCameFromTestimonials(false); // Reset the flag
+          }, 100);
+          
+          // Check again after 1 second to see if something else changed it
+          setTimeout(() => {
+            console.log('useEffect: Current scroll after 1s:', window.scrollY);
+          }, 1000);
         }
       };
       
