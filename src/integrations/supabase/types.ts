@@ -128,6 +128,24 @@ export type Database = {
         }
         Relationships: []
       }
+      book_link: {
+        Row: {
+          created_at: string
+          id: number
+          url: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          url?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          url?: string | null
+        }
+        Relationships: []
+      }
       certificates: {
         Row: {
           caption: string | null
