@@ -79,10 +79,7 @@ const TestimonialsViewOnly: React.FC<TestimonialsViewOnlyProps> = ({
             </div>
           </div>
 
-          <TestimonialsHeader 
-            title="What People Say"
-            description="Here's what clients and colleagues have to say about working with me."
-          />
+          <TestimonialsHeader />
 
           {isLoading ? (
             <div className="text-center py-8">
@@ -95,7 +92,7 @@ const TestimonialsViewOnly: React.FC<TestimonialsViewOnlyProps> = ({
             </div>
           ) : (
             <div className="relative">
-              <TestimonialsGrid testimonials={testimonials || []} isLoading={isLoading} />
+              <TestimonialsGrid testimonials={testimonials || []} />
               
               {/* Add Client Testimonial Button positioned in the grid */}
               <div className="absolute bottom-4 right-4">

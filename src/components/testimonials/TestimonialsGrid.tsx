@@ -4,10 +4,10 @@ import TestimonialCard from './TestimonialCard';
 
 interface TestimonialsGridProps {
   testimonials: any[];
-  isLoading?: boolean;
+  isLoading: boolean;
 }
 
-const TestimonialsGrid = ({ testimonials, isLoading = false }: TestimonialsGridProps) => {
+const TestimonialsGrid = ({ testimonials, isLoading }: TestimonialsGridProps) => {
   if (isLoading) {
     return (
       <div className="text-center">

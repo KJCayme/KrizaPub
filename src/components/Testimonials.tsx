@@ -39,10 +39,7 @@ const Testimonials: React.FC<TestimonialsProps> = ({ onShowTestimonialsOnly }) =
     <div className="py-20 bg-white dark:bg-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-16">
-          <TestimonialsHeader 
-            title="What People Say"
-            description="Here's what clients and colleagues have to say about working with me."
-          />
+          <TestimonialsHeader />
           <div className="flex items-center gap-4">
             {user && (
               <Button
@@ -69,7 +66,7 @@ const Testimonials: React.FC<TestimonialsProps> = ({ onShowTestimonialsOnly }) =
           </div>
         ) : (
           <div className="relative">
-            <TestimonialsGrid testimonials={testimonials || []} isLoading={isLoading} />
+            <TestimonialsGrid testimonials={testimonials || []} />
             
             {/* Add Client Testimonial Button positioned in the grid */}
             <div className="absolute bottom-4 right-4">
