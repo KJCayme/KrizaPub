@@ -87,7 +87,13 @@ const Index = () => {
 
   const handleBackFromTestimonials = () => {
     setShowTestimonialsOnly(false);
-    // No immediate scrolling - let the component handle it
+    // Scroll to testimonials section after state change
+    setTimeout(() => {
+      const element = document.getElementById('testimonials');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 100);
   };
 
   // Show certificates-only view
