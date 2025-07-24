@@ -88,7 +88,19 @@ const Index = () => {
 
   const handleBackFromCertificates = () => {
     setShowCertificatesOnly(false);
-    // No immediate scrolling - let the component handle it
+    // Wait for DOM to fully re-render all sections
+    setTimeout(() => {
+      const certificatesSection = document.getElementById('certificates');
+      if (certificatesSection) {
+        console.log(`Certificates section found, scrolling to it`);
+        certificatesSection.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
+      } else {
+        console.log('Certificates section not found');
+      }
+    }, 500); // Same timeout as testimonials
   };
 
   const handleBackFromTestimonials = () => {
