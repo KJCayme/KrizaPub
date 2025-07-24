@@ -93,30 +93,19 @@ const Index = () => {
 
   const handleBackFromTestimonials = () => {
     setShowTestimonialsOnly(false);
-    // Debug the section positions to understand the layout
+    // Wait longer for DOM to fully re-render all sections
     setTimeout(() => {
-      console.log('=== Section Debug Info ===');
-      ['hero', 'about', 'skills', 'portfolio', 'tools', 'certificates', 'testimonials', 'contact'].forEach(id => {
-        const element = document.getElementById(id);
-        if (element) {
-          const rect = element.getBoundingClientRect();
-          console.log(`${id}: top=${Math.round(rect.top + window.pageYOffset)}, height=${Math.round(rect.height)}`);
-        }
-      });
-      
       const testimonialsSection = document.getElementById('testimonials');
       if (testimonialsSection) {
-        // Use scrollIntoView with additional offset to account for navigation
-        const navHeight = 80; // Approximate navigation height
-        const sectionTop = testimonialsSection.getBoundingClientRect().top + window.pageYOffset - navHeight;
-        
-        console.log(`Scrolling to testimonials at position: ${sectionTop}`);
-        window.scrollTo({ 
-          top: sectionTop,
-          behavior: 'smooth' 
+        console.log(`Testimonials section found, scrolling to it`);
+        testimonialsSection.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
         });
+      } else {
+        console.log('Testimonials section not found');
       }
-    }, 200);
+    }, 500); // Increased timeout to ensure DOM is fully updated
   };
 
 
