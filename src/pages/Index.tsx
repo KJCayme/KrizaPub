@@ -93,6 +93,17 @@ const Index = () => {
 
   const handleBackFromTestimonials = () => {
     setShowTestimonialsOnly(false);
+    // Wait for the main page to render, then scroll to testimonials
+    setTimeout(() => {
+      const element = document.getElementById('testimonials');
+      if (element) {
+        const elementTop = element.getBoundingClientRect().top + window.pageYOffset;
+        window.scrollTo({ 
+          top: elementTop - 80, // Account for fixed navigation
+          behavior: 'smooth' 
+        });
+      }
+    }, 100);
   };
 
 
