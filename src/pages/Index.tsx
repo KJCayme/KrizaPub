@@ -93,17 +93,30 @@ const Index = () => {
 
   const handleBackFromTestimonials = () => {
     setShowTestimonialsOnly(false);
-    // Use a more reliable scroll approach
+    // Debug the section positions to understand the layout
     setTimeout(() => {
+      console.log('=== Section Debug Info ===');
+      ['hero', 'about', 'skills', 'portfolio', 'tools', 'certificates', 'testimonials', 'contact'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          console.log(`${id}: top=${Math.round(rect.top + window.pageYOffset)}, height=${Math.round(rect.height)}`);
+        }
+      });
+      
       const testimonialsSection = document.getElementById('testimonials');
       if (testimonialsSection) {
-        // Use scrollIntoView instead of manual calculations
-        testimonialsSection.scrollIntoView({ 
-          behavior: 'smooth',
-          block: 'start' // This ensures we scroll to the actual start of the section
+        // Use scrollIntoView with additional offset to account for navigation
+        const navHeight = 80; // Approximate navigation height
+        const sectionTop = testimonialsSection.getBoundingClientRect().top + window.pageYOffset - navHeight;
+        
+        console.log(`Scrolling to testimonials at position: ${sectionTop}`);
+        window.scrollTo({ 
+          top: sectionTop,
+          behavior: 'smooth' 
         });
       }
-    }, 150); // Single timeout with appropriate delay
+    }, 200);
   };
 
 
