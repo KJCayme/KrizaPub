@@ -93,22 +93,17 @@ const Index = () => {
 
   const handleBackFromTestimonials = () => {
     setShowTestimonialsOnly(false);
-    // Force scroll to testimonials section after state change
+    // Use a more reliable scroll approach
     setTimeout(() => {
-      // First, make sure we're at the top to reset any scroll position
-      window.scrollTo({ top: 0, behavior: 'auto' });
-      // Then scroll to testimonials with a longer delay to ensure DOM is ready
-      setTimeout(() => {
-        const testimonialsSection = document.getElementById('testimonials');
-        if (testimonialsSection) {
-          const sectionTop = testimonialsSection.getBoundingClientRect().top + window.pageYOffset;
-          window.scrollTo({ 
-            top: sectionTop - 100, // Account for navigation height
-            behavior: 'smooth' 
-          });
-        }
-      }, 100);
-    }, 50);
+      const testimonialsSection = document.getElementById('testimonials');
+      if (testimonialsSection) {
+        // Use scrollIntoView instead of manual calculations
+        testimonialsSection.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start' // This ensures we scroll to the actual start of the section
+        });
+      }
+    }, 150); // Single timeout with appropriate delay
   };
 
 
