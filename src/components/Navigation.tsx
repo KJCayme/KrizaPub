@@ -42,8 +42,11 @@ const Navigation = () => {
 
   useEffect(() => {
     setIsDarkMode(document.documentElement.classList.contains('dark'));
+    let scrollHandlerEnabled = true;
 
     const handleScroll = () => {
+      if (!scrollHandlerEnabled) return;
+      
       const sections = ['hero', 'skills', 'portfolio', 'tools', 'certificates', 'testimonials', 'contact'];
       const scrollPosition = window.scrollY + 100;
 
@@ -75,13 +78,27 @@ const Navigation = () => {
       }
     };
 
+    const handleDisableNavScroll = () => {
+      scrollHandlerEnabled = false;
+      console.log('Navigation: Scroll handler disabled');
+    };
+
+    const handleEnableNavScroll = () => {
+      scrollHandlerEnabled = true;
+      console.log('Navigation: Scroll handler enabled');
+    };
+
     window.addEventListener('scroll', handleScroll);
     window.addEventListener('resize', handleScroll);
+    window.addEventListener('disableNavScroll', handleDisableNavScroll);
+    window.addEventListener('enableNavScroll', handleEnableNavScroll);
     handleScroll();
     
     return () => {
       window.removeEventListener('scroll', handleScroll);
       window.removeEventListener('resize', handleScroll);
+      window.removeEventListener('disableNavScroll', handleDisableNavScroll);
+      window.removeEventListener('enableNavScroll', handleEnableNavScroll);
     };
   }, [isMobile]);
 

@@ -106,21 +106,21 @@ const Index = () => {
           console.log('useEffect: Scrolling to testimonials after render');
           const targetScroll = element.offsetTop - 80;
           console.log('useEffect: Target scroll position:', targetScroll);
+          
+          // Temporarily disable navigation scroll handler
+          window.dispatchEvent(new CustomEvent('disableNavScroll'));
+          
           window.scrollTo({ 
             top: targetScroll, 
             behavior: 'auto'
           });
           
-          // Check if scroll actually happened
+          // Re-enable navigation scroll handler after scroll
           setTimeout(() => {
+            window.dispatchEvent(new CustomEvent('enableNavScroll'));
             console.log('useEffect: Current scroll after 100ms:', window.scrollY);
             setCameFromTestimonials(false); // Reset the flag
-          }, 100);
-          
-          // Check again after 1 second to see if something else changed it
-          setTimeout(() => {
-            console.log('useEffect: Current scroll after 1s:', window.scrollY);
-          }, 1000);
+          }, 200);
         }
       };
       
