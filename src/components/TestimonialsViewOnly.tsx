@@ -28,8 +28,8 @@ const TestimonialsViewOnly = ({ isDarkMode, onToggleDarkMode, onBack }: Testimon
   const generateCode = useGenerateCode();
 
   const handleBack = () => {
-    onBack();
-    // Use a more reliable approach to scroll to testimonials section
+    onBack(); // This sets showTestimonialsOnly to false
+    // Wait for the main page to render, then scroll to testimonials section
     setTimeout(() => {
       const element = document.getElementById('testimonials');
       if (element) {
@@ -38,7 +38,7 @@ const TestimonialsViewOnly = ({ isDarkMode, onToggleDarkMode, onBack }: Testimon
           block: 'start'
         });
       }
-    }, 200);
+    }, 300); // Increased timeout to allow for page transition
   };
 
   const handleAddTestimonial = () => {
