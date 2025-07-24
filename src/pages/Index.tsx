@@ -19,7 +19,7 @@ const Index = () => {
   const [showAllProjects, setShowAllProjects] = useState(false);
   const [showCertificatesOnly, setShowCertificatesOnly] = useState(false);
   const [showTestimonialsOnly, setShowTestimonialsOnly] = useState(false);
-  const [cameFromTestimonials, setCameFromTestimonials] = useState(false);
+  
   const isMobile = useIsMobile();
 
   useEffect(() => {
@@ -92,43 +92,9 @@ const Index = () => {
   };
 
   const handleBackFromTestimonials = () => {
-    console.log('handleBackFromTestimonials: Setting showTestimonialsOnly to false');
-    setCameFromTestimonials(true);
     setShowTestimonialsOnly(false);
   };
 
-  // Handle scrolling to testimonials after returning from testimonials-only view
-  useEffect(() => {
-    if (cameFromTestimonials && !showTestimonialsOnly) {
-      const scrollToTestimonials = () => {
-        const element = document.getElementById('testimonials');
-        if (element) {
-          console.log('useEffect: Scrolling to testimonials after render');
-          const targetScroll = element.offsetTop - 80;
-          console.log('useEffect: Target scroll position:', targetScroll);
-          
-          // Temporarily disable navigation scroll handler
-          window.dispatchEvent(new CustomEvent('disableNavScroll'));
-          
-          window.scrollTo({ 
-            top: targetScroll, 
-            behavior: 'auto'
-          });
-          
-          // Re-enable navigation scroll handler after scroll
-          setTimeout(() => {
-            window.dispatchEvent(new CustomEvent('enableNavScroll'));
-            console.log('useEffect: Current scroll after 100ms:', window.scrollY);
-            setCameFromTestimonials(false); // Reset the flag
-          }, 200);
-        }
-      };
-      
-      // Wait for the DOM to be ready
-      const timeoutId = setTimeout(scrollToTestimonials, 50);
-      return () => clearTimeout(timeoutId);
-    }
-  }, [cameFromTestimonials, showTestimonialsOnly]);
 
   // Show certificates-only view
   if (showCertificatesOnly) {
