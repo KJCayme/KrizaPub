@@ -28,17 +28,8 @@ const TestimonialsViewOnly = ({ isDarkMode, onToggleDarkMode, onBack }: Testimon
   const generateCode = useGenerateCode();
 
   const handleBack = () => {
-    onBack(); // This sets showTestimonialsOnly to false
-    // Wait for the main page to render, then scroll to testimonials section
-    setTimeout(() => {
-      const element = document.getElementById('testimonials');
-      if (element) {
-        element.scrollIntoView({ 
-          behavior: 'smooth',
-          block: 'start'
-        });
-      }
-    }, 300); // Increased timeout to allow for page transition
+    // Simply call onBack - let the parent handle all navigation logic
+    onBack();
   };
 
   const handleAddTestimonial = () => {

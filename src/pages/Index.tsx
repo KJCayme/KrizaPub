@@ -93,7 +93,22 @@ const Index = () => {
 
   const handleBackFromTestimonials = () => {
     setShowTestimonialsOnly(false);
-    // No immediate scrolling - let the component handle it
+    // Force scroll to testimonials section after state change
+    setTimeout(() => {
+      // First, make sure we're at the top to reset any scroll position
+      window.scrollTo({ top: 0, behavior: 'auto' });
+      // Then scroll to testimonials with a longer delay to ensure DOM is ready
+      setTimeout(() => {
+        const testimonialsSection = document.getElementById('testimonials');
+        if (testimonialsSection) {
+          const sectionTop = testimonialsSection.getBoundingClientRect().top + window.pageYOffset;
+          window.scrollTo({ 
+            top: sectionTop - 100, // Account for navigation height
+            behavior: 'smooth' 
+          });
+        }
+      }, 100);
+    }, 50);
   };
 
 
