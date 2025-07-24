@@ -33,19 +33,11 @@ const TestimonialsViewOnly = ({ isDarkMode, onToggleDarkMode, onBack }: Testimon
     setTimeout(() => {
       const element = document.getElementById('testimonials');
       if (element) {
-        // Temporarily disable navigation scroll handler
-        window.dispatchEvent(new CustomEvent('disableNavScroll'));
-        
         const elementTop = element.getBoundingClientRect().top + window.pageYOffset;
         window.scrollTo({ 
           top: elementTop - 80, // Account for fixed navigation
-          behavior: 'auto' 
+          behavior: 'smooth' 
         });
-        
-        // Re-enable navigation scroll handler after scroll
-        setTimeout(() => {
-          window.dispatchEvent(new CustomEvent('enableNavScroll'));
-        }, 200);
       }
     }, 100);
   };
