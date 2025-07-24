@@ -33,13 +33,12 @@ const TestimonialsViewOnly = ({ isDarkMode, onToggleDarkMode, onBack }: Testimon
     setTimeout(() => {
       const element = document.getElementById('testimonials');
       if (element) {
-        const elementTop = element.getBoundingClientRect().top + window.pageYOffset;
-        window.scrollTo({ 
-          top: elementTop - 80, // Account for fixed navigation
-          behavior: 'smooth' 
+        element.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
         });
       }
-    }, 100);
+    }, 200);
   };
 
   const handleAddTestimonial = () => {
