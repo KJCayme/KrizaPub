@@ -29,6 +29,17 @@ const TestimonialsViewOnly = ({ isDarkMode, onToggleDarkMode, onBack }: Testimon
 
   const handleBack = () => {
     onBack();
+    // Use a more reliable approach to scroll to testimonials section
+    setTimeout(() => {
+      const element = document.getElementById('testimonials');
+      if (element) {
+        const elementTop = element.getBoundingClientRect().top + window.pageYOffset;
+        window.scrollTo({ 
+          top: elementTop - 80, // Account for fixed navigation
+          behavior: 'smooth' 
+        });
+      }
+    }, 100);
   };
 
   const handleAddTestimonial = () => {
