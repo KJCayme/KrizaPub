@@ -11,6 +11,7 @@ import { useIsMobile } from '../hooks/use-mobile';
 import { useProjects } from '../hooks/useProjects';
 import { useProjectsByCategory } from '../hooks/useProjectsByCategory';
 import { usePrefetchProjects } from '../hooks/usePrefetchProjects';
+import { usePrefetchAllProjects } from '../hooks/usePrefetchAllProjects';
 import { useAuth } from '../hooks/useAuth';
 import { usePortfolioCategories } from '../hooks/usePortfolioCategories';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
@@ -33,6 +34,7 @@ const Portfolio = ({ onShowAllProjectsChange }: PortfolioProps) => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [shouldScrollToProject, setShouldScrollToProject] = useState(false);
   const [prefetchedCategories, setPrefetchedCategories] = useState<Set<string>>(new Set());
+  const [hasTriggeredPrefetch, setHasTriggeredPrefetch] = useState(false);
   const projectGridRef = useRef<{ scrollToProject: (projectId: number) => void }>(null);
   const isMobile = useIsMobile();
   const { user } = useAuth();
@@ -49,6 +51,10 @@ const Portfolio = ({ onShowAllProjectsChange }: PortfolioProps) => {
     hidden: cat.hidden || false
   })) || [];
 
+  // Hooks for prefetching
+  const { prefetchProjectsByCategory } = usePrefetchProjects();
+  const { prefetchAllProjects } = usePrefetchAllProjects();
+
   // Set default category to the first available category
   useEffect(() => {
     if (categories.length > 0 && !activeCategory) {
@@ -58,9 +64,17 @@ const Portfolio = ({ onShowAllProjectsChange }: PortfolioProps) => {
     }
   }, [categories, activeCategory]);
 
+  // Prefetch all projects when portfolio section is reached
+  useEffect(() => {
+    if (hasIntersected && !hasTriggeredPrefetch && categories.length > 0) {
+      console.log('🎯 Portfolio section reached - triggering prefetch of all projects');
+      setHasTriggeredPrefetch(true);
+      prefetchAllProjects();
+    }
+  }, [hasIntersected, hasTriggeredPrefetch, categories.length, prefetchAllProjects]);
+
   // Fetch projects by category (only fetch for active category or when hovered/clicked)
   const { data: projectsData, isLoading, error, refetch } = useProjectsByCategory(activeCategory, !!activeCategory && hasIntersected);
-  const { prefetchProjectsByCategory } = usePrefetchProjects();
 
   // Transform projects for UI compatibility
   const projects = projectsData || [];
@@ -70,28 +84,9 @@ const Portfolio = ({ onShowAllProjectsChange }: PortfolioProps) => {
     const darkModeEnabled = document.documentElement.classList.contains('dark');
     setIsDarkMode(darkModeEnabled);
     
-    // For tablet/mobile viewports, prefetch all categories since hover doesn't work
-    if (isMobile && categories.length > 0 && hasIntersected) {
-      const prefetchAllCategories = async () => {
-        console.log('📱 Mobile/tablet detected - prefetching all categories');
-        for (const category of categories) {
-          if (!prefetchedCategories.has(category.id)) {
-            try {
-              console.log(`🚀 Auto-prefetching for mobile: ${category.id}`);
-              await prefetchProjectsByCategory(category.id);
-              setPrefetchedCategories(prev => new Set([...prev, category.id]));
-              console.log(`✅ Auto-prefetched for mobile: ${category.id}`);
-            } catch (error) {
-              console.error(`❌ Failed to auto-prefetch ${category.id}:`, error);
-            }
-          }
-        }
-      };
-      
-      // Delay prefetch to avoid blocking initial render
-      setTimeout(prefetchAllCategories, 1000);
-    }
-  }, [isMobile, categories, prefetchedCategories, prefetchProjectsByCategory, hasIntersected]);
+    // For tablet/mobile viewports, the prefetch is now handled by the main prefetch trigger
+    // No need for separate mobile prefetching since we're prefetching everything
+  }, []);
 
   // Show error toast if there's an error fetching projects or categories
   useEffect(() => {
@@ -168,11 +163,10 @@ const Portfolio = ({ onShowAllProjectsChange }: PortfolioProps) => {
 
   const filteredProjects = projects.filter(project => project.category === activeCategory);
 
-  // Prefetch projects for a category on hover
+  // Prefetch projects for a category on hover (now just logs since we prefetch everything)
   const handleCategoryHover = async (categoryId: string) => {
     if (!prefetchedCategories.has(categoryId)) {
       console.log(`🚀 Prefetching projects for category: ${categoryId}`);
-      // Add to prefetched set to avoid multiple requests
       setPrefetchedCategories(prev => new Set([...prev, categoryId]));
       
       try {
@@ -180,7 +174,6 @@ const Portfolio = ({ onShowAllProjectsChange }: PortfolioProps) => {
         console.log(`✅ Successfully prefetched projects for category: ${categoryId}`);
       } catch (error) {
         console.error(`❌ Failed to prefetch projects for ${categoryId}:`, error);
-        // Remove from prefetched set on error so it can be retried
         setPrefetchedCategories(prev => {
           const newSet = new Set([...prev]);
           newSet.delete(categoryId);
