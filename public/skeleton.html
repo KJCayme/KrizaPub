@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,62 +6,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kenneth John Portfolio - Offline</title>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+        * {
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
             background: linear-gradient(135deg, hsl(222.2, 84%, 4.9%) 0%, hsl(217.2, 32.6%, 17.5%) 100%);
             color: hsl(210, 40%, 98%);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-        
-        .offline-container {
-            text-align: center;
-            padding: 2rem;
-            max-width: 500px;
-        }
-        
-        .offline-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 2rem;
-            background: hsl(210, 40%, 8%);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-        }
-        
-        h1 {
-            margin: 0 0 1rem;
-            font-size: 2rem;
-            font-weight: 600;
-        }
-        
-        p {
-            margin: 0 0 2rem;
-            opacity: 0.8;
             line-height: 1.6;
-        }
-        
-        .retry-button {
-            background: hsl(210, 40%, 98%);
-            color: hsl(222.2, 84%, 4.9%);
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-        
-        .retry-button:hover {
-            opacity: 0.9;
         }
         
         .skeleton-nav {
@@ -75,6 +32,7 @@
             display: flex;
             align-items: center;
             padding: 0 1rem;
+            z-index: 1000;
         }
         
         .skeleton-logo {
@@ -82,6 +40,152 @@
             height: 20px;
             background: hsla(210, 40%, 98%, 0.2);
             border-radius: 4px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .main-content {
+            padding-top: 80px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+            padding: 2rem;
+            background: hsla(210, 40%, 8%, 0.5);
+            border-radius: 1rem;
+            border: 1px solid hsla(210, 40%, 98%, 0.1);
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-align: center;
+            background: linear-gradient(45deg, hsl(210, 40%, 98%), hsl(210, 40%, 80%));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-caption {
+            text-align: center;
+            font-size: 1.1rem;
+            color: hsla(210, 40%, 98%, 0.8);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .fallback-text {
+            text-align: center;
+            font-size: 1rem;
+            color: hsla(210, 40%, 98%, 0.6);
+            margin-top: 2rem;
+            font-style: italic;
+        }
+
+        .skeleton-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .skeleton-card {
+            background: hsla(210, 40%, 8%, 0.8);
+            border: 1px solid hsla(210, 40%, 98%, 0.1);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .skeleton-card-header {
+            width: 80%;
+            height: 20px;
+            background: hsla(210, 40%, 98%, 0.2);
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .skeleton-card-content {
+            width: 100%;
+            height: 60px;
+            background: hsla(210, 40%, 98%, 0.1);
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+
+        .skeleton-card-footer {
+            width: 60%;
+            height: 16px;
+            background: hsla(210, 40%, 98%, 0.15);
+            border-radius: 4px;
+        }
+
+        .skeleton-filters {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .skeleton-filter {
+            width: 80px;
+            height: 40px;
+            background: hsla(210, 40%, 98%, 0.1);
+            border-radius: 20px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .offline-notice {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: hsla(0, 84%, 60%, 0.9);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 12px hsla(0, 0%, 0%, 0.3);
+            z-index: 1001;
+        }
+
+        .offline-notice::before {
+            content: "📶";
+            margin-right: 0.5rem;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .skeleton-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .skeleton-filters {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .skeleton-filter {
+                width: 120px;
+            }
         }
     </style>
 </head>
@@ -90,16 +194,114 @@
         <div class="skeleton-logo"></div>
     </div>
     
-    <div class="offline-container">
-        <div class="offline-icon">📶</div>
-        <h1>You're Offline</h1>
-        <p>
-            It looks like you're not connected to the internet. 
-            Please check your connection and try again.
-        </p>
-        <button class="retry-button" onclick="window.location.reload()">
-            Try Again
-        </button>
+    <div class="main-content">
+        <!-- Skills Section -->
+        <section class="section">
+            <h2 class="section-title">🔧 Skills</h2>
+            <div class="skeleton-grid">
+                <div class="skeleton-card">
+                    <div class="skeleton-card-header"></div>
+                    <div class="skeleton-card-content"></div>
+                    <div class="skeleton-card-footer"></div>
+                </div>
+                <div class="skeleton-card">
+                    <div class="skeleton-card-header"></div>
+                    <div class="skeleton-card-content"></div>
+                    <div class="skeleton-card-footer"></div>
+                </div>
+                <div class="skeleton-card">
+                    <div class="skeleton-card-header"></div>
+                    <div class="skeleton-card-content"></div>
+                    <div class="skeleton-card-footer"></div>
+                </div>
+            </div>
+            <div class="fallback-text">No Skills Available at the moment.</div>
+        </section>
+
+        <!-- Portfolio Section -->
+        <section class="section">
+            <h2 class="section-title">💼 My Portfolio</h2>
+            <p class="section-caption">
+                Real projects, real results. Here's a showcase of my work across different areas of expertise, demonstrating measurable impact and professional excellence.
+            </p>
+            
+            <div class="skeleton-filters">
+                <div class="skeleton-filter"></div>
+                <div class="skeleton-filter"></div>
+                <div class="skeleton-filter"></div>
+                <div class="skeleton-filter"></div>
+            </div>
+            
+            <div class="skeleton-grid">
+                <div class="skeleton-card">
+                    <div class="skeleton-card-header"></div>
+                    <div class="skeleton-card-content"></div>
+                    <div class="skeleton-card-footer"></div>
+                </div>
+                <div class="skeleton-card">
+                    <div class="skeleton-card-header"></div>
+                    <div class="skeleton-card-content"></div>
+                    <div class="skeleton-card-footer"></div>
+                </div>
+                <div class="skeleton-card">
+                    <div class="skeleton-card-header"></div>
+                    <div class="skeleton-card-content"></div>
+                    <div class="skeleton-card-footer"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Certificates Section -->
+        <section class="section">
+            <h2 class="section-title">📜 Certificates</h2>
+            <p class="section-caption">
+                Professional certifications that validate my expertise and commitment to continuous learning.
+            </p>
+            
+            <div class="skeleton-grid">
+                <div class="skeleton-card">
+                    <div class="skeleton-card-header"></div>
+                    <div class="skeleton-card-content"></div>
+                    <div class="skeleton-card-footer"></div>
+                </div>
+                <div class="skeleton-card">
+                    <div class="skeleton-card-header"></div>
+                    <div class="skeleton-card-content"></div>
+                    <div class="skeleton-card-footer"></div>
+                </div>
+                <div class="skeleton-card">
+                    <div class="skeleton-card-header"></div>
+                    <div class="skeleton-card-content"></div>
+                    <div class="skeleton-card-footer"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tools Section -->
+        <section class="section">
+            <h2 class="section-title">🛠️ Tools</h2>
+            <div class="skeleton-grid">
+                <div class="skeleton-card">
+                    <div class="skeleton-card-header"></div>
+                    <div class="skeleton-card-content"></div>
+                    <div class="skeleton-card-footer"></div>
+                </div>
+                <div class="skeleton-card">
+                    <div class="skeleton-card-header"></div>
+                    <div class="skeleton-card-content"></div>
+                    <div class="skeleton-card-footer"></div>
+                </div>
+                <div class="skeleton-card">
+                    <div class="skeleton-card-header"></div>
+                    <div class="skeleton-card-content"></div>
+                    <div class="skeleton-card-footer"></div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="offline-notice">
+        You're offline. Please check your connection.
     </div>
     
     <script>
@@ -108,12 +310,12 @@
             window.location.reload();
         });
         
-        // Auto-retry every 30 seconds
+        // Auto-retry every 15 seconds
         setInterval(() => {
             if (navigator.onLine) {
                 window.location.reload();
             }
-        }, 30000);
+        }, 15000);
     </script>
 </body>
 </html>
