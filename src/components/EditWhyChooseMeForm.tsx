@@ -109,10 +109,10 @@ export const EditWhyChooseMeForm = ({ isOpen, onClose }: EditWhyChooseMeFormProp
           </Button>
           
           <div className="flex gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="outline" onClick={onClose} className="w-1/2">
               Cancel
             </Button>
-            <Button type="submit" disabled={updateWhyChooseMe.isPending}>
+            <Button type="submit" disabled={updateWhyChooseMe.isPending} className="w-1/2">
               {updateWhyChooseMe.isPending ? 'Saving...' : 'Save Changes'}
             </Button>
           </div>

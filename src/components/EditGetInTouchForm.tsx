@@ -180,10 +180,10 @@ export const EditGetInTouchForm = ({ isOpen, onClose }: EditGetInTouchFormProps)
           )}
           
           <div className="flex gap-2 pt-4">
-            <Button type="button" variant="outline" onClick={onClose}>
+            <Button type="button" variant="outline" onClick={onClose} className="w-1/2">
               Cancel
             </Button>
-            <Button type="submit" disabled={updateGetInTouch.isPending}>
+            <Button type="submit" disabled={updateGetInTouch.isPending} className="w-1/2">
               {updateGetInTouch.isPending ? 'Saving...' : 'Save Changes'}
             </Button>
           </div>
