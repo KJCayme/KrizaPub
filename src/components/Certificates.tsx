@@ -7,6 +7,7 @@ import { useCertificates } from '../hooks/useCertificates';
 import { useAuth } from '../hooks/useAuth';
 import AddCertificateForm from './AddCertificateForm';
 import AuthRequiredDialog from './auth/AuthRequiredDialog';
+import CertificateCardSkeleton from './skeletons/CertificateCardSkeleton';
 
 interface CertificatesProps {
   onShowCertificatesOnly: (show: boolean) => void;
@@ -38,8 +39,24 @@ const Certificates = ({ onShowCertificatesOnly }: CertificatesProps) => {
     return (
       <section className="py-20 bg-white dark:bg-slate-900">
         <div className="container mx-auto px-6">
-          <div className="text-center">
-            <p className="text-slate-600 dark:text-slate-300">Loading certificates...</p>
+          <div className="text-center mb-16">
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <div className="w-12 h-12 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 flex items-center justify-center">
+                <Award className="w-6 h-6 text-white" />
+              </div>
+              <h2 className="text-4xl md:text-5xl font-bold text-slate-800 dark:text-white">
+                Certificates
+              </h2>
+            </div>
+            <p className="text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
+              Professional certifications that validate my expertise and commitment to continuous learning
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-8 justify-center mb-12">
+            {[...Array(3)].map((_, index) => (
+              <CertificateCardSkeleton key={index} />
+            ))}
           </div>
         </div>
       </section>

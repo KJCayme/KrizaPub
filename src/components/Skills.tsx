@@ -7,12 +7,13 @@ import { useSkillsWithExpertise } from '../hooks/useSkills';
 import AddSkillForm from './AddSkillForm';
 import SkillActions from './SkillActions';
 import DynamicIcon from './DynamicIcon';
+import SkillCardSkeleton from './skeletons/SkillCardSkeleton';
 
 const Skills = () => {
   const { user } = useAuth();
   const [showAddSkillForm, setShowAddSkillForm] = useState(false);
   // Show hidden skills only when user is logged in
-  const { data: skillsWithExpertise = [] } = useSkillsWithExpertise(!!user);
+  const { data: skillsWithExpertise = [], isLoading } = useSkillsWithExpertise(!!user);
 
   const handleSkillAdded = () => {
     console.log('Skill added - skills list will update automatically');
@@ -47,8 +48,14 @@ const Skills = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            {/* Database Skills */}
-            {skillsWithExpertise.map((skill) => {
+            {/* Loading state */}
+            {isLoading ? (
+              [...Array(6)].map((_, index) => (
+                <SkillCardSkeleton key={index} />
+              ))
+            ) : (
+              /* Database Skills */
+              skillsWithExpertise.map((skill) => {
               const expertise = skill.skills_expertise?.[0];
               const skillDetails = expertise?.details || [`Professional ${skill.skill_name} services`];
               
@@ -106,10 +113,11 @@ const Skills = () => {
                   </div>
                 </div>
               );
-            })}
+            })
+            )}
 
             {/* Add Skill Button - Circular button */}
-            {user && (
+            {user && !isLoading && (
               <div className="flex justify-center items-center">
                 <Button
                   onClick={() => setShowAddSkillForm(true)}
@@ -122,7 +130,7 @@ const Skills = () => {
             )}
 
             {/* Show message when no skills are available */}
-            {skillsWithExpertise.length === 0 && (
+            {skillsWithExpertise.length === 0 && !isLoading && (
               <div className="col-span-full text-center py-12">
                 <p className="text-slate-600 dark:text-slate-300 text-lg mb-4">
                   No skills available at the moment.

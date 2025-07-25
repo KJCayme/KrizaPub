@@ -6,6 +6,7 @@ import ProjectGrid from './portfolio/ProjectGrid';
 import AddProjectForm from './portfolio/AddProjectForm';
 import AddCategoryForm from './portfolio/AddCategoryForm';
 import ManageCategoriesForm from './portfolio/ManageCategoriesForm';
+import ProjectCardSkeleton from './skeletons/ProjectCardSkeleton';
 import { handleBookCall } from '../utils/bookCall';
 import { useIsMobile } from '../hooks/use-mobile';
 import { useProjects } from '../hooks/useProjects';
@@ -244,9 +245,21 @@ const Portfolio = ({ onShowAllProjectsChange }: PortfolioProps) => {
     return (
       <section ref={portfolioRef} id="portfolio" className="py-20 bg-gradient-to-br from-slate-100 to-blue-50 dark:from-slate-800 dark:to-blue-900">
         <div className="container mx-auto px-4 md:px-6">
-          <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <p className="mt-4 text-slate-600 dark:text-slate-300">Loading projects...</p>
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-slate-800 dark:text-white">
+              My Portfolio
+            </h2>
+            <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto mb-8">
+              Real projects, real results. Here's a showcase of my work across different 
+              areas of expertise, demonstrating measurable impact and professional excellence.
+            </p>
+          </div>
+          
+          {/* Skeleton projects grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            {[...Array(6)].map((_, index) => (
+              <ProjectCardSkeleton key={index} />
+            ))}
           </div>
         </div>
       </section>
