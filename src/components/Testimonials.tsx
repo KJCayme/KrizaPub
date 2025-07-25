@@ -11,6 +11,7 @@ import AddClientTestimonialForm from './AddClientTestimonialForm';
 import CodeGenerationPopup from './CodeGenerationPopup';
 import TestimonialsHeader from './testimonials/TestimonialsHeader';
 import TestimonialsGrid from './testimonials/TestimonialsGrid';
+import TestimonialCardSkeleton from './skeletons/TestimonialCardSkeleton';
 
 interface TestimonialsProps {
   onShowTestimonialsOnly: (show: boolean) => void;
@@ -53,8 +54,20 @@ const Testimonials = ({ onShowTestimonialsOnly }: TestimonialsProps) => {
     return (
       <section id="testimonials" className="py-20 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-800 dark:to-slate-900 transition-colors duration-300">
         <div className="container mx-auto px-6">
-          <div className="text-center">
-            <div className="animate-pulse">Loading testimonials...</div>
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-slate-800 dark:text-white mb-6">
+              What Clients Say
+            </h2>
+            <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto">
+              Don't just take my word for it. Here's what my clients have to say about working with me and the results we've achieved together.
+            </p>
+          </div>
+          
+          {/* Skeleton testimonials */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+            {[...Array(6)].map((_, index) => (
+              <TestimonialCardSkeleton key={index} />
+            ))}
           </div>
         </div>
       </section>
@@ -98,8 +111,17 @@ const Testimonials = ({ onShowTestimonialsOnly }: TestimonialsProps) => {
             </p>
           </div>
 
-          {/* Add Client Testimonial Button - positioned below caption */}
-          <div className="mb-12 flex justify-center">
+
+          {displayedTestimonials.length > 0 ? (
+            <TestimonialsGrid testimonials={displayedTestimonials} isLoading={false} />
+          ) : (
+            <div className="text-center text-slate-600 dark:text-slate-300">
+              <p className="text-lg mb-4">No testimonials yet.</p>
+            </div>
+          )}
+
+          {/* Add Client Testimonial Button - moved to bottom */}
+          <div className="text-center mt-12">
             <Button
               onClick={() => setShowClientForm(true)}
               variant="outline"
@@ -109,31 +131,6 @@ const Testimonials = ({ onShowTestimonialsOnly }: TestimonialsProps) => {
               Add Client Testimonial
             </Button>
           </div>
-
-          {displayedTestimonials.length > 0 ? (
-            <TestimonialsGrid testimonials={displayedTestimonials} isLoading={false} />
-          ) : (
-            <div className="text-center text-slate-600 dark:text-slate-300">
-              <p className="text-lg mb-4">No testimonials yet.</p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button
-                  onClick={() => setShowAddForm(true)}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-                >
-                  <Plus className="w-5 h-5 mr-2" />
-                  Be the First to Add a Testimonial
-                </Button>
-                <Button
-                  onClick={() => setShowClientForm(true)}
-                  variant="outline"
-                  className="bg-white/80 backdrop-blur-sm border-2 border-blue-200 text-blue-600 font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:bg-blue-50"
-                >
-                  <Plus className="w-5 h-5 mr-2" />
-                  Add Client Testimonial
-                </Button>
-              </div>
-            </div>
-          )}
 
           {testimonials.length >= 6 && (
             <div className="text-center mt-12">
