@@ -54,10 +54,16 @@ if ('serviceWorker' in navigator) {
     // Listen for online/offline status changes
     window.addEventListener('online', () => {
       console.log('Back online, checking for updates...');
-      // Register background sync when back online
+      // Register background sync when back online (with proper type checking)
       if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
         navigator.serviceWorker.ready.then((registration) => {
-          return registration.sync.register('background-sync');
+          // Type assertion for background sync support
+          const syncRegistration = registration as any;
+          if (syncRegistration.sync) {
+            return syncRegistration.sync.register('background-sync');
+          }
+        }).catch((error) => {
+          console.warn('Background sync registration failed:', error);
         });
       }
     });
