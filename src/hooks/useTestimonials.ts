@@ -66,13 +66,18 @@ export const useTestimonials = (limit?: number) => {
         throw clientTestimonialsError;
       }
 
+      // Filter out client testimonials with empty or null feedback
+      const filteredClientTestimonials = clientTestimonialsData.filter(item => 
+        item.feedback && item.feedback.trim() !== ''
+      );
+
       // Combine and normalize data
       const normalizedTestimonials = testimonialsData.map(item => ({
         ...item,
         source: 'testimonials' as const
       }));
 
-      const normalizedClientTestimonials = clientTestimonialsData.map(item => ({
+      const normalizedClientTestimonials = filteredClientTestimonials.map(item => ({
         ...item,
         source: 'client_testimonials' as const
       }));
