@@ -3,46 +3,57 @@ import { createRoot } from 'react-dom/client'
 import App from './App.tsx'
 import './index.css'
 
-// Enhanced Service Worker Registration with automatic updates
+// Enhanced Service Worker Registration with better debugging
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
+    console.log('Registering service worker...');
+    
+    navigator.serviceWorker.register('/sw.js', {
+      // Update on reload in development
+      updateViaCache: 'none'
+    })
       .then((registration) => {
-        console.log('SW registered: ', registration);
+        console.log('SW registered successfully: ', registration);
         
-        // Check for updates immediately
+        // Force update check immediately
         registration.update();
         
         // Listen for updates
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing;
+          console.log('New service worker found, installing...');
+          
           if (newWorker) {
-            console.log('New service worker found, installing...');
-            
             newWorker.addEventListener('statechange', () => {
               console.log('Service worker state changed:', newWorker.state);
               
               if (newWorker.state === 'installed') {
                 if (navigator.serviceWorker.controller) {
-                  // New service worker installed, activate immediately
                   console.log('New service worker installed, activating...');
                   newWorker.postMessage({ type: 'SKIP_WAITING' });
                 } else {
-                  // First install
                   console.log('Service worker installed for the first time');
                 }
+              }
+              
+              if (newWorker.state === 'activated') {
+                console.log('Service worker activated');
               }
             });
           }
         });
         
-        // Set up periodic update checks (every 5 minutes)
+        // Check for updates more frequently in development
+        const isDev = import.meta.env.DEV;
+        const updateInterval = isDev ? 10000 : 5 * 60 * 1000; // 10s in dev, 5min in prod
+        
         setInterval(() => {
+          console.log('Checking for service worker updates...');
           registration.update();
-        }, 5 * 60 * 1000);
+        }, updateInterval);
       })
       .catch((registrationError) => {
-        console.log('SW registration failed: ', registrationError);
+        console.error('SW registration failed: ', registrationError);
       });
     
     // Listen for service worker controller changes and reload automatically
@@ -70,6 +81,11 @@ if ('serviceWorker' in navigator) {
     
     window.addEventListener('offline', () => {
       console.log('Gone offline, caching will be used');
+    });
+    
+    // Add debugging for service worker messages
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      console.log('Message from service worker:', event.data);
     });
   });
 }

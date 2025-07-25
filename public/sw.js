@@ -1,7 +1,7 @@
 
-const CACHE_NAME = 'kenneth-portfolio-cache-v2';
-const STATIC_CACHE_NAME = 'static-cache-v2';
-const DYNAMIC_CACHE_NAME = 'dynamic-cache-v2';
+const CACHE_NAME = 'kenneth-portfolio-cache-v3';
+const STATIC_CACHE_NAME = 'static-cache-v3';
+const DYNAMIC_CACHE_NAME = 'dynamic-cache-v3';
 
 // Enhanced static assets to cache
 const STATIC_ASSETS = [
@@ -25,17 +25,24 @@ const DYNAMIC_CACHE_PATTERNS = [
 
 // Install event - cache static assets and skeleton
 self.addEventListener('install', (event) => {
-  console.log('Service Worker installing with enhanced caching');
+  console.log('Service Worker installing with enhanced caching v3');
   
   event.waitUntil(
     Promise.all([
       // Cache static assets
       caches.open(STATIC_CACHE_NAME).then(async (cache) => {
-        await cache.addAll(STATIC_ASSETS);
+        console.log('Caching static assets...');
+        
+        try {
+          await cache.addAll(STATIC_ASSETS);
+          console.log('Static assets cached successfully');
+        } catch (error) {
+          console.error('Failed to cache static assets:', error);
+        }
         
         // Cache Vite generated assets
         try {
-          // Try to get the current build assets
+          console.log('Attempting to cache Vite assets...');
           const indexResponse = await fetch('/index.html');
           const indexText = await indexResponse.text();
           
@@ -44,13 +51,20 @@ self.addEventListener('install', (event) => {
           const jsMatches = indexText.match(/\/assets\/[^"]+\.js/g);
           const cssMatches = indexText.match(/\/assets\/[^"]+\.css/g);
           
-          if (jsMatches) assetUrls.push(...jsMatches);
-          if (cssMatches) assetUrls.push(...cssMatches);
+          if (jsMatches) {
+            assetUrls.push(...jsMatches);
+            console.log('Found JS assets:', jsMatches);
+          }
+          if (cssMatches) {
+            assetUrls.push(...cssMatches);
+            console.log('Found CSS assets:', cssMatches);
+          }
           
           // Cache the found assets
           for (const url of assetUrls) {
             try {
               await cache.add(url);
+              console.log('Cached asset:', url);
             } catch (error) {
               console.warn(`Failed to cache asset: ${url}`, error);
             }
@@ -61,22 +75,26 @@ self.addEventListener('install', (event) => {
       }),
       
       // Initialize dynamic cache
-      caches.open(DYNAMIC_CACHE_NAME)
+      caches.open(DYNAMIC_CACHE_NAME).then(() => {
+        console.log('Dynamic cache initialized');
+      })
     ])
   );
   
   // Force immediate activation
+  console.log('Service worker skipping waiting...');
   self.skipWaiting();
 });
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('Service Worker activating with cache cleanup');
+  console.log('Service Worker activating with cache cleanup v3');
   
   event.waitUntil(
     Promise.all([
       // Clean up old caches
       caches.keys().then((cacheNames) => {
+        console.log('Found caches:', cacheNames);
         return Promise.all(
           cacheNames.map((cacheName) => {
             if (cacheName !== STATIC_CACHE_NAME && 
@@ -90,7 +108,9 @@ self.addEventListener('activate', (event) => {
       }),
       
       // Take control of all clients immediately
-      self.clients.claim()
+      self.clients.claim().then(() => {
+        console.log('Service worker claimed all clients');
+      })
     ])
   );
 });
@@ -110,29 +130,38 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   
+  console.log('Fetching:', request.url);
+  
   // API requests - Network First with enhanced caching
   if (url.pathname.startsWith('/api/') || 
       DYNAMIC_CACHE_PATTERNS.some(pattern => url.pathname.includes(pattern))) {
+    console.log('API request - Network First strategy');
+    
     event.respondWith(
       fetch(request)
         .then((response) => {
+          console.log('API response received:', response.status);
           // Cache successful responses
           if (response.ok) {
             const responseClone = response.clone();
             caches.open(DYNAMIC_CACHE_NAME).then((cache) => {
               cache.put(request, responseClone);
+              console.log('API response cached');
             });
           }
           return response;
         })
-        .catch(async () => {
+        .catch(async (error) => {
+          console.log('API request failed, trying cache:', error);
           // Fallback to cache if network fails
           const cachedResponse = await caches.match(request);
           if (cachedResponse) {
+            console.log('Serving API response from cache');
             return cachedResponse;
           }
           
           // Return empty response for API calls when offline
+          console.log('No cache available, returning offline response');
           return new Response(JSON.stringify({ error: 'Offline' }), {
             status: 503,
             headers: { 'Content-Type': 'application/json' }
@@ -151,17 +180,22 @@ self.addEventListener('fetch', (event) => {
      url.pathname.includes('.js') ||
      url.pathname.includes('.css'))
   ) {
+    console.log('Static asset - Cache First strategy');
+    
     event.respondWith(
       caches.open(STATIC_CACHE_NAME).then(async (cache) => {
         const cachedResponse = await cache.match(request);
         if (cachedResponse) {
+          console.log('Serving static asset from cache');
           return cachedResponse;
         }
         
         try {
+          console.log('Fetching static asset from network');
           const response = await fetch(request);
           if (response.ok) {
             cache.put(request, response.clone());
+            console.log('Static asset cached');
           }
           return response;
         } catch (error) {
@@ -176,38 +210,48 @@ self.addEventListener('fetch', (event) => {
   // Navigation requests - Enhanced offline fallback
   if (request.mode === 'navigate' || 
       (request.method === 'GET' && request.headers.get('accept')?.includes('text/html'))) {
+    console.log('Navigation request - Network First with skeleton fallback');
+    
     event.respondWith(
       fetch(request)
         .then((response) => {
+          console.log('Navigation response received:', response.status);
           // Cache successful navigation responses
           if (response.ok) {
             const responseClone = response.clone();
             caches.open(STATIC_CACHE_NAME).then((cache) => {
               cache.put(request, responseClone);
+              console.log('Navigation response cached');
             });
           }
           return response;
         })
-        .catch(async () => {
+        .catch(async (error) => {
+          console.log('Navigation request failed, trying fallbacks:', error);
+          
           // Try cached version first
           const cachedResponse = await caches.match(request);
           if (cachedResponse) {
+            console.log('Serving navigation from cache');
             return cachedResponse;
           }
           
           // Try cached index.html
           const indexResponse = await caches.match('/index.html');
           if (indexResponse) {
+            console.log('Serving index.html from cache');
             return indexResponse;
           }
           
           // Final fallback to skeleton
           const skeletonResponse = await caches.match('/skeleton.html');
           if (skeletonResponse) {
+            console.log('Serving skeleton.html from cache');
             return skeletonResponse;
           }
           
           // Create basic offline response if skeleton not cached
+          console.log('No cache available, creating basic offline response');
           return new Response(`
             <!DOCTYPE html>
             <html>
@@ -227,17 +271,22 @@ self.addEventListener('fetch', (event) => {
   }
   
   // Default: Cache First for everything else
+  console.log('Default request - Cache First strategy');
+  
   event.respondWith(
     caches.open(DYNAMIC_CACHE_NAME).then(async (cache) => {
       const cachedResponse = await cache.match(request);
       if (cachedResponse) {
+        console.log('Serving from cache');
         return cachedResponse;
       }
       
       try {
+        console.log('Fetching from network');
         const response = await fetch(request);
         if (response.ok) {
           cache.put(request, response.clone());
+          console.log('Response cached');
         }
         return response;
       } catch (error) {
@@ -250,21 +299,26 @@ self.addEventListener('fetch', (event) => {
 
 // Listen for messages from the main thread
 self.addEventListener('message', (event) => {
+  console.log('Service worker received message:', event.data);
+  
   if (event.data && event.data.type === 'SKIP_WAITING') {
+    console.log('Skipping waiting...');
     self.skipWaiting();
   }
 });
 
 // Background sync for when connection is restored
 self.addEventListener('sync', (event) => {
+  console.log('Background sync event:', event.tag);
+  
   if (event.tag === 'background-sync') {
     event.waitUntil(
       // Refresh critical data when back online
       Promise.all([
-        fetch('/api/skills').catch(() => {}),
-        fetch('/api/portfolio').catch(() => {}),
-        fetch('/api/certificates').catch(() => {}),
-        fetch('/api/tools').catch(() => {})
+        fetch('/api/skills').then(() => console.log('Skills synced')).catch(() => {}),
+        fetch('/api/portfolio').then(() => console.log('Portfolio synced')).catch(() => {}),
+        fetch('/api/certificates').then(() => console.log('Certificates synced')).catch(() => {}),
+        fetch('/api/tools').then(() => console.log('Tools synced')).catch(() => {})
       ])
     );
   }
