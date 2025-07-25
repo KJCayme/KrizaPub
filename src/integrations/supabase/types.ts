@@ -242,6 +242,36 @@ export type Database = {
         }
         Relationships: []
       }
+      get_in_touch: {
+        Row: {
+          caption: string
+          created_at: string
+          icon: string
+          id: string
+          social: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          caption: string
+          created_at?: string
+          icon: string
+          id?: string
+          social: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          caption?: string
+          created_at?: string
+          icon?: string
+          id?: string
+          social?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       key_service: {
         Row: {
           created_at: string
@@ -550,6 +580,30 @@ export type Database = {
           name_censored?: boolean | null
           rate?: number | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      why_choose_me: {
+        Row: {
+          caption: string
+          created_at: string
+          id: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          caption: string
+          created_at?: string
+          id?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          caption?: string
+          created_at?: string
+          id?: string
+          sort_order?: number
+          updated_at?: string
         }
         Relationships: []
       }

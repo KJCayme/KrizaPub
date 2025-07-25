@@ -6,6 +6,11 @@ import { Button } from './ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { useAuth } from '../hooks/useAuth';
+import { useGetInTouch } from '@/hooks/useGetInTouch';
+import { useWhyChooseMe } from '@/hooks/useWhyChooseMe';
+import { EditGetInTouchForm } from './EditGetInTouchForm';
+import { EditWhyChooseMeForm } from './EditWhyChooseMeForm';
+import DynamicIcon from './DynamicIcon';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -15,7 +20,35 @@ const Contact = () => {
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showGetInTouchForm, setShowGetInTouchForm] = useState(false);
+  const [showWhyChooseMeForm, setShowWhyChooseMeForm] = useState(false);
   const { user } = useAuth();
+  const { data: getInTouchData } = useGetInTouch();
+  const { data: whyChooseMeData } = useWhyChooseMe();
+
+  // Fallback data with example@gmail.com email
+  const fallbackGetInTouch = [
+    { icon: "Mail", social: "example@gmail.com", caption: "Email" },
+    { icon: "Phone", social: "+1234567890", caption: "Phone" },
+    { icon: "Linkedin", social: "linkedin.com/in/yourprofile", caption: "LinkedIn" },
+    { icon: "Github", social: "github.com/yourusername", caption: "GitHub" },
+    { icon: "MapPin", social: "Your Location", caption: "Location" }
+  ];
+
+  const fallbackWhyChooseMe = [
+    "Dedicated and reliable virtual assistant with proven track record",
+    "Excellent communication skills and attention to detail", 
+    "Flexible and adaptable to your business needs",
+    "Cost-effective solution for your administrative tasks"
+  ];
+
+  const contactItems = getInTouchData && getInTouchData.length > 0 
+    ? getInTouchData.slice(0, 5)
+    : fallbackGetInTouch;
+
+  const whyChooseItems = whyChooseMeData && whyChooseMeData.length > 0
+    ? whyChooseMeData.map(item => item.caption)
+    : fallbackWhyChooseMe;
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -88,6 +121,7 @@ const Contact = () => {
                   variant="ghost"
                   size="sm"
                   className="text-slate-300 hover:text-white hover:bg-slate-700"
+                  onClick={() => setShowGetInTouchForm(true)}
                 >
                   Edit Info
                 </Button>
@@ -95,45 +129,17 @@ const Contact = () => {
             </div>
             
             <div className="space-y-6">
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
-                  <Mail className="w-6 h-6" />
+              {contactItems.map((item, index) => (
+                <div key={index} className="flex items-center space-x-4">
+                  <div className="w-12 h-12 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
+                    <DynamicIcon iconName={item.icon} className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="font-semibold">{item.caption}</p>
+                    <p className="text-slate-300">{item.social}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="font-semibold">Email</p>
-                  <p className="text-slate-300">kennethjohncayme@gmail.com</p>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
-                  <Linkedin className="w-6 h-6" />
-                </div>
-                <div>
-                  <p className="font-semibold">LinkedIn</p>
-                  <p className="text-slate-300">Connect with me professionally</p>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
-                  <Instagram className="w-6 h-6" />
-                </div>
-                <div>
-                  <p className="font-semibold">Instagram</p>
-                  <p className="text-slate-300">Follow my journey</p>
-                </div>
-              </div>
-
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 rounded-lg bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center">
-                  <Facebook className="w-6 h-6" />
-                </div>
-                <div>
-                  <p className="font-semibold">Facebook</p>
-                  <p className="text-slate-300">Stay connected</p>
-                </div>
-              </div>
+              ))}
             </div>
 
             <div className="mt-12">
@@ -144,24 +150,19 @@ const Contact = () => {
                     variant="ghost"
                     size="icon"
                     className="text-slate-300 hover:text-white hover:bg-slate-700"
+                    onClick={() => setShowWhyChooseMeForm(true)}
                   >
                     <Edit3 className="w-4 h-4" />
                   </Button>
                 )}
               </div>
               <ul className="space-y-3 text-slate-300">
-                <li className="flex items-center space-x-2">
-                  <div className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
-                  <span>Fast response time within 24 hours</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <div className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
-                  <span>Customized solutions for your needs</span>
-                </li>
-                <li className="flex items-center space-x-2">
-                  <div className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
-                  <span>Professional and reliable service</span>
-                </li>
+                {whyChooseItems.map((item, index) => (
+                  <li key={index} className="flex items-center space-x-2">
+                    <div className="w-2 h-2 rounded-full bg-gradient-to-r from-blue-500 to-purple-500"></div>
+                    <span>{item}</span>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
@@ -239,6 +240,17 @@ const Contact = () => {
           </div>
         </div>
       </div>
+      
+      {/* Edit Forms */}
+      <EditGetInTouchForm
+        isOpen={showGetInTouchForm}
+        onClose={() => setShowGetInTouchForm(false)}
+      />
+      
+      <EditWhyChooseMeForm
+        isOpen={showWhyChooseMeForm}
+        onClose={() => setShowWhyChooseMeForm(false)}
+      />
     </section>
   );
 };
