@@ -79,7 +79,7 @@ const Hero = () => {
   }
 
   const displayName = profile?.name || 'Kenneth John Cayme';
-  const displayCaption = profile?.caption || 'Empowering businesses through exceptional virtual assistance';
+  const displayCaption = profile?.caption || 'Empowering businesses through exceptional virtual assistance, strategic social media management, seamless administrative support, creative design, and utilizing Artificial Intelligence.';
 
   return (
     <section className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 dark:from-slate-950 dark:via-blue-950 dark:to-purple-950 flex items-center justify-center relative overflow-hidden transition-colors duration-300">
