@@ -15,7 +15,6 @@ import EditHobbiesForm from './EditHobbiesForm';
 import EditThingsToDoForm from './EditThingsToDoForm';
 import EditHighlightsForm from './EditHighlightsForm';
 import DynamicIcon from './DynamicIcon';
-import AboutSectionSkeleton from './skeletons/AboutSectionSkeleton';
 
 const About = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -32,14 +31,11 @@ const About = () => {
   // Use intersection observer for one-time animations
   const { ref: aboutRef, hasIntersected } = useIntersectionObserver({ threshold: 0.2 });
 
-  const { data: carouselImages = [], isLoading: carouselLoading, refetch: refetchImages } = useAboutCarousel();
-  const { data: aboutInfo, isLoading: infoLoading } = useAboutInfo();
-  const { data: hobbiesData = [], isLoading: hobbiesLoading, refetch: refetchHobbies } = useAboutHobbies();
-  const { data: thingsToDoData = [], isLoading: ttdLoading, refetch: refetchThingsToDo } = useAboutTtd();
-  const { data: highlightsData = [], isLoading: highlightsLoading } = useAboutHighlights();
-
-  // Overall loading state
-  const isLoading = carouselLoading || infoLoading || hobbiesLoading || ttdLoading || highlightsLoading;
+  const { data: carouselImages = [], refetch: refetchImages } = useAboutCarousel();
+  const { data: aboutInfo } = useAboutInfo();
+  const { data: hobbiesData = [], refetch: refetchHobbies } = useAboutHobbies();
+  const { data: thingsToDoData = [], refetch: refetchThingsToDo } = useAboutTtd();
+  const { data: highlightsData = [] } = useAboutHighlights();
 
   // Fallback images if no carousel images are found
   const fallbackImages = [
@@ -126,11 +122,6 @@ const About = () => {
   const handleThingsToDoUpdate = () => {
     refetchThingsToDo();
   };
-
-  // Show skeleton loading state
-  if (isLoading) {
-    return <AboutSectionSkeleton />;
-  }
 
   return (
     <>
