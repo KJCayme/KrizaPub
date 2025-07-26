@@ -7,30 +7,42 @@ const NetworkStatusIndicator = () => {
 
   useEffect(() => {
     const handleOnline = () => {
-      console.log('Network: Back online');
+      console.log('Browser: Back online');
       setIsOnline(true);
     };
 
     const handleOffline = () => {
-      console.log('Network: Gone offline');
+      console.log('Browser: Gone offline');
       setIsOnline(false);
     };
 
-    // Listen for browser online/offline events
+    // Listen for browser online/offline events (these are more reliable)
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
 
-    // Listen for service worker messages about network status
+    // Listen for service worker messages about network status (but don't override browser events)
     const handleServiceWorkerMessage = (event: MessageEvent) => {
       if (event.data && event.data.type === 'NETWORK_STATUS') {
         console.log('Service worker network status:', event.data.isOnline);
-        setIsOnline(event.data.isOnline);
+        
+        // Only trust service worker if it says we're offline AND browser also says offline
+        // Don't let service worker override browser's online status
+        if (!event.data.isOnline && !navigator.onLine) {
+          setIsOnline(false);
+        }
+        // If browser says we're online, trust the browser over service worker
+        else if (navigator.onLine) {
+          setIsOnline(true);
+        }
       }
     };
 
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
     }
+
+    // Debug: log current status
+    console.log('NetworkStatusIndicator initialized - navigator.onLine:', navigator.onLine);
 
     return () => {
       window.removeEventListener('online', handleOnline);
@@ -40,6 +52,9 @@ const NetworkStatusIndicator = () => {
       }
     };
   }, []);
+
+  // Debug: log render state
+  console.log('NetworkStatusIndicator render - isOnline:', isOnline, 'navigator.onLine:', navigator.onLine);
 
   if (isOnline) {
     return null;
