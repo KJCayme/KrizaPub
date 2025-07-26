@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useIsMobile } from '../hooks/use-mobile';
 import { useAuth } from '../hooks/useAuth';
@@ -131,9 +132,9 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-slate-200 dark:border-slate-700 transition-colors duration-300">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-slate-200 dark:border-slate-700 transition-colors duration-300 will-change-transform" style={{ minHeight: '64px' }}>
       <div className="container mx-auto px-6 relative">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center justify-between h-16 min-h-16">
           <DarkModeToggle isDarkMode={isDarkMode} onToggle={toggleDarkMode} />
 
           <DesktopNavigation 
@@ -152,7 +153,7 @@ const Navigation = () => {
             />
           )}
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-shrink-0">
             {!authLoading && (
               <>
                 {user ? (
