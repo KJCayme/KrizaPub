@@ -1,7 +1,7 @@
 
-const CACHE_NAME = 'kenneth-portfolio-cache-v5';
-const STATIC_CACHE_NAME = 'static-cache-v5';
-const DYNAMIC_CACHE_NAME = 'dynamic-cache-v5';
+const CACHE_NAME = 'kenneth-portfolio-cache-v4';
+const STATIC_CACHE_NAME = 'static-cache-v4';
+const DYNAMIC_CACHE_NAME = 'dynamic-cache-v4';
 
 // Enhanced static assets to cache
 const STATIC_ASSETS = [
@@ -25,7 +25,7 @@ const DYNAMIC_CACHE_PATTERNS = [
 
 // Install event - cache static assets and skeleton
 self.addEventListener('install', (event) => {
-  console.log('Service Worker installing with enhanced caching v5');
+  console.log('Service Worker installing with enhanced caching v4');
   
   event.waitUntil(
     Promise.all([
@@ -94,14 +94,14 @@ self.addEventListener('install', (event) => {
     ])
   );
   
-  // Don't force immediate activation - let current page continue running
-  // This prevents unnecessary page refreshes
-  console.log('Service worker installed, waiting for activation...');
+  // Force immediate activation
+  console.log('Service worker skipping waiting...');
+  self.skipWaiting();
 });
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('Service Worker activating with cache cleanup v5');
+  console.log('Service Worker activating with cache cleanup v4');
   
   event.waitUntil(
     Promise.all([
@@ -123,15 +123,6 @@ self.addEventListener('activate', (event) => {
       // Take control of all clients immediately
       self.clients.claim().then(() => {
         console.log('Service worker claimed all clients');
-        // Notify clients about offline status if needed
-        self.clients.matchAll().then(clients => {
-          clients.forEach(client => {
-            client.postMessage({
-              type: 'SW_ACTIVATED',
-              isOnline: navigator.onLine
-            });
-          });
-        });
       })
     ])
   );
@@ -179,17 +170,6 @@ self.addEventListener('fetch', (event) => {
         })
         .catch(async (error) => {
           console.log('API request failed, trying cache:', error);
-          
-          // Notify clients about offline status
-          self.clients.matchAll().then(clients => {
-            clients.forEach(client => {
-              client.postMessage({
-                type: 'NETWORK_STATUS',
-                isOnline: false
-              });
-            });
-          });
-          
           // Fallback to cache if network fails
           try {
             const cachedResponse = await caches.match(request);
@@ -283,16 +263,6 @@ self.addEventListener('fetch', (event) => {
         .catch(async (error) => {
           console.log('Navigation request failed, trying fallbacks:', error);
           
-          // Notify clients about offline status
-          self.clients.matchAll().then(clients => {
-            clients.forEach(client => {
-              client.postMessage({
-                type: 'NETWORK_STATUS',
-                isOnline: false
-              });
-            });
-          });
-          
           try {
             // Try cached version first
             const cachedResponse = await caches.match(request);
@@ -363,17 +333,6 @@ self.addEventListener('fetch', (event) => {
         return response;
       } catch (error) {
         console.warn('Failed to fetch:', request.url, error);
-        
-        // Notify clients about offline status
-        self.clients.matchAll().then(clients => {
-          clients.forEach(client => {
-            client.postMessage({
-              type: 'NETWORK_STATUS',
-              isOnline: false
-            });
-          });
-        });
-        
         throw error;
       }
     }).catch(error => {
@@ -405,17 +364,7 @@ self.addEventListener('sync', (event) => {
         fetch('/api/portfolio').then(() => console.log('Portfolio synced')).catch(() => {}),
         fetch('/api/certificates').then(() => console.log('Certificates synced')).catch(() => {}),
         fetch('/api/tools').then(() => console.log('Tools synced')).catch(() => {})
-      ]).then(() => {
-        // Notify clients that sync is complete
-        self.clients.matchAll().then(clients => {
-          clients.forEach(client => {
-            client.postMessage({
-              type: 'SYNC_COMPLETE',
-              isOnline: true
-            });
-          });
-        });
-      })
+      ])
     );
   }
 });
