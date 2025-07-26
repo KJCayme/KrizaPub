@@ -1,4 +1,3 @@
-
 const CACHE_NAME = 'kenneth-portfolio-cache-v4';
 const STATIC_CACHE_NAME = 'static-cache-v4';
 const DYNAMIC_CACHE_NAME = 'dynamic-cache-v4';
@@ -128,7 +127,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Enhanced fetch handler with comprehensive caching strategies
+// Enhanced fetch handler with network status communication
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -154,6 +153,17 @@ self.addEventListener('fetch', (event) => {
       fetch(request)
         .then((response) => {
           console.log('API response received:', response.status);
+          
+          // Notify main thread that network is available
+          self.clients.matchAll().then(clients => {
+            clients.forEach(client => {
+              client.postMessage({
+                type: 'NETWORK_STATUS',
+                isOnline: true
+              });
+            });
+          });
+          
           // Cache successful responses
           if (response.ok) {
             const responseClone = response.clone();
@@ -170,6 +180,17 @@ self.addEventListener('fetch', (event) => {
         })
         .catch(async (error) => {
           console.log('API request failed, trying cache:', error);
+          
+          // Notify main thread about network issues
+          self.clients.matchAll().then(clients => {
+            clients.forEach(client => {
+              client.postMessage({
+                type: 'NETWORK_STATUS',
+                isOnline: false
+              });
+            });
+          });
+          
           // Fallback to cache if network fails
           try {
             const cachedResponse = await caches.match(request);
@@ -322,6 +343,17 @@ self.addEventListener('fetch', (event) => {
         
         console.log('Fetching from network');
         const response = await fetch(request);
+        
+        // Notify about network status
+        self.clients.matchAll().then(clients => {
+          clients.forEach(client => {
+            client.postMessage({
+              type: 'NETWORK_STATUS',
+              isOnline: response.ok
+            });
+          });
+        });
+        
         if (response.ok) {
           try {
             await cache.put(request, response.clone());
@@ -333,6 +365,17 @@ self.addEventListener('fetch', (event) => {
         return response;
       } catch (error) {
         console.warn('Failed to fetch:', request.url, error);
+        
+        // Notify about network failure
+        self.clients.matchAll().then(clients => {
+          clients.forEach(client => {
+            client.postMessage({
+              type: 'NETWORK_STATUS',
+              isOnline: false
+            });
+          });
+        });
+        
         throw error;
       }
     }).catch(error => {

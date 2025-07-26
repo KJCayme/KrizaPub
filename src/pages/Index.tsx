@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import Navigation from '../components/Navigation';
 import Hero from '../components/Hero';
@@ -11,6 +10,7 @@ import Testimonials from '../components/Testimonials';
 import Contact from '../components/Contact';
 import CertificatesViewOnly from '../components/CertificatesViewOnly';
 import TestimonialsViewOnly from '../components/TestimonialsViewOnly';
+import NetworkStatusIndicator from '../components/NetworkStatusIndicator';
 import { Toaster } from 'sonner';
 import { useIsMobile } from '../hooks/use-mobile';
 
@@ -112,6 +112,7 @@ const Index = () => {
   if (showCertificatesOnly) {
     return (
       <div className="min-h-screen transition-colors duration-300">
+        <NetworkStatusIndicator />
         <CertificatesViewOnly 
           isDarkMode={isDarkMode} 
           onToggleDarkMode={toggleDarkMode}
@@ -126,6 +127,7 @@ const Index = () => {
   if (showTestimonialsOnly) {
     return (
       <div className="min-h-screen transition-colors duration-300">
+        <NetworkStatusIndicator />
         <TestimonialsViewOnly 
           isDarkMode={isDarkMode} 
           onToggleDarkMode={toggleDarkMode}
@@ -138,6 +140,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen transition-colors duration-300">
+      <NetworkStatusIndicator />
       {!showAllProjects && <Navigation />}
       <div className={!showAllProjects ? "pt-16" : ""}> {/* Add padding only when navigation is visible */}
         {!showAllProjects && (
