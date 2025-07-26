@@ -1,8 +1,7 @@
 
-import * as React from 'react';
-import { createRoot } from 'react-dom/client';
-import App from './App.tsx';
-import './index.css';
+import { createRoot } from 'react-dom/client'
+import App from './App.tsx'
+import './index.css'
 
 // Enhanced Service Worker Registration with better debugging
 if ('serviceWorker' in navigator) {
@@ -67,11 +66,11 @@ if ('serviceWorker' in navigator) {
     window.addEventListener('online', () => {
       console.log('Back online, checking for updates...');
       // Register background sync when back online (with proper type checking)
-      if ('serviceWorker' in navigator && navigator.serviceWorker.ready) {
+      if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
         navigator.serviceWorker.ready.then((registration) => {
-          // Check if background sync is supported
-          if ('sync' in registration) {
-            const syncRegistration = registration as any;
+          // Type assertion for background sync support
+          const syncRegistration = registration as any;
+          if (syncRegistration.sync) {
             return syncRegistration.sync.register('background-sync');
           }
         }).catch((error) => {
@@ -91,8 +90,4 @@ if ('serviceWorker' in navigator) {
   });
 }
 
-const container = document.getElementById("root");
-if (container) {
-  const root = createRoot(container);
-  root.render(<App />);
-}
+createRoot(document.getElementById("root")!).render(<App />);

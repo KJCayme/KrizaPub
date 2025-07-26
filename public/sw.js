@@ -1,7 +1,7 @@
 
-const CACHE_NAME = 'kenneth-portfolio-cache-v4';
-const STATIC_CACHE_NAME = 'static-cache-v4';
-const DYNAMIC_CACHE_NAME = 'dynamic-cache-v4';
+const CACHE_NAME = 'kenneth-portfolio-cache-v3';
+const STATIC_CACHE_NAME = 'static-cache-v3';
+const DYNAMIC_CACHE_NAME = 'dynamic-cache-v3';
 
 // Enhanced static assets to cache
 const STATIC_ASSETS = [
@@ -25,33 +25,25 @@ const DYNAMIC_CACHE_PATTERNS = [
 
 // Install event - cache static assets and skeleton
 self.addEventListener('install', (event) => {
-  console.log('Service Worker installing with enhanced caching v4');
+  console.log('Service Worker installing with enhanced caching v3');
   
   event.waitUntil(
     Promise.all([
-      // Cache static assets with better error handling
+      // Cache static assets
       caches.open(STATIC_CACHE_NAME).then(async (cache) => {
         console.log('Caching static assets...');
         
-        // Cache static assets one by one to avoid failures
-        for (const asset of STATIC_ASSETS) {
-          try {
-            await cache.add(asset);
-            console.log('Cached static asset:', asset);
-          } catch (error) {
-            console.warn(`Failed to cache static asset: ${asset}`, error);
-          }
+        try {
+          await cache.addAll(STATIC_ASSETS);
+          console.log('Static assets cached successfully');
+        } catch (error) {
+          console.error('Failed to cache static assets:', error);
         }
         
-        // Cache Vite generated assets with improved error handling
+        // Cache Vite generated assets
         try {
           console.log('Attempting to cache Vite assets...');
           const indexResponse = await fetch('/index.html');
-          
-          if (!indexResponse.ok) {
-            throw new Error(`Failed to fetch index.html: ${indexResponse.status}`);
-          }
-          
           const indexText = await indexResponse.text();
           
           // Extract asset URLs from the HTML
@@ -68,16 +60,11 @@ self.addEventListener('install', (event) => {
             console.log('Found CSS assets:', cssMatches);
           }
           
-          // Cache the found assets with individual error handling
+          // Cache the found assets
           for (const url of assetUrls) {
             try {
-              const response = await fetch(url);
-              if (response.ok) {
-                await cache.put(url, response);
-                console.log('Cached asset:', url);
-              } else {
-                console.warn(`Asset returned ${response.status}:`, url);
-              }
+              await cache.add(url);
+              console.log('Cached asset:', url);
             } catch (error) {
               console.warn(`Failed to cache asset: ${url}`, error);
             }
@@ -101,7 +88,7 @@ self.addEventListener('install', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('Service Worker activating with cache cleanup v4');
+  console.log('Service Worker activating with cache cleanup v3');
   
   event.waitUntil(
     Promise.all([
@@ -158,12 +145,8 @@ self.addEventListener('fetch', (event) => {
           if (response.ok) {
             const responseClone = response.clone();
             caches.open(DYNAMIC_CACHE_NAME).then((cache) => {
-              cache.put(request, responseClone).catch(error => {
-                console.warn('Failed to cache API response:', error);
-              });
+              cache.put(request, responseClone);
               console.log('API response cached');
-            }).catch(error => {
-              console.warn('Failed to open dynamic cache:', error);
             });
           }
           return response;
@@ -171,14 +154,10 @@ self.addEventListener('fetch', (event) => {
         .catch(async (error) => {
           console.log('API request failed, trying cache:', error);
           // Fallback to cache if network fails
-          try {
-            const cachedResponse = await caches.match(request);
-            if (cachedResponse) {
-              console.log('Serving API response from cache');
-              return cachedResponse;
-            }
-          } catch (cacheError) {
-            console.warn('Failed to access cache:', cacheError);
+          const cachedResponse = await caches.match(request);
+          if (cachedResponse) {
+            console.log('Serving API response from cache');
+            return cachedResponse;
           }
           
           // Return empty response for API calls when offline
@@ -205,33 +184,24 @@ self.addEventListener('fetch', (event) => {
     
     event.respondWith(
       caches.open(STATIC_CACHE_NAME).then(async (cache) => {
+        const cachedResponse = await cache.match(request);
+        if (cachedResponse) {
+          console.log('Serving static asset from cache');
+          return cachedResponse;
+        }
+        
         try {
-          const cachedResponse = await cache.match(request);
-          if (cachedResponse) {
-            console.log('Serving static asset from cache');
-            return cachedResponse;
-          }
-          
           console.log('Fetching static asset from network');
           const response = await fetch(request);
           if (response.ok) {
-            try {
-              await cache.put(request, response.clone());
-              console.log('Static asset cached');
-            } catch (cacheError) {
-              console.warn('Failed to cache static asset:', cacheError);
-            }
-          } else {
-            console.warn(`Static asset returned ${response.status}:`, request.url);
+            cache.put(request, response.clone());
+            console.log('Static asset cached');
           }
           return response;
         } catch (error) {
-          console.warn('Failed to fetch static asset:', request.url, error);
+          console.warn('Failed to fetch static asset:', request.url);
           throw error;
         }
-      }).catch(error => {
-        console.warn('Failed to open static cache:', error);
-        return fetch(request);
       })
     );
     return;
@@ -250,12 +220,8 @@ self.addEventListener('fetch', (event) => {
           if (response.ok) {
             const responseClone = response.clone();
             caches.open(STATIC_CACHE_NAME).then((cache) => {
-              cache.put(request, responseClone).catch(error => {
-                console.warn('Failed to cache navigation response:', error);
-              });
+              cache.put(request, responseClone);
               console.log('Navigation response cached');
-            }).catch(error => {
-              console.warn('Failed to open cache for navigation:', error);
             });
           }
           return response;
@@ -263,29 +229,25 @@ self.addEventListener('fetch', (event) => {
         .catch(async (error) => {
           console.log('Navigation request failed, trying fallbacks:', error);
           
-          try {
-            // Try cached version first
-            const cachedResponse = await caches.match(request);
-            if (cachedResponse) {
-              console.log('Serving navigation from cache');
-              return cachedResponse;
-            }
-            
-            // Try cached index.html
-            const indexResponse = await caches.match('/index.html');
-            if (indexResponse) {
-              console.log('Serving index.html from cache');
-              return indexResponse;
-            }
-            
-            // Final fallback to skeleton
-            const skeletonResponse = await caches.match('/skeleton.html');
-            if (skeletonResponse) {
-              console.log('Serving skeleton.html from cache');
-              return skeletonResponse;
-            }
-          } catch (cacheError) {
-            console.warn('Failed to access cache for navigation:', cacheError);
+          // Try cached version first
+          const cachedResponse = await caches.match(request);
+          if (cachedResponse) {
+            console.log('Serving navigation from cache');
+            return cachedResponse;
+          }
+          
+          // Try cached index.html
+          const indexResponse = await caches.match('/index.html');
+          if (indexResponse) {
+            console.log('Serving index.html from cache');
+            return indexResponse;
+          }
+          
+          // Final fallback to skeleton
+          const skeletonResponse = await caches.match('/skeleton.html');
+          if (skeletonResponse) {
+            console.log('Serving skeleton.html from cache');
+            return skeletonResponse;
           }
           
           // Create basic offline response if skeleton not cached
@@ -313,31 +275,24 @@ self.addEventListener('fetch', (event) => {
   
   event.respondWith(
     caches.open(DYNAMIC_CACHE_NAME).then(async (cache) => {
+      const cachedResponse = await cache.match(request);
+      if (cachedResponse) {
+        console.log('Serving from cache');
+        return cachedResponse;
+      }
+      
       try {
-        const cachedResponse = await cache.match(request);
-        if (cachedResponse) {
-          console.log('Serving from cache');
-          return cachedResponse;
-        }
-        
         console.log('Fetching from network');
         const response = await fetch(request);
         if (response.ok) {
-          try {
-            await cache.put(request, response.clone());
-            console.log('Response cached');
-          } catch (cacheError) {
-            console.warn('Failed to cache response:', cacheError);
-          }
+          cache.put(request, response.clone());
+          console.log('Response cached');
         }
         return response;
       } catch (error) {
-        console.warn('Failed to fetch:', request.url, error);
+        console.warn('Failed to fetch:', request.url);
         throw error;
       }
-    }).catch(error => {
-      console.warn('Failed to open dynamic cache:', error);
-      return fetch(request);
     })
   );
 });
