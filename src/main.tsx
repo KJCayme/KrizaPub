@@ -39,6 +39,7 @@ if ('serviceWorker' in navigator) {
               
               if (newWorker.state === 'activated') {
                 console.log('Service worker activated');
+                // Don't reload automatically - let user continue using the app
               }
             });
           }
@@ -57,15 +58,18 @@ if ('serviceWorker' in navigator) {
         console.error('SW registration failed: ', registrationError);
       });
     
-    // Listen for service worker controller changes and reload automatically
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      console.log('Service worker controller changed, reloading page...');
-      window.location.reload();
-    });
+    // REMOVED: Automatic page reload on controller change
+    // This was causing the app to refresh after caching
     
     // Listen for online/offline status changes
     window.addEventListener('online', () => {
       console.log('Back online, checking for updates...');
+      // Hide offline indicator
+      const offlineIndicator = document.getElementById('offline-indicator');
+      if (offlineIndicator) {
+        offlineIndicator.style.display = 'none';
+      }
+      
       // Register background sync when back online (with proper type checking)
       if ('serviceWorker' in navigator && navigator.serviceWorker.ready) {
         navigator.serviceWorker.ready.then((registration) => {
@@ -82,13 +86,75 @@ if ('serviceWorker' in navigator) {
     
     window.addEventListener('offline', () => {
       console.log('Gone offline, caching will be used');
+      // Show offline indicator
+      showOfflineIndicator();
     });
     
     // Add debugging for service worker messages
     navigator.serviceWorker.addEventListener('message', (event) => {
       console.log('Message from service worker:', event.data);
     });
+    
+    // Check initial online status
+    if (!navigator.onLine) {
+      showOfflineIndicator();
+    }
   });
+}
+
+// Function to show offline indicator
+function showOfflineIndicator() {
+  let offlineIndicator = document.getElementById('offline-indicator');
+  
+  if (!offlineIndicator) {
+    offlineIndicator = document.createElement('div');
+    offlineIndicator.id = 'offline-indicator';
+    offlineIndicator.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(135deg, hsl(0, 84%, 60%), hsl(0, 70%, 50%));
+        color: white;
+        padding: 12px 24px;
+        border-radius: 24px;
+        font-size: 14px;
+        font-weight: 500;
+        box-shadow: 0 4px 12px hsla(0, 0%, 0%, 0.3);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        backdrop-filter: blur(10px);
+        border: 1px solid hsla(0, 84%, 70%, 0.3);
+        animation: slideDown 0.3s ease-out;
+      ">
+        <span style="font-size: 16px;">📶</span>
+        No Network Connection
+      </div>
+    `;
+    
+    // Add CSS animation
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes slideDown {
+        from {
+          opacity: 0;
+          transform: translateX(-50%) translateY(-20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateX(-50%) translateY(0);
+        }
+      }
+    `;
+    document.head.appendChild(style);
+    
+    document.body.appendChild(offlineIndicator);
+  }
+  
+  offlineIndicator.style.display = 'block';
 }
 
 const container = document.getElementById("root");
