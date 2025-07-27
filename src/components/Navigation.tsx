@@ -1,133 +1,80 @@
-
 import React, { useState, useEffect } from 'react';
 import { useIsMobile } from '../hooks/use-mobile';
 import { useAuth } from '../hooks/useAuth';
 import DarkModeToggle from './navigation/DarkModeToggle';
 import DesktopNavigation from './navigation/DesktopNavigation';
 import MobileMenu from './navigation/MobileMenu';
-import PortfolioDropdown from './navigation/PortfolioDropdown';
-import BookCallButton from './navigation/BookCallButton';
-import AuthDialog from './auth/AuthDialog';
 import UserMenu from './auth/UserMenu';
-import { Button } from './ui/button';
+import BookCallButton from './navigation/BookCallButton';
 
-const Navigation = () => {
+interface NavigationProps {
+  isDarkMode?: boolean;
+  onToggleDarkMode?: () => void;
+}
+
+const Navigation = ({ isDarkMode = false, onToggleDarkMode }: NavigationProps) => {
   const [activeSection, setActiveSection] = useState('hero');
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isPortfolioVisible, setIsPortfolioVisible] = useState(false);
-  const [showPortfolioDropdown, setShowPortfolioDropdown] = useState(false);
-  const [activePortfolioCategory, setActivePortfolioCategory] = useState('admin');
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isMobile = useIsMobile();
-  const { user, loading: authLoading } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
 
-  const navItems = [
+  const sections = [
+    { id: 'hero', label: 'Home' },
+    { id: 'about', label: 'About' },
     { id: 'skills', label: 'Skills' },
-    { id: 'portfolio', label: 'Projects' },
+    { id: 'portfolio', label: 'Portfolio' },
     { id: 'tools', label: 'Tools' },
     { id: 'certificates', label: 'Certificates' },
     { id: 'testimonials', label: 'Testimonials' },
-    { id: 'contact', label: 'Contacts' }
-  ];
-
-  const portfolioCategories = [
-    { id: 'admin', name: 'Admin Support' },
-    { id: 'social', name: 'Social Media' },
-    { id: 'project', name: 'Project Management' },
-    { id: 'design', name: 'Design & Creative' },
-    { id: 'copywriting', name: 'Copywriting' },
-    { id: 'webdev', name: 'Web Development', badge: 'Soon!' },
-    { id: 'ai', name: 'AI Automation', badge: 'Soon!' }
+    { id: 'contact', label: 'Contact' }
   ];
 
   useEffect(() => {
-    setIsDarkMode(document.documentElement.classList.contains('dark'));
-    let scrollHandlerEnabled = true;
-
     const handleScroll = () => {
-      if (!scrollHandlerEnabled) return;
-      
-      const sections = ['hero', 'skills', 'portfolio', 'tools', 'certificates', 'testimonials', 'contact'];
       const scrollPosition = window.scrollY + 100;
-
+      
       for (const section of sections) {
-        const element = document.getElementById(section);
+        const element = document.getElementById(section.id);
         if (element) {
-          const offsetTop = element.offsetTop;
-          const height = element.offsetHeight;
-          
-          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + height) {
-            if (activeSection !== section) {
-              console.log('Navigation: Active section changed from', activeSection, 'to', section, 'scrollPosition:', scrollPosition);
-              setActiveSection(section);
-            }
+          const { offsetTop, offsetHeight } = element;
+          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+            setActiveSection(section.id);
             break;
           }
         }
       }
-
-      if (isMobile) {
-        const portfolioElement = document.getElementById('portfolio');
-        if (portfolioElement) {
-          const rect = portfolioElement.getBoundingClientRect();
-          const isVisible = rect.top <= 100 && rect.bottom >= 100;
-          setIsPortfolioVisible(isVisible);
-        }
-      } else {
-        setIsPortfolioVisible(false);
-      }
-    };
-
-    const handleDisableNavScroll = () => {
-      scrollHandlerEnabled = false;
-      console.log('Navigation: Scroll handler disabled');
-    };
-
-    const handleEnableNavScroll = () => {
-      scrollHandlerEnabled = true;
-      console.log('Navigation: Scroll handler enabled');
     };
 
     window.addEventListener('scroll', handleScroll);
-    window.addEventListener('resize', handleScroll);
-    window.addEventListener('disableNavScroll', handleDisableNavScroll);
-    window.addEventListener('enableNavScroll', handleEnableNavScroll);
-    handleScroll();
-    
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleScroll);
-      window.removeEventListener('disableNavScroll', handleDisableNavScroll);
-      window.removeEventListener('enableNavScroll', handleEnableNavScroll);
-    };
-  }, [isMobile]);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      const navHeight = 64;
+      const elementPosition = element.offsetTop;
+      const offsetPosition = elementPosition - navHeight;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
     }
-    setIsMenuOpen(false);
+    setIsMobileMenuOpen(false);
   };
 
-  const handlePortfolioCategoryChange = (categoryId: string) => {
-    setActivePortfolioCategory(categoryId);
-    setShowPortfolioDropdown(false);
-    
-    window.dispatchEvent(new CustomEvent('portfolioCategoryChange', { 
-      detail: { category: categoryId } 
-    }));
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
+
+  const closeMobileMenu = () => {
+    setIsMobileMenuOpen(false);
   };
 
   const toggleDarkMode = () => {
-    const newDarkMode = !isDarkMode;
-    setIsDarkMode(newDarkMode);
-    
-    if (newDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
+    if (onToggleDarkMode) {
+      onToggleDarkMode();
     }
   };
 
@@ -138,18 +85,19 @@ const Navigation = () => {
           <DarkModeToggle isDarkMode={isDarkMode} onToggle={toggleDarkMode} />
 
           <DesktopNavigation 
-            navItems={navItems} 
-            activeSection={activeSection} 
-            onSectionClick={scrollToSection} 
+            sections={sections}
+            activeSection={activeSection}
+            onSectionClick={scrollToSection}
           />
 
-          {isMobile && isPortfolioVisible && (
-            <PortfolioDropdown
-              portfolioCategories={portfolioCategories}
-              activePortfolioCategory={activePortfolioCategory}
-              showPortfolioDropdown={showPortfolioDropdown}
-              onToggleDropdown={() => setShowPortfolioDropdown(!showPortfolioDropdown)}
-              onCategoryChange={handlePortfolioCategoryChange}
+          {isMobile && (
+            <MobileMenu
+              isOpen={isMobileMenuOpen}
+              onToggle={toggleMobileMenu}
+              onClose={closeMobileMenu}
+              sections={sections}
+              activeSection={activeSection}
+              onSectionClick={scrollToSection}
             />
           )}
 
@@ -157,49 +105,15 @@ const Navigation = () => {
             {!authLoading && (
               <>
                 {user ? (
-                  <UserMenu />
+                  <UserMenu user={user} />
                 ) : (
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => setShowAuthDialog(true)}
-                    className="hidden md:flex"
-                  >
-                    Sign In
-                  </Button>
+                  <BookCallButton />
                 )}
               </>
             )}
-
-            <BookCallButton isVisible={!isMobile || !isPortfolioVisible} />
-
-            <div className="flex items-center gap-2 ml-auto md:hidden">
-              {!authLoading && !user && (
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setShowAuthDialog(true)}
-                >
-                  Sign In
-                </Button>
-              )}
-              <BookCallButton isMobile={true} isVisible={!isPortfolioVisible} />
-              <MobileMenu
-                navItems={navItems}
-                activeSection={activeSection}
-                isMenuOpen={isMenuOpen}
-                onToggleMenu={() => setIsMenuOpen(!isMenuOpen)}
-                onSectionClick={scrollToSection}
-              />
-            </div>
           </div>
         </div>
       </div>
-
-      <AuthDialog 
-        isOpen={showAuthDialog} 
-        onClose={() => setShowAuthDialog(false)} 
-      />
     </nav>
   );
 };
