@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useState, useEffect } from 'react';
 import Navigation from '../components/Navigation';
 import Hero from '../components/Hero';
 import About from '../components/About';
@@ -14,14 +14,14 @@ import NetworkStatusIndicator from '../components/NetworkStatusIndicator';
 import { useIsMobile } from '../hooks/use-mobile';
 
 const Index = () => {
-  const [isDarkMode, setIsDarkMode] = React.useState(false);
-  const [showAllProjects, setShowAllProjects] = React.useState(false);
-  const [showCertificatesOnly, setShowCertificatesOnly] = React.useState(false);
-  const [showTestimonialsOnly, setShowTestimonialsOnly] = React.useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [showAllProjects, setShowAllProjects] = useState(false);
+  const [showCertificatesOnly, setShowCertificatesOnly] = useState(false);
+  const [showTestimonialsOnly, setShowTestimonialsOnly] = useState(false);
   
   const isMobile = useIsMobile();
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Check for saved dark mode preference
     const savedMode = localStorage.getItem('darkMode');
     if (savedMode) {
@@ -45,7 +45,7 @@ const Index = () => {
     };
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Apply dark mode class to document
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
