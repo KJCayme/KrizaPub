@@ -1,12 +1,7 @@
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-html {
-  font-family: 'Inter', system-ui, sans-serif;
-}
 
 @layer base {
   :root {
@@ -74,82 +69,59 @@ html {
   }
 }
 
-/* Navigation stability fixes for offline/caching scenarios */
-nav[class*="fixed"] {
-  transform: translateZ(0); /* Force hardware acceleration */
-  backface-visibility: hidden;
+/* Navigation specific styles */
+.navigation-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  background-color: rgb(255 255 255 / 0.95);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgb(226 232 240);
+  transition: all 0.3s ease;
+  min-height: 64px;
+  height: 64px;
+  will-change: transform;
+}
+
+.dark .navigation-container {
+  background-color: rgb(15 23 42 / 0.95);
+  border-bottom-color: rgb(51 65 85);
+}
+
+/* Prevent layout shift and ensure sticky behavior */
+.navigation-container::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  background: inherit;
+  backdrop-filter: inherit;
+}
+
+/* Override any conflicting styles that might affect navigation */
+nav {
   position: fixed !important;
   top: 0 !important;
-  left: 0 !important;
-  right: 0 !important;
+  transform: none !important;
 }
 
-/* Prevent layout shifts during resource loading */
-.container {
-  contain: layout style;
+/* Ensure proper stacking and positioning */
+.navigation-container {
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
-/* Custom responsive typography */
-.text-responsive-xs {
-  @apply text-xs sm:text-xs md:text-sm;
+/* Prevent scrolling issues */
+html {
+  scroll-behavior: smooth;
 }
 
-.text-responsive-sm {
-  @apply text-sm sm:text-sm md:text-base;
-}
-
-.text-responsive-base {
-  @apply text-base sm:text-base md:text-lg;
-}
-
-.text-responsive-lg {
-  @apply text-lg sm:text-lg md:text-xl;
-}
-
-.text-responsive-xl {
-  @apply text-xl sm:text-xl md:text-2xl;
-}
-
-.text-responsive-2xl {
-  @apply text-2xl sm:text-2xl md:text-3xl;
-}
-
-.text-responsive-3xl {
-  @apply text-3xl sm:text-3xl md:text-4xl;
-}
-
-.text-responsive-4xl {
-  @apply text-4xl sm:text-4xl md:text-5xl;
-}
-
-.text-responsive-5xl {
-  @apply text-5xl sm:text-5xl md:text-6xl;
-}
-
-/* Hide scrollbars */
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-
-/* Custom animations */
-@keyframes scroll {
-  0% {
-    transform: translateY(0);
-  }
-  100% {
-    transform: translateY(-25%);
-  }
-}
-
-.animate-scroll {
-  animation: scroll 10s linear infinite;
-}
-
-.animate-scroll:hover {
-  animation-play-state: paused;
+/* Ensure proper spacing for content below navigation */
+.pt-16 {
+  padding-top: 4rem !important;
 }

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useIsMobile } from '../hooks/use-mobile';
 import { useAuth } from '../hooks/useAuth';
@@ -16,7 +17,7 @@ const Navigation = ({ isDarkMode = false, onToggleDarkMode }: NavigationProps) =
   const [activeSection, setActiveSection] = useState('hero');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const isMobile = useIsMobile();
-  const { user, isLoading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
   const sections = [
     { id: 'hero', label: 'Home' },
@@ -79,24 +80,23 @@ const Navigation = ({ isDarkMode = false, onToggleDarkMode }: NavigationProps) =
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-slate-200 dark:border-slate-700 transition-colors duration-300 will-change-transform" style={{ minHeight: '64px' }}>
+    <nav className="navigation-container">
       <div className="container mx-auto px-6 relative">
         <div className="flex items-center justify-between h-16 min-h-16">
           <DarkModeToggle isDarkMode={isDarkMode} onToggle={toggleDarkMode} />
 
           <DesktopNavigation 
-            sections={sections}
+            navItems={sections}
             activeSection={activeSection}
             onSectionClick={scrollToSection}
           />
 
           {isMobile && (
             <MobileMenu
-              isOpen={isMobileMenuOpen}
-              onToggle={toggleMobileMenu}
-              onClose={closeMobileMenu}
-              sections={sections}
+              navItems={sections}
               activeSection={activeSection}
+              isMenuOpen={isMobileMenuOpen}
+              onToggleMenu={toggleMobileMenu}
               onSectionClick={scrollToSection}
             />
           )}
@@ -105,9 +105,9 @@ const Navigation = ({ isDarkMode = false, onToggleDarkMode }: NavigationProps) =
             {!authLoading && (
               <>
                 {user ? (
-                  <UserMenu user={user} />
+                  <UserMenu />
                 ) : (
-                  <BookCallButton />
+                  <BookCallButton isVisible={true} />
                 )}
               </>
             )}
