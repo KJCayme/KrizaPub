@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import * as React from 'react';
 import Navigation from '../components/Navigation';
 import Hero from '../components/Hero';
 import About from '../components/About';
@@ -12,17 +11,18 @@ import Contact from '../components/Contact';
 import CertificatesViewOnly from '../components/CertificatesViewOnly';
 import TestimonialsViewOnly from '../components/TestimonialsViewOnly';
 import NetworkStatusIndicator from '../components/NetworkStatusIndicator';
+import { Toaster } from 'sonner';
 import { useIsMobile } from '../hooks/use-mobile';
 
 const Index = () => {
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const [showAllProjects, setShowAllProjects] = useState(false);
-  const [showCertificatesOnly, setShowCertificatesOnly] = useState(false);
-  const [showTestimonialsOnly, setShowTestimonialsOnly] = useState(false);
+  const [isDarkMode, setIsDarkMode] = React.useState(false);
+  const [showAllProjects, setShowAllProjects] = React.useState(false);
+  const [showCertificatesOnly, setShowCertificatesOnly] = React.useState(false);
+  const [showTestimonialsOnly, setShowTestimonialsOnly] = React.useState(false);
   
   const isMobile = useIsMobile();
 
-  useEffect(() => {
+  React.useEffect(() => {
     // Check for saved dark mode preference
     const savedMode = localStorage.getItem('darkMode');
     if (savedMode) {
@@ -46,7 +46,7 @@ const Index = () => {
     };
   }, []);
 
-  useEffect(() => {
+  React.useEffect(() => {
     // Apply dark mode class to document
     if (isDarkMode) {
       document.documentElement.classList.add('dark');
@@ -107,6 +107,7 @@ const Index = () => {
     }, 500); // Increased timeout to ensure DOM is fully updated
   };
 
+
   // Show certificates-only view
   if (showCertificatesOnly) {
     return (
@@ -117,6 +118,7 @@ const Index = () => {
           onToggleDarkMode={toggleDarkMode}
           onBack={handleBackFromCertificates}
         />
+        <Toaster />
       </div>
     );
   }
@@ -131,6 +133,7 @@ const Index = () => {
           onToggleDarkMode={toggleDarkMode}
           onBack={handleBackFromTestimonials}
         />
+        <Toaster />
       </div>
     );
   }
@@ -138,7 +141,7 @@ const Index = () => {
   return (
     <div className="min-h-screen transition-colors duration-300">
       <NetworkStatusIndicator />
-      {!showAllProjects && <Navigation isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />}
+      {!showAllProjects && <Navigation />}
       <div className={!showAllProjects ? "pt-16" : ""}> {/* Add padding only when navigation is visible */}
         {!showAllProjects && (
           <section id="hero">
@@ -179,6 +182,7 @@ const Index = () => {
           </section>
         )}
       </div>
+      <Toaster />
     </div>
   );
 };
