@@ -1,3 +1,4 @@
+
 import * as React from 'react';
 import Navigation from '../components/Navigation';
 import Hero from '../components/Hero';
@@ -11,7 +12,6 @@ import Contact from '../components/Contact';
 import CertificatesViewOnly from '../components/CertificatesViewOnly';
 import TestimonialsViewOnly from '../components/TestimonialsViewOnly';
 import NetworkStatusIndicator from '../components/NetworkStatusIndicator';
-import { Toaster } from 'sonner';
 import { useIsMobile } from '../hooks/use-mobile';
 
 const Index = () => {
@@ -118,7 +118,6 @@ const Index = () => {
           onToggleDarkMode={toggleDarkMode}
           onBack={handleBackFromCertificates}
         />
-        <Toaster />
       </div>
     );
   }
@@ -133,7 +132,6 @@ const Index = () => {
           onToggleDarkMode={toggleDarkMode}
           onBack={handleBackFromTestimonials}
         />
-        <Toaster />
       </div>
     );
   }
@@ -141,7 +139,7 @@ const Index = () => {
   return (
     <div className="min-h-screen transition-colors duration-300">
       <NetworkStatusIndicator />
-      {!showAllProjects && <Navigation />}
+      {!showAllProjects && <Navigation isDarkMode={isDarkMode} onToggleDarkMode={toggleDarkMode} />}
       <div className={!showAllProjects ? "pt-16" : ""}> {/* Add padding only when navigation is visible */}
         {!showAllProjects && (
           <section id="hero">
@@ -182,7 +180,6 @@ const Index = () => {
           </section>
         )}
       </div>
-      <Toaster />
     </div>
   );
 };
