@@ -1,4 +1,3 @@
-
 import * as React from 'react';
 import Navigation from '../components/Navigation';
 import Hero from '../components/Hero';
@@ -106,7 +105,6 @@ const Index = () => {
       }
     }, 500); // Increased timeout to ensure DOM is fully updated
   };
-
 
   // Show certificates-only view
   if (showCertificatesOnly) {
