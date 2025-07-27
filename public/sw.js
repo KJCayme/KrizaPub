@@ -1,6 +1,7 @@
-const CACHE_NAME = 'kenneth-portfolio-cache-v4';
-const STATIC_CACHE_NAME = 'static-cache-v4';
-const DYNAMIC_CACHE_NAME = 'dynamic-cache-v4';
+
+const CACHE_NAME = 'kenneth-portfolio-cache-v5';
+const STATIC_CACHE_NAME = 'static-cache-v5';
+const DYNAMIC_CACHE_NAME = 'dynamic-cache-v5';
 
 // Enhanced static assets to cache
 const STATIC_ASSETS = [
@@ -22,9 +23,12 @@ const DYNAMIC_CACHE_PATTERNS = [
   '/api/profile'
 ];
 
+// Network status tracking
+let isOnline = true;
+
 // Install event - cache static assets and skeleton
 self.addEventListener('install', (event) => {
-  console.log('Service Worker installing with enhanced caching v4');
+  console.log('Service Worker installing with network-first strategy v5');
   
   event.waitUntil(
     Promise.all([
@@ -100,7 +104,7 @@ self.addEventListener('install', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('Service Worker activating with cache cleanup v4');
+  console.log('Service Worker activating with cache cleanup v5');
   
   event.waitUntil(
     Promise.all([
@@ -127,7 +131,21 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Enhanced fetch handler with network status communication
+// Check if we're really offline by testing network connectivity
+const checkNetworkConnectivity = async () => {
+  try {
+    const response = await fetch('/', { 
+      method: 'HEAD',
+      cache: 'no-cache',
+      mode: 'no-cors'
+    });
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+// Enhanced fetch handler with network-first approach
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -144,15 +162,18 @@ self.addEventListener('fetch', (event) => {
   
   console.log('Fetching:', request.url);
   
-  // API requests - Network First with enhanced caching
+  // API requests - Network First with offline fallback ONLY
   if (url.pathname.startsWith('/api/') || 
       DYNAMIC_CACHE_PATTERNS.some(pattern => url.pathname.includes(pattern))) {
-    console.log('API request - Network First strategy');
+    console.log('API request - Network First with offline fallback');
     
     event.respondWith(
       fetch(request)
-        .then((response) => {
+        .then(async (response) => {
           console.log('API response received:', response.status);
+          
+          // Update network status
+          isOnline = true;
           
           // Notify main thread that network is available
           self.clients.matchAll().then(clients => {
@@ -164,14 +185,14 @@ self.addEventListener('fetch', (event) => {
             });
           });
           
-          // Cache successful responses
+          // Cache successful responses for offline use
           if (response.ok) {
             const responseClone = response.clone();
             caches.open(DYNAMIC_CACHE_NAME).then((cache) => {
               cache.put(request, responseClone).catch(error => {
                 console.warn('Failed to cache API response:', error);
               });
-              console.log('API response cached');
+              console.log('API response cached for offline use');
             }).catch(error => {
               console.warn('Failed to open dynamic cache:', error);
             });
@@ -179,41 +200,53 @@ self.addEventListener('fetch', (event) => {
           return response;
         })
         .catch(async (error) => {
-          console.log('API request failed, trying cache:', error);
+          console.log('API request failed, checking if truly offline:', error);
           
-          // Notify main thread about network issues
-          self.clients.matchAll().then(clients => {
-            clients.forEach(client => {
-              client.postMessage({
-                type: 'NETWORK_STATUS',
-                isOnline: false
+          // Double-check network connectivity
+          const isReallyOffline = !(await checkNetworkConnectivity());
+          
+          if (isReallyOffline) {
+            console.log('Network confirmed offline, using cached data');
+            isOnline = false;
+            
+            // Notify main thread about offline status
+            self.clients.matchAll().then(clients => {
+              clients.forEach(client => {
+                client.postMessage({
+                  type: 'NETWORK_STATUS',
+                  isOnline: false
+                });
               });
             });
-          });
-          
-          // Fallback to cache if network fails
-          try {
-            const cachedResponse = await caches.match(request);
-            if (cachedResponse) {
-              console.log('Serving API response from cache');
-              return cachedResponse;
+            
+            // Only use cache when truly offline
+            try {
+              const cachedResponse = await caches.match(request);
+              if (cachedResponse) {
+                console.log('Serving API response from cache (offline)');
+                return cachedResponse;
+              }
+            } catch (cacheError) {
+              console.warn('Failed to access cache:', cacheError);
             }
-          } catch (cacheError) {
-            console.warn('Failed to access cache:', cacheError);
+            
+            // Return offline response when no cache available
+            console.log('No cache available, returning offline response');
+            return new Response(JSON.stringify({ error: 'Offline', cached: false }), {
+              status: 503,
+              headers: { 'Content-Type': 'application/json' }
+            });
+          } else {
+            // Network error but not offline - propagate the error
+            console.log('Network error but not offline, propagating error');
+            throw error;
           }
-          
-          // Return empty response for API calls when offline
-          console.log('No cache available, returning offline response');
-          return new Response(JSON.stringify({ error: 'Offline' }), {
-            status: 503,
-            headers: { 'Content-Type': 'application/json' }
-          });
         })
     );
     return;
   }
   
-  // Static assets - Cache First with Vite hash support
+  // Static assets - Network First with cache fallback
   if (
     request.method === 'GET' && 
     (url.pathname.startsWith('/assets/') || 
@@ -222,70 +255,71 @@ self.addEventListener('fetch', (event) => {
      url.pathname.includes('.js') ||
      url.pathname.includes('.css'))
   ) {
-    console.log('Static asset - Cache First strategy');
+    console.log('Static asset - Network First with cache fallback');
     
     event.respondWith(
-      caches.open(STATIC_CACHE_NAME).then(async (cache) => {
-        try {
-          const cachedResponse = await cache.match(request);
-          if (cachedResponse) {
-            console.log('Serving static asset from cache');
-            return cachedResponse;
-          }
+      fetch(request)
+        .then(async (response) => {
+          console.log('Static asset response received:', response.status);
           
-          console.log('Fetching static asset from network');
-          const response = await fetch(request);
+          // Cache successful responses
           if (response.ok) {
             try {
+              const cache = await caches.open(STATIC_CACHE_NAME);
               await cache.put(request, response.clone());
               console.log('Static asset cached');
             } catch (cacheError) {
               console.warn('Failed to cache static asset:', cacheError);
             }
-          } else {
-            console.warn(`Static asset returned ${response.status}:`, request.url);
-          }
-          return response;
-        } catch (error) {
-          console.warn('Failed to fetch static asset:', request.url, error);
-          throw error;
-        }
-      }).catch(error => {
-        console.warn('Failed to open static cache:', error);
-        return fetch(request);
-      })
-    );
-    return;
-  }
-  
-  // Navigation requests - Enhanced offline fallback
-  if (request.mode === 'navigate' || 
-      (request.method === 'GET' && request.headers.get('accept')?.includes('text/html'))) {
-    console.log('Navigation request - Network First with skeleton fallback');
-    
-    event.respondWith(
-      fetch(request)
-        .then((response) => {
-          console.log('Navigation response received:', response.status);
-          // Cache successful navigation responses
-          if (response.ok) {
-            const responseClone = response.clone();
-            caches.open(STATIC_CACHE_NAME).then((cache) => {
-              cache.put(request, responseClone).catch(error => {
-                console.warn('Failed to cache navigation response:', error);
-              });
-              console.log('Navigation response cached');
-            }).catch(error => {
-              console.warn('Failed to open cache for navigation:', error);
-            });
           }
           return response;
         })
         .catch(async (error) => {
-          console.log('Navigation request failed, trying fallbacks:', error);
+          console.log('Static asset request failed, checking cache:', error);
           
           try {
-            // Try cached version first
+            const cachedResponse = await caches.match(request);
+            if (cachedResponse) {
+              console.log('Serving static asset from cache');
+              return cachedResponse;
+            }
+          } catch (cacheError) {
+            console.warn('Failed to access cache for static asset:', cacheError);
+          }
+          
+          throw error;
+        })
+    );
+    return;
+  }
+  
+  // Navigation requests - Network First with offline fallback
+  if (request.mode === 'navigate' || 
+      (request.method === 'GET' && request.headers.get('accept')?.includes('text/html'))) {
+    console.log('Navigation request - Network First with offline fallback');
+    
+    event.respondWith(
+      fetch(request)
+        .then(async (response) => {
+          console.log('Navigation response received:', response.status);
+          
+          // Cache successful navigation responses
+          if (response.ok) {
+            try {
+              const cache = await caches.open(STATIC_CACHE_NAME);
+              await cache.put(request, response.clone());
+              console.log('Navigation response cached');
+            } catch (cacheError) {
+              console.warn('Failed to cache navigation response:', cacheError);
+            }
+          }
+          return response;
+        })
+        .catch(async (error) => {
+          console.log('Navigation request failed, trying offline fallbacks:', error);
+          
+          try {
+            // Try cached version of the specific page
             const cachedResponse = await caches.match(request);
             if (cachedResponse) {
               console.log('Serving navigation from cache');
@@ -309,7 +343,7 @@ self.addEventListener('fetch', (event) => {
             console.warn('Failed to access cache for navigation:', cacheError);
           }
           
-          // Create basic offline response if skeleton not cached
+          // Create basic offline response if no cache available
           console.log('No cache available, creating basic offline response');
           return new Response(`
             <!DOCTYPE html>
@@ -329,59 +363,68 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   
-  // Default: Cache First for everything else
-  console.log('Default request - Cache First strategy');
+  // Default: Network First for everything else
+  console.log('Default request - Network First strategy');
   
   event.respondWith(
-    caches.open(DYNAMIC_CACHE_NAME).then(async (cache) => {
-      try {
-        const cachedResponse = await cache.match(request);
-        if (cachedResponse) {
-          console.log('Serving from cache');
-          return cachedResponse;
-        }
-        
-        console.log('Fetching from network');
-        const response = await fetch(request);
+    fetch(request)
+      .then(async (response) => {
+        console.log('Default response received:', response.status);
         
         // Notify about network status
         self.clients.matchAll().then(clients => {
           clients.forEach(client => {
             client.postMessage({
               type: 'NETWORK_STATUS',
-              isOnline: response.ok
+              isOnline: true
             });
           });
         });
         
+        // Cache successful responses for offline use
         if (response.ok) {
           try {
+            const cache = await caches.open(DYNAMIC_CACHE_NAME);
             await cache.put(request, response.clone());
-            console.log('Response cached');
+            console.log('Response cached for offline use');
           } catch (cacheError) {
             console.warn('Failed to cache response:', cacheError);
           }
         }
         return response;
-      } catch (error) {
-        console.warn('Failed to fetch:', request.url, error);
+      })
+      .catch(async (error) => {
+        console.log('Default request failed, checking if offline:', error);
         
-        // Notify about network failure
-        self.clients.matchAll().then(clients => {
-          clients.forEach(client => {
-            client.postMessage({
-              type: 'NETWORK_STATUS',
-              isOnline: false
+        // Check if truly offline
+        const isReallyOffline = !(await checkNetworkConnectivity());
+        
+        if (isReallyOffline) {
+          console.log('Confirmed offline, checking cache');
+          
+          // Notify about network failure
+          self.clients.matchAll().then(clients => {
+            clients.forEach(client => {
+              client.postMessage({
+                type: 'NETWORK_STATUS',
+                isOnline: false
+              });
             });
           });
-        });
+          
+          try {
+            const cachedResponse = await caches.match(request);
+            if (cachedResponse) {
+              console.log('Serving from cache (offline)');
+              return cachedResponse;
+            }
+          } catch (cacheError) {
+            console.warn('Failed to access cache:', cacheError);
+          }
+        }
         
         throw error;
-      }
-    }).catch(error => {
-      console.warn('Failed to open dynamic cache:', error);
-      return fetch(request);
-    })
+      })
   );
 });
 
