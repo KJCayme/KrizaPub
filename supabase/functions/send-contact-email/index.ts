@@ -14,17 +14,18 @@ serve(async (req) => {
   }
 
   try {
-    const { name, email_client, message } = await req.json()
+    const { name, email_client, subject, message } = await req.json()
 
-    console.log("Sending contact email:", { name, email_client });
+    console.log("Sending contact email:", { name, email_client, subject });
 
     const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY')
 
-    const subject = `New Contact Message from ${name}`
+    const emailSubject = subject ? `${subject} - from ${name}` : `New Contact Message from ${name}`
     const html = `
       <h3>New Contact Form Submission</h3>
       <p><strong>Name:</strong> ${name}</p>
       <p><strong>Email:</strong> ${email_client}</p>
+      ${subject ? `<p><strong>Subject:</strong> ${subject}</p>` : ''}
       <p><strong>Message:</strong></p>
       <p>${message.replace(/\n/g, '<br>')}</p>
     `
@@ -38,7 +39,7 @@ serve(async (req) => {
       body: JSON.stringify({
         from: 'Contact Form <onboarding@resend.dev>',
         to: ['kennethjohncayme@gmail.com'],
-        subject,
+        subject: emailSubject,
         html,
       }),
     })

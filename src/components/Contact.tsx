@@ -16,6 +16,7 @@ const Contact = () => {
   const [formData, setFormData] = useState({
     name: '',
     email_client: '',
+    subject: '',
     message: ''
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -69,6 +70,7 @@ const Contact = () => {
         body: {
           name: formData.name,
           email_client: formData.email_client,
+          subject: formData.subject,
           message: formData.message,
           recipientEmail: 'kennethjohncayme@gmail.com'
         }
@@ -87,7 +89,7 @@ const Contact = () => {
       // Reset form after 3 seconds
       setTimeout(() => {
         setIsSubmitted(false);
-        setFormData({ name: '', email_client: '', message: '' });
+        setFormData({ name: '', email_client: '', subject: '', message: '' });
       }, 3000);
       
     } catch (error) {
@@ -202,6 +204,19 @@ const Contact = () => {
                     required
                     className="w-full px-4 py-3 rounded-lg bg-slate-700 dark:bg-slate-800 border border-slate-600 focus:border-blue-500 focus:outline-none transition-colors text-white"
                     placeholder="your@email.com"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold mb-2">Subject</label>
+                  <input
+                    type="text"
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full px-4 py-3 rounded-lg bg-slate-700 dark:bg-slate-800 border border-slate-600 focus:border-blue-500 focus:outline-none transition-colors text-white"
+                    placeholder="What's this about?"
                   />
                 </div>
 
