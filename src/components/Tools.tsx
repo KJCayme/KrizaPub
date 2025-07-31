@@ -1,110 +1,15 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Plus } from 'lucide-react';
 import { Button } from './ui/button';
 import { useAuth } from '../hooks/useAuth';
+import { useTools } from '../hooks/useTools';
+import AddToolForm from './AddToolForm';
 
 const Tools = () => {
   const { user } = useAuth();
-
-  const tools = [
-    {
-      name: "Notion",
-      category: "Productivity",
-      icon: "https://www.notion.so/images/favicon.ico",
-      color: "bg-white"
-    },
-    {
-      name: "Canva",
-      category: "Design",
-      icon: "https://static.canva.com/web/images/favicon.ico",
-      color: "bg-purple-100"
-    },
-    {
-      name: "Figma",
-      category: "Design",
-      icon: "https://static.figma.com/app/icon/1/favicon.ico",
-      color: "bg-orange-100"
-    },
-    {
-      name: "Adobe Creative Suite",
-      category: "Design",
-      icon: "https://www.adobe.com/favicon.ico",
-      color: "bg-red-100"
-    },
-    {
-      name: "Slack",
-      category: "Communication",
-      icon: "https://a.slack-edge.com/80588/marketing/img/meta/favicon-32.png",
-      color: "bg-purple-100"
-    },
-    {
-      name: "Trello",
-      category: "Project Management",
-      icon: "https://trello.com/favicon.ico",
-      color: "bg-blue-100"
-    },
-    {
-      name: "Asana",
-      category: "Project Management",
-      icon: "https://asana.com/favicon.ico",
-      color: "bg-orange-100"
-    },
-    {
-      name: "Google Workspace",
-      category: "Productivity",
-      icon: "https://workspace.google.com/favicon.ico",
-      color: "bg-blue-100"
-    },
-    {
-      name: "Hootsuite",
-      category: "Social Media",
-      icon: "https://hootsuite.com/favicon.ico",
-      color: "bg-yellow-100"
-    },
-    {
-      name: "Buffer",
-      category: "Social Media",
-      icon: "https://buffer.com/favicon.ico",
-      color: "bg-blue-100"
-    },
-    {
-      name: "Later",
-      category: "Social Media",
-      icon: "https://later.com/favicon.ico",
-      color: "bg-green-100"
-    },
-    {
-      name: "Loom",
-      category: "Video",
-      icon: "https://www.loom.com/favicon.ico",
-      color: "bg-purple-100"
-    },
-    {
-      name: "Zoom",
-      category: "Communication",
-      icon: "https://zoom.us/favicon.ico",
-      color: "bg-blue-100"
-    },
-    {
-      name: "Microsoft Office",
-      category: "Productivity",
-      icon: "https://res.cdn.office.net/assets/mail/file-icon/png/generic_16x16.png",
-      color: "bg-blue-100"
-    },
-    {
-      name: "Grammarly",
-      category: "Writing",
-      icon: "https://static.grammarly.com/assets/files/efe57d016d9efff36da7884c193b646b/favicon-32x32.png",
-      color: "bg-green-100"
-    },
-    {
-      name: "Calendly",
-      category: "Scheduling",
-      icon: "https://calendly.com/favicon.ico",
-      color: "bg-blue-100"
-    }
-  ];
+  const { data: tools = [], isLoading } = useTools();
+  const [isFormOpen, setIsFormOpen] = useState(false);
 
   return (
     <section id="tools" className="py-20 bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 dark:from-slate-950 dark:via-purple-950 dark:to-indigo-950 relative overflow-hidden transition-colors duration-300">
@@ -133,9 +38,12 @@ const Tools = () => {
             </h2>
             <div className="flex-1 flex justify-end">
               {user && (
-                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <Button 
+                  onClick={() => setIsFormOpen(true)}
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                >
                   <Plus className="w-5 h-5 mr-2" />
-                  Add
+                  Add Tools
                 </Button>
               )}
             </div>
@@ -146,13 +54,16 @@ const Tools = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
-          {tools.map((tool, index) => (
-            <div
-              key={index}
-              className={`group p-3 rounded-xl ${tool.color} shadow-lg transform transition-all duration-300 cursor-pointer backdrop-blur-sm bg-white/90 dark:bg-white/95`}
-              title={`${tool.name} - ${tool.category}`}
-            >
+        {isLoading ? (
+          <div className="text-center text-blue-200">Loading tools...</div>
+        ) : (
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+            {tools.map((tool) => (
+              <div
+                key={tool.id}
+                className={`group p-3 rounded-xl ${tool.color} shadow-lg transform transition-all duration-300 cursor-pointer backdrop-blur-sm bg-white/90 dark:bg-white/95`}
+                title={`${tool.name} - ${tool.category}`}
+              >
               <div className="flex flex-col items-center">
                 <div className="w-10 h-10 mb-2 rounded-lg bg-white/80 flex items-center justify-center shadow-sm transition-transform duration-1000 ease-in-out">
                   <img
@@ -168,10 +79,11 @@ const Tools = () => {
                 <span className="text-xs font-medium text-slate-700 dark:text-slate-800 text-center leading-tight">
                   {tool.name}
                 </span>
+               </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         <div className="text-center mt-12">
           <p className="text-blue-200 max-w-2xl mx-auto">
@@ -179,6 +91,9 @@ const Tools = () => {
             to ensure cutting-edge solutions for your business needs.
           </p>
         </div>
+
+        {/* Add Tool Form */}
+        <AddToolForm isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} />
       </div>
     </section>
   );
