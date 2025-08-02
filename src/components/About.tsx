@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Award, Clock, Heart, Target, ChevronLeft, ChevronRight, MapPin, GraduationCap, Coffee, Users, Music, Camera, Book, Plane, Edit } from 'lucide-react';
+import { Edit, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useIsMobile } from '../hooks/use-mobile';
 import { useAboutCarousel } from '../hooks/useAboutCarousel';
 import { useAboutInfo } from '../hooks/useAboutInfo';
@@ -14,6 +14,10 @@ import EditAboutInfoForm from './EditAboutInfoForm';
 import EditHobbiesForm from './EditHobbiesForm';
 import EditThingsToDoForm from './EditThingsToDoForm';
 import EditHighlightsForm from './EditHighlightsForm';
+import AboutCarousel from './about/AboutCarousel';
+import AboutInfo from './about/AboutInfo';
+import AboutHighlights from './about/AboutHighlights';
+import AboutHobbies from './about/AboutHobbies';
 import DynamicIcon from './DynamicIcon';
 
 const About = () => {

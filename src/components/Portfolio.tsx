@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Calendar, Users, TrendingUp, Palette, Video, CheckCircle, Code, Bot, PenTool, Database, Globe, BarChart3, FileText, ExternalLink, Plus, Settings } from 'lucide-react';
+import { Plus, Settings, ExternalLink } from 'lucide-react';
 import ProjectDetails from './ProjectDetails';
 import AllProjectsView from './portfolio/AllProjectsView';
 import ProjectGrid from './portfolio/ProjectGrid';
 import AddProjectForm from './portfolio/AddProjectForm';
 import AddCategoryForm from './portfolio/AddCategoryForm';
 import ManageCategoriesForm from './portfolio/ManageCategoriesForm';
-import { handleBookCall } from '../utils/bookCall';
+import PortfolioHeader from './portfolio/PortfolioHeader';
+import CategoryTabs from './portfolio/CategoryTabs';
+import PortfolioCallToAction from './portfolio/PortfolioCallToAction';
+
 import { useIsMobile } from '../hooks/use-mobile';
 import { useProjects } from '../hooks/useProjects';
 import { useProjectsByCategory } from '../hooks/useProjectsByCategory';
@@ -79,13 +82,10 @@ const Portfolio = ({ onShowAllProjectsChange }: PortfolioProps) => {
   // Transform projects for UI compatibility
   const projects = projectsData || [];
 
-  // Initialize dark mode from document and prefetch for tablet/mobile
+  // Initialize dark mode from document
   useEffect(() => {
     const darkModeEnabled = document.documentElement.classList.contains('dark');
     setIsDarkMode(darkModeEnabled);
-    
-    // For tablet/mobile viewports, the prefetch is now handled by the main prefetch trigger
-    // No need for separate mobile prefetching since we're prefetching everything
   }, []);
 
   // Show error toast if there's an error fetching projects or categories
@@ -105,11 +105,10 @@ const Portfolio = ({ onShowAllProjectsChange }: PortfolioProps) => {
     const handleCategoryChange = (event: CustomEvent) => {
       const newCategory = event.detail.category;
       setActiveCategory(newCategory);
-      // Reset scroll position to left when category changes
       setShouldScrollToProject(false);
       setTimeout(() => {
         if (projectGridRef.current) {
-          projectGridRef.current.scrollToProject(-1); // Scroll to start
+          projectGridRef.current.scrollToProject(-1);
         }
       }, 100);
     };
@@ -131,19 +130,6 @@ const Portfolio = ({ onShowAllProjectsChange }: PortfolioProps) => {
     return () => window.removeEventListener('showAddCategoryForm', handleShowAddCategoryForm);
   }, []);
 
-  const toggleDarkMode = () => {
-    const newDarkMode = !isDarkMode;
-    setIsDarkMode(newDarkMode);
-    
-    if (newDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    
-    localStorage.setItem('darkMode', JSON.stringify(newDarkMode));
-  };
-
   // Notify parent component when showAllProjects changes
   useEffect(() => {
     if (onShowAllProjectsChange) {
@@ -163,7 +149,7 @@ const Portfolio = ({ onShowAllProjectsChange }: PortfolioProps) => {
 
   const filteredProjects = projects.filter(project => project.category === activeCategory);
 
-  // Prefetch projects for a category on hover (now just logs since we prefetch everything)
+  // Prefetch projects for a category on hover
   const handleCategoryHover = async (categoryId: string) => {
     if (!prefetchedCategories.has(categoryId)) {
       console.log(`🚀 Prefetching projects for category: ${categoryId}`);
@@ -202,7 +188,6 @@ const Portfolio = ({ onShowAllProjectsChange }: PortfolioProps) => {
 
   const handleBackFromAllProjects = () => {
     setShowAllProjects(false);
-    // Scroll to portfolio section
     setTimeout(() => {
       const element = document.getElementById('portfolio');
       if (element) {
@@ -213,22 +198,21 @@ const Portfolio = ({ onShowAllProjectsChange }: PortfolioProps) => {
 
   const handleCategoryChange = (categoryId: string) => {
     setActiveCategory(categoryId);
-    // Reset scroll position to left when category changes
     setShouldScrollToProject(false);
     setTimeout(() => {
       if (projectGridRef.current) {
-        projectGridRef.current.scrollToProject(-1); // Scroll to start
+        projectGridRef.current.scrollToProject(-1);
       }
     }, 100);
   };
 
   const handleProjectAdded = () => {
-    refetch(); // Refresh the projects list
+    refetch();
     toast.success('Project added successfully!');
   };
 
   const handleCategoryAdded = () => {
-    refetchCategories(); // Refresh the categories list
+    refetchCategories();
     toast.success('Category added successfully!');
   };
 
@@ -283,7 +267,7 @@ const Portfolio = ({ onShowAllProjectsChange }: PortfolioProps) => {
         onBack={handleBackFromAllProjects}
         onViewProject={handleViewProject}
         isDarkMode={isDarkMode}
-        onToggleDarkMode={toggleDarkMode}
+        onToggleDarkMode={() => {}}
         lastOpenedProject={lastOpenedProject}
         onProjectAdded={handleProjectAdded}
       />
@@ -291,76 +275,31 @@ const Portfolio = ({ onShowAllProjectsChange }: PortfolioProps) => {
   }
 
   return (
-    <section ref={portfolioRef} id="portfolio" className="py-20 bg-gradient-to-br from-slate-100 to-blue-50 dark:from-slate-800 dark:to-blue-900">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="text-center mb-16 relative">
-          {/* Add Project Button - Only show if user is authenticated */}
-          {user && (
-            <div className="absolute top-0 right-0 flex items-center gap-2">
-              <button
-                onClick={() => setShowAddProjectForm(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold rounded-lg shadow-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl"
-              >
-                <Plus className="w-5 h-5" />
-                Add Project
-              </button>
-              <button
-                onClick={() => setShowManageCategoriesForm(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-lg shadow-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl"
-              >
-                <Settings className="w-5 h-5" />
-                Manage
-              </button>
-            </div>
-          )}
+    <section ref={portfolioRef} id="portfolio" className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 py-20 relative overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiM5QzkyQUMiIGZpbGwtb3BhY2l0eT0iMC4xIj48Y2lyY2xlIGN4PSIzMCIgY3k9IjMwIiByPSIzIi8+PC9nPjwvZz48L3N2Zz4=')] opacity-20"></div>
+      
+      <div className="container mx-auto px-6">
+        <PortfolioHeader
+          user={user}
+          onAddProject={() => setShowAddProjectForm(true)}
+          onAddCategory={() => setShowAddCategoryForm(true)}
+          onManageCategories={() => setShowManageCategoriesForm(true)}
+        />
 
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6 text-slate-800 dark:text-white">
-            My Portfolio
-          </h2>
-          <p className="text-lg md:text-xl text-slate-600 dark:text-slate-300 max-w-3xl mx-auto mb-8">
-            Real projects, real results. Here's a showcase of my work across different 
-            areas of expertise, demonstrating measurable impact and professional excellence.
-          </p>
-
-          {/* Category Filter - Desktop only */}
-          <div className="hidden md:flex flex-wrap justify-center gap-4 items-center">
-            {categories.filter(category => !category.hidden || user).map((category) => (
-              <button
-                key={category.id}
-                onClick={() => handleCategoryChange(category.id)}
-                onMouseEnter={() => handleCategoryHover(category.id)}
-                className={`relative px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
-                  activeCategory === category.id
-                    ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
-                    : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-600'
-                } ${category.hidden ? 'opacity-60' : ''}`}
-              >
-                {category.name}
-                {category.badge && (
-                  <span className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full">
-                    {category.badge}
-                  </span>
-                )}
-                {category.hidden && user && (
-                  <span className="absolute -bottom-1 left-1/2 transform -translate-x-1/2 text-xs text-slate-400 whitespace-nowrap">
-                    (Hidden)
-                  </span>
-                )}
-              </button>
-            ))}
-            
-            {/* Add Category Button - Only show if user is authenticated */}
-            {user && (
-              <button
-                onClick={() => setShowAddCategoryForm(true)}
-                className="w-12 h-12 rounded-full bg-gradient-to-r from-green-500 to-green-600 text-white flex items-center justify-center shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-                title="Add New Category"
-              >
-                <Plus className="w-6 h-6" />
-              </button>
-            )}
-          </div>
-        </div>
+        {categoriesLoading ? (
+          <div className="text-center text-gray-400">Loading categories...</div>
+        ) : categoriesError ? (
+          <div className="text-center text-red-400">Error loading categories</div>
+        ) : (
+          <CategoryTabs
+            categories={categories || []}
+            activeCategory={activeCategory}
+            onCategoryChange={setActiveCategory}
+            prefetchedCategories={prefetchedCategories}
+            onCategoryHover={handleCategoryHover}
+          />
+        )}
 
         {/* Projects Grid */}
         <ProjectGrid 
@@ -383,37 +322,7 @@ const Portfolio = ({ onShowAllProjectsChange }: PortfolioProps) => {
           </button>
         </div>
 
-        {/* Call to Action */}
-        <div className="text-center mt-16">
-          <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl p-6 md:p-8 text-white">
-            <h3 className="text-xl md:text-2xl font-bold mb-4">
-              Ready to see similar results for your business?
-            </h3>
-            <p className="text-blue-100 mb-6 max-w-2xl mx-auto text-sm md:text-base">
-              Let's discuss how I can help streamline your operations, boost your digital presence, 
-              and deliver measurable outcomes for your organization.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button 
-                onClick={handleBookCall}
-                className="px-8 py-4 bg-white text-blue-600 font-semibold rounded-full shadow-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg"
-              >
-                Book a Call
-              </button>
-              <button 
-                onClick={() => {
-                  const element = document.getElementById('contact');
-                  if (element) {
-                    element.scrollIntoView({ behavior: 'smooth' });
-                  }
-                }}
-                className="px-8 py-4 border-2 border-white text-white font-semibold rounded-full transition-all duration-300 hover:bg-white/10 transform hover:-translate-y-1"
-              >
-                Get in Touch
-              </button>
-            </div>
-          </div>
-        </div>
+        <PortfolioCallToAction />
       </div>
 
       {/* Add Project Form Dialog */}
