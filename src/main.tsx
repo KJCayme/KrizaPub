@@ -44,23 +44,16 @@ if ('serviceWorker' in navigator) {
           }
         });
         
-        // Check for updates more frequently in development
-        const isDev = import.meta.env.DEV;
-        const updateInterval = isDev ? 10000 : 5 * 60 * 1000; // 10s in dev, 5min in prod
-        
-        setInterval(() => {
-          console.log('Checking for service worker updates...');
-          registration.update();
-        }, updateInterval);
+        // Only check for updates on initial load, not continuously
       })
       .catch((registrationError) => {
         console.error('SW registration failed: ', registrationError);
       });
     
-    // Listen for service worker controller changes and reload automatically
+    // Listen for service worker controller changes (no automatic reload)
     navigator.serviceWorker.addEventListener('controllerchange', () => {
-      console.log('Service worker controller changed, reloading page...');
-      window.location.reload();
+      console.log('Service worker controller changed');
+      // Only reload on network status changes, not service worker updates
     });
     
     // Listen for online/offline status changes
