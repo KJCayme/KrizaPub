@@ -585,7 +585,7 @@ export type Database = {
       }
       tools: {
         Row: {
-          category: string | null
+          category: string
           color: string
           created_at: string
           icon: string
@@ -595,7 +595,7 @@ export type Database = {
           user_id: string | null
         }
         Insert: {
-          category?: string | null
+          category: string
           color: string
           created_at?: string
           icon: string
@@ -605,7 +605,7 @@ export type Database = {
           user_id?: string | null
         }
         Update: {
-          category?: string | null
+          category?: string
           color?: string
           created_at?: string
           icon?: string
