@@ -22,21 +22,10 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
 
   const [formData, setFormData] = useState({
     name: '',
-    category: '',
     icon: '',
     color: 'bg-blue-100'
   });
 
-  const categories = [
-    'Productivity',
-    'Design',
-    'Communication',
-    'Project Management',
-    'Social Media',
-    'Video',
-    'Writing',
-    'Scheduling'
-  ];
 
   const colors = [
     'bg-white',
@@ -62,7 +51,6 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
       
       setFormData({
         name: '',
-        category: '',
         icon: '',
         color: 'bg-blue-100'
       });
@@ -125,22 +113,6 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
                 </div>
 
                 <div>
-                  <Label htmlFor="category" className="text-slate-300">Category</Label>
-                  <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
-                    <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
-                      <SelectValue placeholder="Select category" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-slate-700 border-slate-600">
-                      {categories.map((category) => (
-                        <SelectItem key={category} value={category} className="text-white">
-                          {category}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div>
                   <Label htmlFor="icon" className="text-slate-300">Icon URL</Label>
                   <Input
                     id="icon"
@@ -150,9 +122,12 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
                     required
                     className="bg-slate-700 border-slate-600 text-white"
                   />
+                  <p className="text-xs text-slate-400 mt-1">
+                    Tip: You can use favicons from websites (e.g., https://notion.so/favicon.ico)
+                  </p>
                 </div>
 
-                <div>
+                <div className="md:col-span-2">
                   <Label htmlFor="color" className="text-slate-300">Background Color</Label>
                   <Select value={formData.color} onValueChange={(value) => handleInputChange('color', value)}>
                     <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
@@ -205,7 +180,6 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
                     </div>
                     <div>
                       <h4 className="text-white font-medium">{tool.name}</h4>
-                      <p className="text-slate-400 text-sm">{tool.category}</p>
                     </div>
                   </div>
                   {user && user.id === tool.user_id && (
