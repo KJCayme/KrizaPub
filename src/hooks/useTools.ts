@@ -7,7 +7,7 @@ import type { Tables } from '@/integrations/supabase/types';
 export interface Tool {
   id: string;
   name: string;
-  category: string;
+  category?: string;
   icon: string;
   color: string;
   user_id?: string;
@@ -42,9 +42,14 @@ export const useAddTool = () => {
 
   return useMutation({
     mutationFn: async (tool: Omit<Tool, 'id' | 'created_at' | 'updated_at'>) => {
+      const toolWithDefaults = {
+        ...tool,
+        category: tool.category || 'General'
+      };
+      
       const { data, error } = await supabase
         .from('tools')
-        .insert([tool])
+        .insert([toolWithDefaults])
         .select()
         .single();
 
