@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, Users, TrendingUp, Palette, Video, CheckCircle, Code, Bot, PenTool, Database, Globe, BarChart3, FileText, ExternalLink, Plus, Settings } from 'lucide-react';
 import ProjectDetails from './ProjectDetails';
 import AllProjectsView from './portfolio/AllProjectsView';
+import PortfolioSkeleton from './portfolio/PortfolioSkeleton';
 import ProjectGrid from './portfolio/ProjectGrid';
 import AddProjectForm from './portfolio/AddProjectForm';
 import AddCategoryForm from './portfolio/AddCategoryForm';
@@ -234,16 +235,7 @@ const Portfolio = ({ onShowAllProjectsChange }: PortfolioProps) => {
 
   // Loading state
   if (isLoading || categoriesLoading) {
-    return (
-      <section ref={portfolioRef} id="portfolio" className="py-20 bg-gradient-to-br from-slate-100 to-blue-50 dark:from-slate-800 dark:to-blue-900">
-        <div className="container mx-auto px-4 md:px-6">
-          <div className="text-center">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-            <p className="mt-4 text-slate-600 dark:text-slate-300">Loading projects...</p>
-          </div>
-        </div>
-      </section>
-    );
+    return <PortfolioSkeleton ref={portfolioRef} />;
   }
 
   // Error state
