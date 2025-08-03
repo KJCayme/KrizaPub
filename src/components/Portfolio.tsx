@@ -233,11 +233,6 @@ const Portfolio = ({ onShowAllProjectsChange }: PortfolioProps) => {
     toast.success('Category added successfully!');
   };
 
-  // Show skeleton while loading the first category's projects
-  if ((isLoading || categoriesLoading) && (!projectsData || projectsData.length === 0)) {
-    return <PortfolioSkeleton ref={portfolioRef} categories={categories} activeCategory={activeCategory} />;
-  }
-
   // Error state
   if (error || categoriesError) {
     return (
