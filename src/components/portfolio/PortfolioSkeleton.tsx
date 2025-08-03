@@ -1,12 +1,19 @@
+
 import React, { forwardRef } from 'react';
 import { Skeleton } from '../ui/skeleton';
 import { useIsMobile } from '../../hooks/use-mobile';
+import { Plus } from 'lucide-react';
 
-const PortfolioSkeleton = forwardRef<HTMLElement>((props, ref) => {
+interface PortfolioSkeletonProps {
+  categories?: Array<{ id: string; name: string; badge?: string; hidden?: boolean }>;
+  activeCategory?: string;
+}
+
+const PortfolioSkeleton = forwardRef<HTMLElement, PortfolioSkeletonProps>(({ categories = [], activeCategory }, ref) => {
   const isMobile = useIsMobile();
 
-  // Create skeleton for 5 projects (Admin Support category default)
-  const skeletonProjects = Array.from({ length: 5 }, (_, index) => (
+  // Create skeleton for 4 projects (matching the typical first category load)
+  const skeletonProjects = Array.from({ length: 4 }, (_, index) => (
     <div
       key={index}
       className={`flex-shrink-0 ${
@@ -76,15 +83,38 @@ const PortfolioSkeleton = forwardRef<HTMLElement>((props, ref) => {
             </div>
           </div>
 
-          {/* Category Filter Skeleton - Desktop only */}
+          {/* Category Filter - Desktop only */}
           <div className="hidden md:flex flex-wrap justify-center gap-4 items-center">
-            {Array.from({ length: 6 }, (_, index) => (
-              <Skeleton 
-                key={index}
-                className="h-12 w-32 rounded-full"
-              />
-            ))}
-            <Skeleton className="w-12 h-12 rounded-full" />
+            {categories.length > 0 ? (
+              <>
+                {categories.map((category) => (
+                  <button
+                    key={category.id}
+                    className={`relative px-6 py-3 rounded-full font-semibold transition-all duration-300 ${
+                      activeCategory === category.id
+                        ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg'
+                        : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600'
+                    } ${category.hidden ? 'opacity-60' : ''}`}
+                    disabled
+                  >
+                    {category.name}
+                    {category.badge && (
+                      <span className="absolute -top-2 -right-2 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                        {category.badge}
+                      </span>
+                    )}
+                  </button>
+                ))}
+                <Skeleton className="w-12 h-12 rounded-full" />
+              </>
+            ) : (
+              Array.from({ length: 6 }, (_, index) => (
+                <Skeleton 
+                  key={index}
+                  className="h-12 w-32 rounded-full"
+                />
+              ))
+            )}
           </div>
         </div>
 

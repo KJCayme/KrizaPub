@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, Users, TrendingUp, Palette, Video, CheckCircle, Code, Bot, PenTool, Database, Globe, BarChart3, FileText, ExternalLink, Plus, Settings } from 'lucide-react';
 import ProjectDetails from './ProjectDetails';
@@ -18,6 +17,7 @@ import { usePortfolioCategories } from '../hooks/usePortfolioCategories';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
 import { transformProjects } from '../utils/projectHelpers';
 import { toast } from 'sonner';
+import PortfolioSkeleton from './portfolio/PortfolioSkeleton';
 
 interface PortfolioProps {
   onShowAllProjectsChange?: (show: boolean) => void;
@@ -232,6 +232,11 @@ const Portfolio = ({ onShowAllProjectsChange }: PortfolioProps) => {
     refetchCategories(); // Refresh the categories list
     toast.success('Category added successfully!');
   };
+
+  // Show skeleton while loading the first category's projects
+  if ((isLoading || categoriesLoading) && (!projectsData || projectsData.length === 0)) {
+    return <PortfolioSkeleton ref={portfolioRef} categories={categories} activeCategory={activeCategory} />;
+  }
 
   // Error state
   if (error || categoriesError) {
