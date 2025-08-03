@@ -17,7 +17,6 @@ import { usePortfolioCategories } from '../hooks/usePortfolioCategories';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
 import { transformProjects } from '../utils/projectHelpers';
 import { toast } from 'sonner';
-import PortfolioSkeleton from './portfolio/PortfolioSkeleton';
 
 interface PortfolioProps {
   onShowAllProjectsChange?: (show: boolean) => void;
