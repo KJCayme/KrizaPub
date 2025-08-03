@@ -23,6 +23,7 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
   const [formData, setFormData] = useState({
     name: '',
     icon: '',
+    iconSource: '',
     color: 'bg-blue-100'
   });
 
@@ -52,6 +53,7 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
       setFormData({
         name: '',
         icon: '',
+        iconSource: '',
         color: 'bg-blue-100'
       });
       onClose();
@@ -124,6 +126,20 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
                   />
                   <p className="text-xs text-slate-400 mt-1">
                     Tip: You can use favicons from websites (e.g., https://notion.so/favicon.ico)
+                  </p>
+                </div>
+
+                <div>
+                  <Label htmlFor="iconSource" className="text-slate-300">Icon Source (optional)</Label>
+                  <Input
+                    id="iconSource"
+                    value={formData.iconSource}
+                    onChange={(e) => handleInputChange('iconSource', e.target.value)}
+                    placeholder="Where did you get this icon? (e.g., Official website, Icon library)"
+                    className="bg-slate-700 border-slate-600 text-white"
+                  />
+                  <p className="text-xs text-slate-400 mt-1">
+                    Note where you obtained this icon for reference
                   </p>
                 </div>
 
