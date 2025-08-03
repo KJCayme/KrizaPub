@@ -1,8 +1,8 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Calendar, Users, TrendingUp, Palette, Video, CheckCircle, Code, Bot, PenTool, Database, Globe, BarChart3, FileText, ExternalLink, Plus, Settings } from 'lucide-react';
 import ProjectDetails from './ProjectDetails';
 import AllProjectsView from './portfolio/AllProjectsView';
-import PortfolioSkeleton from './portfolio/PortfolioSkeleton';
 import ProjectGrid from './portfolio/ProjectGrid';
 import AddProjectForm from './portfolio/AddProjectForm';
 import AddCategoryForm from './portfolio/AddCategoryForm';
@@ -232,11 +232,6 @@ const Portfolio = ({ onShowAllProjectsChange }: PortfolioProps) => {
     refetchCategories(); // Refresh the categories list
     toast.success('Category added successfully!');
   };
-
-  // Loading state
-  if (isLoading || categoriesLoading) {
-    return <PortfolioSkeleton ref={portfolioRef} />;
-  }
 
   // Error state
   if (error || categoriesError) {
