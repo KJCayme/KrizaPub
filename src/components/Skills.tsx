@@ -14,6 +14,11 @@ const Skills = () => {
   // Show hidden skills only when user is logged in
   const { data: skillsWithExpertise = [] } = useSkillsWithExpertise(!!user);
 
+  // Sort skills alphabetically by skill name
+  const sortedSkills = [...skillsWithExpertise].sort((a, b) => 
+    a.skill_name.localeCompare(b.skill_name)
+  );
+
   const handleSkillAdded = () => {
     console.log('Skill added - skills list will update automatically');
   };
@@ -48,7 +53,7 @@ const Skills = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {/* Database Skills */}
-            {skillsWithExpertise.map((skill) => {
+            {sortedSkills.map((skill) => {
               const expertise = skill.skills_expertise?.[0];
               const skillDetails = expertise?.details || [`Professional ${skill.skill_name} services`];
               
@@ -122,7 +127,7 @@ const Skills = () => {
             )}
 
             {/* Show message when no skills are available */}
-            {skillsWithExpertise.length === 0 && (
+            {sortedSkills.length === 0 && (
               <div className="col-span-full text-center py-12">
                 <p className="text-slate-600 dark:text-slate-300 text-lg mb-4">
                   No skills available at the moment.
