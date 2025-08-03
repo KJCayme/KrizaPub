@@ -88,23 +88,40 @@ const Index = () => {
 
   const handleBackFromCertificates = () => {
     setShowCertificatesOnly(false);
+    // Wait for complete render before scrolling
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        const certificatesSection = document.getElementById('certificates');
+        if (certificatesSection) {
+          console.log('Certificates section found, scrolling to it');
+          certificatesSection.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+          });
+        } else {
+          console.log('Certificates section not found');
+        }
+      }, 100); // Additional delay to ensure DOM is fully updated
+    });
   };
 
   const handleBackFromTestimonials = () => {
     setShowTestimonialsOnly(false);
-    // Wait longer for DOM to fully re-render all sections
-    setTimeout(() => {
-      const testimonialsSection = document.getElementById('testimonials');
-      if (testimonialsSection) {
-        console.log(`Testimonials section found, scrolling to it`);
-        testimonialsSection.scrollIntoView({ 
-          behavior: 'smooth',
-          block: 'start'
-        });
-      } else {
-        console.log('Testimonials section not found');
-      }
-    }, 500); // Increased timeout to ensure DOM is fully updated
+    // Wait for complete render before scrolling
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        const testimonialsSection = document.getElementById('testimonials');
+        if (testimonialsSection) {
+          console.log('Testimonials section found, scrolling to it');
+          testimonialsSection.scrollIntoView({ 
+            behavior: 'smooth',
+            block: 'start'
+          });
+        } else {
+          console.log('Testimonials section not found');
+        }
+      }, 100); // Additional delay to ensure DOM is fully updated
+    });
   };
 
 
