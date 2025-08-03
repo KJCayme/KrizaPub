@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useIsMobile } from '../hooks/use-mobile';
 import { useAuth } from '../hooks/useAuth';
@@ -173,16 +172,7 @@ const Navigation = () => {
 
             <BookCallButton isVisible={!isMobile || !isPortfolioVisible} />
 
-            <div className="flex items-center gap-2 ml-auto md:hidden">
-              {!authLoading && !user && (
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => setShowAuthDialog(true)}
-                >
-                  Sign In
-                </Button>
-              )}
+            <div className="flex items-center gap-2 md:hidden">
               <BookCallButton isMobile={true} isVisible={!isPortfolioVisible} />
               <MobileMenu
                 navItems={navItems}
@@ -190,6 +180,9 @@ const Navigation = () => {
                 isMenuOpen={isMenuOpen}
                 onToggleMenu={() => setIsMenuOpen(!isMenuOpen)}
                 onSectionClick={scrollToSection}
+                user={user}
+                authLoading={authLoading}
+                onShowAuthDialog={() => setShowAuthDialog(true)}
               />
             </div>
           </div>

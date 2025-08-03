@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Menu, X } from 'lucide-react';
+import { Button } from '../ui/button';
 
 interface NavItem {
   id: string;
@@ -13,9 +14,21 @@ interface MobileMenuProps {
   isMenuOpen: boolean;
   onToggleMenu: () => void;
   onSectionClick: (sectionId: string) => void;
+  user: any;
+  authLoading: boolean;
+  onShowAuthDialog: () => void;
 }
 
-const MobileMenu = ({ navItems, activeSection, isMenuOpen, onToggleMenu, onSectionClick }: MobileMenuProps) => {
+const MobileMenu = ({ 
+  navItems, 
+  activeSection, 
+  isMenuOpen, 
+  onToggleMenu, 
+  onSectionClick,
+  user,
+  authLoading,
+  onShowAuthDialog
+}: MobileMenuProps) => {
   const handleSectionClick = (sectionId: string) => {
     onSectionClick(sectionId);
     onToggleMenu(); // Close menu after clicking
@@ -47,6 +60,22 @@ const MobileMenu = ({ navItems, activeSection, isMenuOpen, onToggleMenu, onSecti
                 {item.label}
               </button>
             ))}
+            
+            {!authLoading && !user && (
+              <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    onShowAuthDialog();
+                    onToggleMenu();
+                  }}
+                  className="w-full"
+                >
+                  Sign In
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       )}
