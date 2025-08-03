@@ -134,14 +134,19 @@ const Navigation = () => {
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-slate-200 dark:border-slate-700 transition-colors duration-300 will-change-transform" style={{ minHeight: '64px' }}>
       <div className="container mx-auto px-6 relative">
         <div className="flex items-center justify-between h-16 min-h-16">
+          {/* Left side - Dark Mode Toggle */}
           <DarkModeToggle isDarkMode={isDarkMode} onToggle={toggleDarkMode} />
 
-          <DesktopNavigation 
-            navItems={navItems} 
-            activeSection={activeSection} 
-            onSectionClick={scrollToSection} 
-          />
+          {/* Center - Desktop Navigation (hidden on mobile) */}
+          {!isMobile && (
+            <DesktopNavigation 
+              navItems={navItems} 
+              activeSection={activeSection} 
+              onSectionClick={scrollToSection} 
+            />
+          )}
 
+          {/* Mobile Portfolio Dropdown when visible */}
           {isMobile && isPortfolioVisible && (
             <PortfolioDropdown
               portfolioCategories={portfolioCategories}
@@ -152,8 +157,10 @@ const Navigation = () => {
             />
           )}
 
+          {/* Right side */}
           <div className="flex items-center gap-3 flex-shrink-0">
-            {!authLoading && (
+            {/* Desktop Sign In / User Menu */}
+            {!isMobile && !authLoading && (
               <>
                 {user ? (
                   <UserMenu />
@@ -162,7 +169,6 @@ const Navigation = () => {
                     variant="outline" 
                     size="sm"
                     onClick={() => setShowAuthDialog(true)}
-                    className="hidden md:flex"
                   >
                     Sign In
                   </Button>
@@ -170,21 +176,25 @@ const Navigation = () => {
               </>
             )}
 
-            <BookCallButton isVisible={!isMobile || !isPortfolioVisible} />
+            {/* Desktop Book Call Button */}
+            {!isMobile && <BookCallButton isVisible={true} />}
 
-            <div className="flex items-center gap-2 md:hidden">
-              <BookCallButton isMobile={true} isVisible={!isPortfolioVisible} />
-              <MobileMenu
-                navItems={navItems}
-                activeSection={activeSection}
-                isMenuOpen={isMenuOpen}
-                onToggleMenu={() => setIsMenuOpen(!isMenuOpen)}
-                onSectionClick={scrollToSection}
-                user={user}
-                authLoading={authLoading}
-                onShowAuthDialog={() => setShowAuthDialog(true)}
-              />
-            </div>
+            {/* Mobile layout: Book Call + Burger Menu */}
+            {isMobile && (
+              <div className="flex items-center gap-2">
+                <BookCallButton isMobile={true} isVisible={!isPortfolioVisible} />
+                <MobileMenu
+                  navItems={navItems}
+                  activeSection={activeSection}
+                  isMenuOpen={isMenuOpen}
+                  onToggleMenu={() => setIsMenuOpen(!isMenuOpen)}
+                  onSectionClick={scrollToSection}
+                  user={user}
+                  authLoading={authLoading}
+                  onShowAuthDialog={() => setShowAuthDialog(true)}
+                />
+              </div>
+            )}
           </div>
         </div>
       </div>
