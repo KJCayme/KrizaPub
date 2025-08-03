@@ -38,14 +38,14 @@ const MobileMenu = ({
     <>
       <button
         onClick={onToggleMenu}
-        className="text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors z-50"
+        className="md:hidden text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors z-50"
         aria-label="Toggle navigation menu"
       >
         {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
       </button>
 
       {isMenuOpen && (
-        <div className="absolute top-full left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 shadow-lg z-40">
+        <div className="md:hidden absolute top-full left-0 right-0 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 shadow-lg z-40">
           <div className="py-4 px-6">
             {navItems.map((item) => (
               <button
