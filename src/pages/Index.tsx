@@ -120,7 +120,7 @@ const Index = () => {
         } else {
           console.log('Testimonials section not found');
         }
-      }, 100); // Additional delay to ensure DOM is fully updated
+      }, 800); // Increased delay to ensure DOM is fully updated
     });
   };
 
