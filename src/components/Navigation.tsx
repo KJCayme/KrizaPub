@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useIsMobile } from '../hooks/use-mobile';
+import { useIsTablet } from '../hooks/use-tablet';
 import { useAuth } from '../hooks/useAuth';
 import DarkModeToggle from './navigation/DarkModeToggle';
 import DesktopNavigation from './navigation/DesktopNavigation';
 import MobileMenu from './navigation/MobileMenu';
+import TabletMenu from './navigation/TabletMenu';
 import PortfolioDropdown from './navigation/PortfolioDropdown';
 import BookCallButton from './navigation/BookCallButton';
 import AuthDialog from './auth/AuthDialog';
@@ -19,6 +21,7 @@ const Navigation = () => {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
   const { user, loading: authLoading } = useAuth();
 
   const navItems = [
@@ -136,12 +139,14 @@ const Navigation = () => {
         <div className="flex items-center justify-between h-16 min-h-16">
           <DarkModeToggle isDarkMode={isDarkMode} onToggle={toggleDarkMode} />
 
+          {/* Desktop Navigation - hidden on tablet and mobile */}
           <DesktopNavigation 
             navItems={navItems} 
             activeSection={activeSection} 
             onSectionClick={scrollToSection} 
           />
 
+          {/* Mobile Portfolio Dropdown */}
           {isMobile && isPortfolioVisible && (
             <PortfolioDropdown
               portfolioCategories={portfolioCategories}
@@ -152,27 +157,48 @@ const Navigation = () => {
             />
           )}
 
-          <div className="flex items-center gap-3 flex-shrink-0">
-            {!authLoading && (
-              <>
-                {user ? (
-                  <UserMenu />
-                ) : (
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onClick={() => setShowAuthDialog(true)}
-                    className="hidden md:flex"
-                  >
-                    Sign In
-                  </Button>
-                )}
-              </>
-            )}
+          {/* Tablet Layout - Dark Mode Toggle (left), Book Call + Burger Menu (right) */}
+          {isTablet && (
+            <div className="flex items-center gap-3 flex-shrink-0">
+              <BookCallButton isVisible={true} />
+              <TabletMenu
+                navItems={navItems}
+                activeSection={activeSection}
+                isMenuOpen={isMenuOpen}
+                onToggleMenu={() => setIsMenuOpen(!isMenuOpen)}
+                onSectionClick={scrollToSection}
+                user={user}
+                authLoading={authLoading}
+                onShowAuthDialog={() => setShowAuthDialog(true)}
+              />
+            </div>
+          )}
 
-            <BookCallButton isVisible={!isMobile || !isPortfolioVisible} />
+          {/* Desktop Right Side */}
+          {!isTablet && !isMobile && (
+            <div className="flex items-center gap-3 flex-shrink-0">
+              {!authLoading && (
+                <>
+                  {user ? (
+                    <UserMenu />
+                  ) : (
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => setShowAuthDialog(true)}
+                    >
+                      Sign In
+                    </Button>
+                  )}
+                </>
+              )}
+              <BookCallButton isVisible={true} />
+            </div>
+          )}
 
-            <div className="flex items-center gap-2 md:hidden">
+          {/* Mobile Right Side */}
+          {isMobile && (
+            <div className="flex items-center gap-2">
               <BookCallButton isMobile={true} isVisible={!isPortfolioVisible} />
               <MobileMenu
                 navItems={navItems}
@@ -185,7 +211,7 @@ const Navigation = () => {
                 onShowAuthDialog={() => setShowAuthDialog(true)}
               />
             </div>
-          </div>
+          )}
         </div>
       </div>
 

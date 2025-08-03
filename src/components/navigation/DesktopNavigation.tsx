@@ -14,7 +14,7 @@ interface DesktopNavigationProps {
 
 const DesktopNavigation = ({ navItems, activeSection, onSectionClick }: DesktopNavigationProps) => {
   return (
-    <div className="hidden md:flex items-center space-x-8 flex-1 justify-center">
+    <div className="hidden lg:flex items-center space-x-8 flex-1 justify-center">
       {navItems.map((item) => (
         <button
           key={item.id}
