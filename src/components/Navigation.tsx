@@ -18,9 +18,7 @@ const Navigation = () => {
   const [isPortfolioVisible, setIsPortfolioVisible] = useState(false);
   const [showPortfolioDropdown, setShowPortfolioDropdown] = useState(false);
   const [activePortfolioCategory, setActivePortfolioCategory] = useState('admin');
-  const [isDarkMode, setIsDarkMode] = useState(() => 
-    document.documentElement.classList.contains('dark')
-  );
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const isMobile = useIsMobile();
   const isTablet = useIsTablet();
