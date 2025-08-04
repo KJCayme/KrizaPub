@@ -30,23 +30,18 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
     setActiveIndex(currentIndex);
   }, [currentIndex]);
 
-  // Hide/show navbar and disable/enable background scroll when popup opens/closes
+  // Hide/show navbar when popup opens/closes
   useEffect(() => {
     const navbar = document.querySelector('nav');
-    const body = document.body;
-    
     if (isOpen) {
       if (navbar) navbar.style.display = 'none';
-      body.style.overflow = 'hidden';
     } else {
       if (navbar) navbar.style.display = '';
-      body.style.overflow = '';
     }
 
-    // Cleanup function to ensure navbar is shown and scroll is enabled when component unmounts
+    // Cleanup function to ensure navbar is shown when component unmounts
     return () => {
       if (navbar) navbar.style.display = '';
-      body.style.overflow = '';
     };
   }, [isOpen]);
 
@@ -99,10 +94,10 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed top-0 left-0 w-screen h-screen z-[100]">
+    <div className="fixed inset-0 z-[100] w-screen h-screen">
       {/* Full viewport overlay */}
       <div 
-        className="absolute top-0 left-0 w-full h-full bg-black/90"
+        className="absolute inset-0 bg-black/90"
         onClick={onClose}
       />
       
