@@ -1,6 +1,6 @@
+
 import React, { useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
-import { useNavbarVisibility } from '../hooks/useNavbarVisibility';
 
 interface ImagePopupProps {
   isOpen: boolean;
@@ -21,7 +21,6 @@ const ImagePopup: React.FC<ImagePopupProps> = ({
 }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(currentIndex);
   const [currentImage, setCurrentImage] = useState(imageUrl);
-  const { hideNavbar, showNavbar } = useNavbarVisibility();
 
   useEffect(() => {
     setCurrentImageIndex(currentIndex);
@@ -66,18 +65,6 @@ const ImagePopup: React.FC<ImagePopupProps> = ({
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, currentImageIndex, hasMultipleImages]);
-
-  useEffect(() => {
-    if (isOpen) {
-      hideNavbar();
-    } else {
-      showNavbar();
-    }
-    
-    return () => {
-      showNavbar();
-    };
-  }, [isOpen, hideNavbar, showNavbar]);
 
   if (!isOpen) return null;
 
