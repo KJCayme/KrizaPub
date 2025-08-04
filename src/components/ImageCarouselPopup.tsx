@@ -29,6 +29,21 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
     setActiveIndex(currentIndex);
   }, [currentIndex]);
 
+  // Hide/show navbar when popup opens/closes
+  useEffect(() => {
+    const navbar = document.querySelector('nav');
+    if (isOpen) {
+      if (navbar) navbar.style.display = 'none';
+    } else {
+      if (navbar) navbar.style.display = '';
+    }
+
+    // Cleanup function to ensure navbar is shown when component unmounts
+    return () => {
+      if (navbar) navbar.style.display = '';
+    };
+  }, [isOpen]);
+
   useEffect(() => {
     if (!api) return;
 
