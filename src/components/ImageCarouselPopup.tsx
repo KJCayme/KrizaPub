@@ -1,8 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
-import { Dialog, DialogContent } from './ui/dialog';
-import { cn } from '@/lib/utils';
 
 interface ImageCarouselPopupProps {
   isOpen: boolean;
@@ -47,55 +45,62 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
 
   if (!images.length) return null;
 
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent
-        className="max-w-screen-xl w-full h-[90vh] bg-black p-0 flex items-center justify-center relative border-0 [&>button]:hidden"
-        onInteractOutside={() => onClose()}
-      >
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-4 right-4 text-white hover:text-red-400 z-50"
-        >
-          <X className="w-6 h-6" />
-        </button>
+  if (!isOpen) return null;
 
-        {/* Prev Button */}
-        {activeIndex > 0 && (
+  return (
+    <div className="fixed inset-0 z-[60] bg-black bg-opacity-90 flex items-center justify-center">
+      {/* Close Button */}
+      <button
+        onClick={onClose}
+        className="absolute top-4 right-4 z-[70] text-white hover:text-gray-300 transition-colors"
+        aria-label="Close image popup"
+      >
+        <X className="w-8 h-8" />
+      </button>
+
+      {/* Navigation sidebar */}
+      {images.length > 1 && (
+        <div className="absolute left-4 top-1/2 -translate-y-1/2 z-[70] flex flex-col gap-2">
           <button
             onClick={showPrev}
-            className="absolute left-4 z-50 text-white hover:text-gray-300"
+            className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-3 rounded-full transition-all duration-200 disabled:opacity-50"
+            aria-label="Previous image"
+            disabled={activeIndex === 0}
           >
-            <ChevronLeft className="w-8 h-8" />
+            <ChevronLeft className="w-6 h-6" />
           </button>
-        )}
-
-        {/* Next Button */}
-        {activeIndex < images.length - 1 && (
+          
+          <div className="bg-white bg-opacity-20 text-white px-3 py-2 rounded-full text-sm font-medium">
+            {activeIndex + 1} / {images.length}
+          </div>
+          
           <button
             onClick={showNext}
-            className="absolute right-4 z-50 text-white hover:text-gray-300"
+            className="bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-3 rounded-full transition-all duration-200 disabled:opacity-50"
+            aria-label="Next image"
+            disabled={activeIndex === images.length - 1}
           >
-            <ChevronRight className="w-8 h-8" />
+            <ChevronRight className="w-6 h-6" />
           </button>
-        )}
-
-        {/* Image */}
-        <div className="relative w-full h-full max-h-full flex items-center justify-center">
-          <img
-            src={images[activeIndex]}
-            alt={`${projectTitle} - Image ${activeIndex + 1}`}
-            className="object-contain max-h-full max-w-full"
-          />
         </div>
+      )}
 
-        {/* Image counter */}
-        <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-70 text-white px-3 py-1 rounded-full text-sm">
-          {activeIndex + 1} / {images.length}
-        </div>
-      </DialogContent>
-    </Dialog>
+      {/* Main image */}
+      <div className="flex items-center justify-center w-full h-full p-4">
+        <img
+          src={images[activeIndex]}
+          alt={`${projectTitle} - Image ${activeIndex + 1}`}
+          className="max-w-full max-h-full object-contain"
+          onClick={(e) => e.stopPropagation()}
+        />
+      </div>
+
+      {/* Click outside to close */}
+      <div
+        className="absolute inset-0 z-[65]"
+        onClick={onClose}
+      />
+    </div>
   );
 };
 
