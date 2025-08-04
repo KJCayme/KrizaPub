@@ -76,7 +76,7 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
       {/* Close Button */}
       <button
         onClick={onClose}
-        className="absolute top-6 right-6 z-[10001] text-white hover:text-gray-300 transition-colors p-2 rounded-full bg-black/30 hover:bg-black/50"
+        className="absolute top-6 right-6 z-[10002] text-white hover:text-gray-300 transition-colors p-2 rounded-full bg-black/30 hover:bg-black/50"
         aria-label="Close image popup"
       >
         <X className="w-8 h-8" />
