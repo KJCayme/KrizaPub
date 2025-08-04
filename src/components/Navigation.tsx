@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useIsMobile } from '../hooks/use-mobile';
 import { useIsTablet } from '../hooks/use-tablet';
 import { useAuth } from '../hooks/useAuth';
+import { useNavbarVisibility } from '../hooks/useNavbarVisibility';
 import DarkModeToggle from './navigation/DarkModeToggle';
 import DesktopNavigation from './navigation/DesktopNavigation';
 import MobileMenu from './navigation/MobileMenu';
@@ -23,6 +24,7 @@ const Navigation = () => {
   const isMobile = useIsMobile();
   const isTablet = useIsTablet();
   const { user, loading: authLoading } = useAuth();
+  const { isNavbarVisible } = useNavbarVisibility();
 
   const navItems = [
     { id: 'skills', label: 'Skills' },
@@ -132,6 +134,8 @@ const Navigation = () => {
       document.documentElement.classList.remove('dark');
     }
   };
+
+  if (!isNavbarVisible) return null;
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 dark:bg-slate-900/95 backdrop-blur-sm border-b border-slate-200 dark:border-slate-700 transition-colors duration-300 will-change-transform" style={{ minHeight: '64px' }}>

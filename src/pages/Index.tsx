@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useDarkMode } from '../hooks/useDarkMode';
 import { useViewState } from '../hooks/useViewState';
+import { NavbarVisibilityProvider } from '../hooks/useNavbarVisibility';
 import CertificatesOnlyView from '../components/layout/CertificatesOnlyView';
 import TestimonialsOnlyView from '../components/layout/TestimonialsOnlyView';
 import MainLayout from '../components/layout/MainLayout';
@@ -36,35 +37,36 @@ const Index = () => {
     };
   }, []);
 
-  // Show certificates-only view
-  if (showCertificatesOnly) {
-    return (
-      <CertificatesOnlyView
-        isDarkMode={isDarkMode}
-        onToggleDarkMode={toggleDarkMode}
-        onBack={handleBackFromCertificates}
-      />
-    );
-  }
-
-  // Show testimonials-only view
-  if (showTestimonialsOnly) {
-    return (
-      <TestimonialsOnlyView
-        isDarkMode={isDarkMode}
-        onToggleDarkMode={toggleDarkMode}
-        onBack={handleBackFromTestimonials}
-      />
-    );
-  }
-
   return (
-    <MainLayout
-      showAllProjects={showAllProjects}
-      onShowAllProjectsChange={handleShowAllProjectsChange}
-      onShowCertificatesOnly={handleShowCertificatesOnly}
-      onShowTestimonialsOnly={handleShowTestimonialsOnly}
-    />
+    <NavbarVisibilityProvider>
+      {/* Show certificates-only view */}
+      {showCertificatesOnly && (
+        <CertificatesOnlyView
+          isDarkMode={isDarkMode}
+          onToggleDarkMode={toggleDarkMode}
+          onBack={handleBackFromCertificates}
+        />
+      )}
+
+      {/* Show testimonials-only view */}
+      {showTestimonialsOnly && (
+        <TestimonialsOnlyView
+          isDarkMode={isDarkMode}
+          onToggleDarkMode={toggleDarkMode}
+          onBack={handleBackFromTestimonials}
+        />
+      )}
+
+      {/* Main layout */}
+      {!showCertificatesOnly && !showTestimonialsOnly && (
+        <MainLayout
+          showAllProjects={showAllProjects}
+          onShowAllProjectsChange={handleShowAllProjectsChange}
+          onShowCertificatesOnly={handleShowCertificatesOnly}
+          onShowTestimonialsOnly={handleShowTestimonialsOnly}
+        />
+      )}
+    </NavbarVisibilityProvider>
   );
 };
 

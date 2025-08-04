@@ -1,6 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
-import { X, ChevronLeft, ChevronRight, MoreVertical } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useNavbarVisibility } from '../hooks/useNavbarVisibility';
 import { 
   Carousel,
   CarouselContent,
@@ -24,6 +24,7 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
 }) => {
   const [activeIndex, setActiveIndex] = useState(currentIndex);
   const [api, setApi] = useState<any>();
+  const { hideNavbar, showNavbar } = useNavbarVisibility();
 
   useEffect(() => {
     setActiveIndex(currentIndex);
@@ -63,6 +64,18 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, activeIndex]);
 
+  useEffect(() => {
+    if (isOpen) {
+      hideNavbar();
+    } else {
+      showNavbar();
+    }
+    
+    return () => {
+      showNavbar();
+    };
+  }, [isOpen, hideNavbar, showNavbar]);
+
   const goToPrevious = () => {
     const newIndex = activeIndex > 0 ? activeIndex - 1 : images.length - 1;
     setActiveIndex(newIndex);
@@ -89,15 +102,6 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
         aria-label="Close image popup"
       >
         <X className="w-6 h-6" />
-      </button>
-
-      {/* Top-right button (same column as right navigation) */}
-      <button
-        onClick={(e) => e.stopPropagation()}
-        className="absolute top-4 right-20 z-60 text-white hover:text-gray-300 transition-colors bg-black bg-opacity-50 rounded-full p-2"
-        aria-label="More options"
-      >
-        <MoreVertical className="w-6 h-6" />
       </button>
 
       {/* Main Image Area - centered and properly sized */}
