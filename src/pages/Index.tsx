@@ -1,34 +1,24 @@
 import * as React from 'react';
-import Navigation from '../components/Navigation';
-import Hero from '../components/Hero';
-import About from '../components/About';
-import Skills from '../components/Skills';
-import Portfolio from '../components/Portfolio';
-import Tools from '../components/Tools';
-import Certificates from '../components/Certificates';
-import Testimonials from '../components/Testimonials';
-import Contact from '../components/Contact';
-import CertificatesViewOnly from '../components/CertificatesViewOnly';
-import TestimonialsViewOnly from '../components/TestimonialsViewOnly';
-import NetworkStatusIndicator from '../components/NetworkStatusIndicator';
-import { Toaster } from 'sonner';
-import { useIsMobile } from '../hooks/use-mobile';
+import { useDarkMode } from '../hooks/useDarkMode';
+import { useViewState } from '../hooks/useViewState';
+import CertificatesOnlyView from '../components/layout/CertificatesOnlyView';
+import TestimonialsOnlyView from '../components/layout/TestimonialsOnlyView';
+import MainLayout from '../components/layout/MainLayout';
 
 const Index = () => {
-  const [isDarkMode, setIsDarkMode] = React.useState(false);
-  const [showAllProjects, setShowAllProjects] = React.useState(false);
-  const [showCertificatesOnly, setShowCertificatesOnly] = React.useState(false);
-  const [showTestimonialsOnly, setShowTestimonialsOnly] = React.useState(false);
-  
-  const isMobile = useIsMobile();
+  const { isDarkMode, toggleDarkMode } = useDarkMode();
+  const {
+    showAllProjects,
+    showCertificatesOnly,
+    showTestimonialsOnly,
+    handleShowAllProjectsChange,
+    handleShowCertificatesOnly,
+    handleShowTestimonialsOnly,
+    handleBackFromCertificates,
+    handleBackFromTestimonials,
+  } = useViewState();
 
   React.useEffect(() => {
-    // Check for saved dark mode preference
-    const savedMode = localStorage.getItem('darkMode');
-    if (savedMode) {
-      setIsDarkMode(JSON.parse(savedMode));
-    }
-
     // Disable browser scroll restoration to prevent conflicts
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual';
@@ -46,161 +36,35 @@ const Index = () => {
     };
   }, []);
 
-  React.useEffect(() => {
-    // Apply dark mode class to document
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-    
-    // Save preference
-    localStorage.setItem('darkMode', JSON.stringify(isDarkMode));
-  }, [isDarkMode]);
-
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode);
-  };
-
-  const handleShowAllProjectsChange = (show: boolean) => {
-    setShowAllProjects(show);
-    // Scroll to top when showing all projects with reduced motion
-    if (show) {
-      window.scrollTo({ top: 0, behavior: 'auto' });
-    }
-  };
-
-  const handleShowCertificatesOnly = (show: boolean) => {
-    setShowCertificatesOnly(show);
-    // Scroll to top when showing certificates only with reduced motion
-    if (show) {
-      window.scrollTo({ top: 0, behavior: 'auto' });
-    }
-  };
-
-  const handleShowTestimonialsOnly = (show: boolean) => {
-    setShowTestimonialsOnly(show);
-    // Scroll to top when showing testimonials only with reduced motion
-    if (show) {
-      window.scrollTo({ top: 0, behavior: 'auto' });
-    }
-  };
-
-  const handleBackFromCertificates = () => {
-    setShowCertificatesOnly(false);
-    // Wait for complete render before scrolling
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        const certificatesSection = document.getElementById('certificates');
-        if (certificatesSection) {
-          console.log('Certificates section found, scrolling to it');
-          certificatesSection.scrollIntoView({ 
-            behavior: 'smooth',
-            block: 'start'
-          });
-        } else {
-          console.log('Certificates section not found');
-        }
-      }, 100); // Additional delay to ensure DOM is fully updated
-    });
-  };
-
-  const handleBackFromTestimonials = () => {
-    setShowTestimonialsOnly(false);
-    // Wait for complete render before scrolling
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        const testimonialsSection = document.getElementById('testimonials');
-        if (testimonialsSection) {
-          console.log('Testimonials section found, scrolling to it');
-          testimonialsSection.scrollIntoView({ 
-            behavior: 'smooth',
-            block: 'start'
-          });
-        } else {
-          console.log('Testimonials section not found');
-        }
-      }, 800); // Increased delay to ensure DOM is fully updated
-    });
-  };
-
-
   // Show certificates-only view
   if (showCertificatesOnly) {
     return (
-      <div className="min-h-screen transition-colors duration-300">
-        <NetworkStatusIndicator />
-        <CertificatesViewOnly 
-          isDarkMode={isDarkMode} 
-          onToggleDarkMode={toggleDarkMode}
-          onBack={handleBackFromCertificates}
-        />
-        <Toaster />
-      </div>
+      <CertificatesOnlyView
+        isDarkMode={isDarkMode}
+        onToggleDarkMode={toggleDarkMode}
+        onBack={handleBackFromCertificates}
+      />
     );
   }
 
   // Show testimonials-only view
   if (showTestimonialsOnly) {
     return (
-      <div className="min-h-screen transition-colors duration-300">
-        <NetworkStatusIndicator />
-        <TestimonialsViewOnly 
-          isDarkMode={isDarkMode} 
-          onToggleDarkMode={toggleDarkMode}
-          onBack={handleBackFromTestimonials}
-        />
-        <Toaster />
-      </div>
+      <TestimonialsOnlyView
+        isDarkMode={isDarkMode}
+        onToggleDarkMode={toggleDarkMode}
+        onBack={handleBackFromTestimonials}
+      />
     );
   }
 
   return (
-    <div className="min-h-screen transition-colors duration-300">
-      <NetworkStatusIndicator />
-      {!showAllProjects && <Navigation />}
-      <div className={!showAllProjects ? "pt-16" : ""}> {/* Add padding only when navigation is visible */}
-        {!showAllProjects && (
-          <section id="hero">
-            <Hero />
-          </section>
-        )}
-        {!showAllProjects && (
-          <section id="about">
-            <About />
-          </section>
-        )}
-        {!showAllProjects && (
-          <section id="skills">
-            <Skills />
-          </section>
-        )}
-        <section id="portfolio">
-          <Portfolio onShowAllProjectsChange={handleShowAllProjectsChange} />
-        </section>
-        {!showAllProjects && (
-          <section id="tools">
-            <Tools />
-          </section>
-        )}
-        {!showAllProjects && (
-          <section id="certificates">
-            <Certificates onShowCertificatesOnly={handleShowCertificatesOnly} />
-          </section>
-        )}
-        {!showAllProjects && (
-          <section id="testimonials">
-            <Testimonials onShowTestimonialsOnly={handleShowTestimonialsOnly} />
-          </section>
-        )}
-        {!showAllProjects && (
-          <section id="contact">
-            <Contact />
-          </section>
-        )}
-      </div>
-      <Toaster />
-    </div>
+    <MainLayout
+      showAllProjects={showAllProjects}
+      onShowAllProjectsChange={handleShowAllProjectsChange}
+      onShowCertificatesOnly={handleShowCertificatesOnly}
+      onShowTestimonialsOnly={handleShowTestimonialsOnly}
+    />
   );
 };
 
