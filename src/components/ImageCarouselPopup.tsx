@@ -25,11 +25,37 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
   }, [currentIndex]);
 
   const showPrev = () => {
-    setActiveIndex((prev) => (prev > 0 ? prev - 1 : prev));
+    const newIndex = activeIndex > 0 ? activeIndex - 1 : activeIndex;
+    setActiveIndex(newIndex);
+    scrollToImage(newIndex);
   };
 
   const showNext = () => {
-    setActiveIndex((prev) => (prev < images.length - 1 ? prev + 1 : prev));
+    const newIndex = activeIndex < images.length - 1 ? activeIndex + 1 : activeIndex;
+    setActiveIndex(newIndex);
+    scrollToImage(newIndex);
+  };
+
+  const scrollToImage = (index: number) => {
+    const container = document.querySelector('.carousel-scroll-container');
+    if (container) {
+      const imageWidth = container.clientWidth;
+      container.scrollTo({
+        left: index * imageWidth,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const container = e.currentTarget;
+    const scrollLeft = container.scrollLeft;
+    const imageWidth = container.clientWidth;
+    const newIndex = Math.round(scrollLeft / imageWidth);
+    
+    if (newIndex !== activeIndex && newIndex >= 0 && newIndex < images.length) {
+      setActiveIndex(newIndex);
+    }
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
@@ -113,15 +139,24 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
         </div>
       )}
 
-      {/* Main image */}
+      {/* Main image container with scroll */}
       <div className="flex items-center justify-center w-full h-full p-8">
-        <img
-          src={images[activeIndex]}
-          alt={`${projectTitle} - Image ${activeIndex + 1}`}
-          className="max-w-[calc(100vw-128px)] max-h-[calc(100vh-64px)] object-contain select-none"
-          onClick={(e) => e.stopPropagation()}
-          draggable={false}
-        />
+        <div 
+          className="carousel-scroll-container flex overflow-x-scroll scrollbar-hide snap-x snap-mandatory w-full h-full"
+          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+          onScroll={handleScroll}
+        >
+          {images.map((image, index) => (
+            <div key={index} className="flex-shrink-0 w-full h-full flex items-center justify-center snap-center">
+              <img
+                src={image}
+                alt={`${projectTitle} - Image ${index + 1}`}
+                className="max-w-[calc(100vw-128px)] max-h-[calc(100vh-64px)] object-contain select-none"
+                draggable={false}
+              />
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Click outside to close */}
