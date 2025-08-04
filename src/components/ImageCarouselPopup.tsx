@@ -6,6 +6,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from './ui/carousel';
+import { ScrollArea } from './ui/scroll-area';
 
 interface ImageCarouselPopupProps {
   isOpen: boolean;
@@ -93,79 +94,87 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div 
-      className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center w-screen h-screen"
-      onClick={onClose}
-    >
-      {/* Close button */}
-      <button
+    <div className="fixed inset-0 z-[100] w-screen h-screen">
+      {/* Full viewport overlay */}
+      <div 
+        className="absolute inset-0 bg-black/90"
         onClick={onClose}
-        className="absolute top-4 right-4 z-60 text-white hover:text-gray-300 transition-colors bg-black bg-opacity-50 rounded-full p-2"
-        aria-label="Close image popup"
-      >
-        <X className="w-6 h-6" />
-      </button>
-
-      {/* Top-right button (same column as right navigation) */}
-      <button
-        onClick={(e) => e.stopPropagation()}
-        className="absolute top-4 right-20 z-60 text-white hover:text-gray-300 transition-colors bg-black bg-opacity-50 rounded-full p-2"
-        aria-label="More options"
-      >
-        <MoreVertical className="w-6 h-6" />
-      </button>
-
-      {/* Main Image Area - centered and properly sized */}
-      <div className="flex items-center justify-center w-full h-full p-8 max-w-4xl max-h-[80vh]">
-        <Carousel setApi={setApi} className="w-full h-full">
-          <CarouselContent>
-            {images.map((imageUrl, index) => (
-              <CarouselItem key={index}>
-                <div className="flex items-center justify-center h-full relative">
-                  <img
-                    src={imageUrl}
-                    alt={`${projectTitle} - Image ${index + 1}`}
-                    className="max-w-full max-h-full object-contain rounded-lg"
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                  
-                  {/* Image counter */}
-                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-70 text-white px-3 py-1 rounded-full text-sm">
-                    {activeIndex + 1} / {images.length}
-                  </div>
-                </div>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-        </Carousel>
-      </div>
-
-      {/* Navigation arrows - only show on desktop and if multiple images */}
-      {images.length > 1 && (
-        <>
+      />
+      
+      {/* Scrollable content container */}
+      <ScrollArea className="h-full w-full">
+        <div className="min-h-screen flex items-center justify-center p-4 relative">
+          {/* Close button */}
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              goToPrevious();
-            }}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-3 rounded-full transition-all duration-200 hidden lg:block"
-            aria-label="Previous image"
+            onClick={onClose}
+            className="absolute top-4 right-4 z-60 text-white hover:text-gray-300 transition-colors bg-black bg-opacity-50 rounded-full p-2"
+            aria-label="Close image popup"
           >
-            <ChevronLeft className="w-6 h-6" />
+            <X className="w-6 h-6" />
           </button>
-          
+
+          {/* Top-right button (same column as right navigation) */}
           <button
-            onClick={(e) => {
-              e.stopPropagation();
-              goToNext();
-            }}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-3 rounded-full transition-all duration-200 hidden lg:block"
-            aria-label="Next image"
+            onClick={(e) => e.stopPropagation()}
+            className="absolute top-4 right-20 z-60 text-white hover:text-gray-300 transition-colors bg-black bg-opacity-50 rounded-full p-2"
+            aria-label="More options"
           >
-            <ChevronRight className="w-6 h-6" />
+            <MoreVertical className="w-6 h-6" />
           </button>
-        </>
-      )}
+
+          {/* Main Image Area - contained and responsive */}
+          <div className="w-full max-w-6xl mx-auto">
+            <Carousel setApi={setApi} className="w-full">
+              <CarouselContent>
+                {images.map((imageUrl, index) => (
+                  <CarouselItem key={index}>
+                    <div className="flex items-center justify-center relative p-4">
+                      <img
+                        src={imageUrl}
+                        alt={`${projectTitle} - Image ${index + 1}`}
+                        className="max-w-full max-h-[90vh] object-contain rounded-lg"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                      
+                      {/* Image counter */}
+                      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-70 text-white px-3 py-1 rounded-full text-sm">
+                        {activeIndex + 1} / {images.length}
+                      </div>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+            </Carousel>
+          </div>
+
+          {/* Navigation arrows - only show on desktop and if multiple images */}
+          {images.length > 1 && (
+            <>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  goToPrevious();
+                }}
+                className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-3 rounded-full transition-all duration-200 hidden lg:block"
+                aria-label="Previous image"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  goToNext();
+                }}
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white p-3 rounded-full transition-all duration-200 hidden lg:block"
+                aria-label="Next image"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </>
+          )}
+        </div>
+      </ScrollArea>
     </div>
   );
 };
