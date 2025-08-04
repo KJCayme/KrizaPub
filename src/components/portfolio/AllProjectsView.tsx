@@ -5,7 +5,7 @@ import { useIsMobile } from '../../hooks/use-mobile';
 import { useAuth } from '../../hooks/useAuth';
 import { usePrefetchProjects } from '../../hooks/usePrefetchProjects';
 import { usePortfolioCategories } from '../../hooks/usePortfolioCategories';
-import ProjectGrid from './ProjectGrid';
+import ProjectFlexGrid from './ProjectFlexGrid';
 import AddProjectForm from './AddProjectForm';
 import ManageCategoriesForm from './ManageCategoriesForm';
 
@@ -261,7 +261,7 @@ const AllProjectsView = ({
         </div>
 
         {/* All Projects Grid */}
-        <ProjectGrid 
+        <ProjectFlexGrid 
           ref={projectGridRef}
           projects={filteredProjects}
           activeCategory={activeCategory}
