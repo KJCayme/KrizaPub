@@ -26,9 +26,9 @@ export const NavbarVisibilityProvider: React.FC<NavbarVisibilityProviderProps> =
   const hideNavbar = () => setIsNavbarVisible(false);
   const showNavbar = () => setIsNavbarVisible(true);
 
-  return React.createElement(
-    NavbarVisibilityContext.Provider,
-    { value: { isNavbarVisible, hideNavbar, showNavbar } },
-    children
+  return (
+    <NavbarVisibilityContext.Provider value={{ isNavbarVisible, hideNavbar, showNavbar }}>
+      {children}
+    </NavbarVisibilityContext.Provider>
   );
 };
