@@ -98,11 +98,7 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
   if (!isOpen) return null;
 
   return createPortal(
-    <div 
-      className="fixed inset-0 z-[9999] bg-black flex items-center justify-center" 
-      style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
-      onClick={onClose}
-    >
+    <div className="fixed inset-0 z-[9999] bg-black flex items-center justify-center" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
       {/* Close Button */}
       <button
         onClick={onClose}
@@ -112,29 +108,6 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
         <X className="w-8 h-8" />
       </button>
 
-      {/* Navigation - Left side (Desktop only) */}
-      {images.length > 1 && (
-        <button
-          onClick={showPrev}
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-[10001] bg-black/30 hover:bg-black/50 transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed p-3 rounded-full hidden lg:flex items-center justify-center"
-          aria-label="Previous image"
-          disabled={activeIndex === 0}
-        >
-          <ChevronLeft className="w-6 h-6 text-white" />
-        </button>
-      )}
-
-      {/* Navigation - Right side (Desktop only) */}
-      {images.length > 1 && (
-        <button
-          onClick={showNext}
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-[10001] bg-black/30 hover:bg-black/50 transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed p-3 rounded-full hidden lg:flex items-center justify-center"
-          aria-label="Next image"
-          disabled={activeIndex === images.length - 1}
-        >
-          <ChevronRight className="w-6 h-6 text-white" />
-        </button>
-      )}
 
       {/* Image counter */}
       {images.length > 1 && (
@@ -149,7 +122,6 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
           className="carousel-scroll-container flex overflow-x-scroll scrollbar-hide snap-x snap-mandatory w-full h-full"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           onScroll={handleScroll}
-          onClick={(e) => e.stopPropagation()}
         >
           {images.map((image, index) => (
             <div key={index} className="flex-shrink-0 w-full h-full flex items-center justify-center snap-center">
@@ -163,6 +135,12 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
           ))}
         </div>
       </div>
+
+      {/* Click outside to close */}
+      <div
+        className="absolute inset-0 z-[10000]"
+        onClick={onClose}
+      />
     </div>,
     document.body
   );
