@@ -4,6 +4,7 @@ import { Plus } from 'lucide-react';
 import { Button } from './ui/button';
 import { useAuth } from '../hooks/useAuth';
 import { useSkillsWithExpertise } from '../hooks/useSkills';
+import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
 import AddSkillForm from './AddSkillForm';
 import SkillActions from './SkillActions';
 import DynamicIcon from './DynamicIcon';
@@ -13,6 +14,12 @@ const Skills = () => {
   const [showAddSkillForm, setShowAddSkillForm] = useState(false);
   // Show hidden skills only when user is logged in
   const { data: skillsWithExpertise = [] } = useSkillsWithExpertise(!!user);
+  
+  // Intersection observer for scroll animation
+  const { ref: skillsRef, hasIntersected } = useIntersectionObserver({
+    threshold: 0.1,
+    rootMargin: '0px 0px -100px 0px'
+  });
 
   // Sort skills alphabetically by skill name
   const sortedSkills = [...skillsWithExpertise].sort((a, b) => 
@@ -51,18 +58,23 @@ const Skills = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+          <div ref={skillsRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             {/* Database Skills */}
-            {sortedSkills.map((skill) => {
+            {sortedSkills.map((skill, index) => {
               const expertise = skill.skills_expertise?.[0];
               const skillDetails = expertise?.details || [`Professional ${skill.skill_name} services`];
               
               return (
                 <div
                   key={skill.id}
-                  className={`relative group bg-slate-50 dark:bg-slate-800 rounded-2xl p-6 md:p-8 shadow-lg transition-all duration-500 dark:shadow-slate-900/50 ${
-                    skill.hidden ? 'opacity-60 border-2 border-dashed border-yellow-400' : ''
-                  }`}
+                  className={`relative group bg-slate-50 dark:bg-slate-800 rounded-2xl p-6 md:p-8 shadow-lg transition-all duration-700 dark:shadow-slate-900/50 transform ${
+                    hasIntersected 
+                      ? 'scale-100 opacity-100' 
+                      : 'scale-75 opacity-0'
+                  } ${skill.hidden ? 'opacity-60 border-2 border-dashed border-yellow-400' : ''}`}
+                  style={{ 
+                    transitionDelay: hasIntersected ? `${index * 100}ms` : '0ms'
+                  }}
                 >
                   {user && (
                     <SkillActions

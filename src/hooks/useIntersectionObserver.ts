@@ -9,7 +9,7 @@ interface UseIntersectionObserverProps {
 export const useIntersectionObserver = ({ threshold = 0.1, rootMargin = '0px' }: UseIntersectionObserverProps = {}) => {
   const [isIntersecting, setIsIntersecting] = useState(false);
   const [hasIntersected, setHasIntersected] = useState(false);
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const element = ref.current;
