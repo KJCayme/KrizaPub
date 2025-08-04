@@ -50,7 +50,8 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
-        className="max-w-screen-xl w-full h-[90vh] bg-black p-0 flex items-center justify-center relative"
+        className="max-w-screen-xl w-full h-[90vh] bg-black p-0 flex items-center justify-center relative border-0 [&>button]:hidden"
+        onInteractOutside={() => onClose()}
       >
         {/* Close Button */}
         <button
