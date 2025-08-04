@@ -71,7 +71,7 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] bg-black flex items-center justify-center">
+    <div className="fixed inset-0 z-[9999] bg-black flex items-center justify-center" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
       {/* Close Button */}
       <button
         onClick={onClose}
@@ -81,30 +81,34 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
         <X className="w-8 h-8" />
       </button>
 
-      {/* Navigation sidebar */}
+      {/* Navigation - Left side */}
       {images.length > 1 && (
-        <div className="absolute left-6 top-1/2 -translate-y-1/2 z-[10001] flex flex-col gap-3">
-          <button
-            onClick={showPrev}
-            className="bg-black/30 hover:bg-black/50 text-white p-4 rounded-full transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
-            aria-label="Previous image"
-            disabled={activeIndex === 0}
-          >
-            <ChevronLeft className="w-6 h-6" />
-          </button>
-          
-          <div className="bg-black/50 text-white px-4 py-2 rounded-full text-sm font-medium text-center min-w-[80px]">
-            {activeIndex + 1} / {images.length}
-          </div>
-          
-          <button
-            onClick={showNext}
-            className="bg-black/30 hover:bg-black/50 text-white p-4 rounded-full transition-all duration-200 disabled:opacity-30 disabled:cursor-not-allowed"
-            aria-label="Next image"
-            disabled={activeIndex === images.length - 1}
-          >
-            <ChevronRight className="w-6 h-6" />
-          </button>
+        <button
+          onClick={showPrev}
+          className="absolute left-0 top-0 bottom-0 w-16 z-[10001] bg-transparent hover:bg-black/10 transition-all duration-200 disabled:cursor-not-allowed flex items-center justify-center"
+          aria-label="Previous image"
+          disabled={activeIndex === 0}
+        >
+          <ChevronLeft className="w-8 h-8 text-white opacity-0 hover:opacity-100 transition-opacity duration-200" />
+        </button>
+      )}
+
+      {/* Navigation - Right side */}
+      {images.length > 1 && (
+        <button
+          onClick={showNext}
+          className="absolute right-0 top-0 bottom-0 w-16 z-[10001] bg-transparent hover:bg-black/10 transition-all duration-200 disabled:cursor-not-allowed flex items-center justify-center"
+          aria-label="Next image"
+          disabled={activeIndex === images.length - 1}
+        >
+          <ChevronRight className="w-8 h-8 text-white opacity-0 hover:opacity-100 transition-opacity duration-200" />
+        </button>
+      )}
+
+      {/* Image counter */}
+      {images.length > 1 && (
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[10001] bg-black/50 text-white px-4 py-2 rounded-full text-sm font-medium">
+          {activeIndex + 1} / {images.length}
         </div>
       )}
 
