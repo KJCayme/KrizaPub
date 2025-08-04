@@ -108,29 +108,6 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
         <X className="w-8 h-8" />
       </button>
 
-      {/* Navigation - Left side */}
-      {images.length > 1 && (
-        <button
-          onClick={showPrev}
-          className="absolute left-0 top-0 bottom-0 w-16 z-[10001] bg-transparent hover:bg-black/10 transition-all duration-200 disabled:cursor-not-allowed flex items-center justify-center"
-          aria-label="Previous image"
-          disabled={activeIndex === 0}
-        >
-          <ChevronLeft className="w-8 h-8 text-white opacity-0 hover:opacity-100 transition-opacity duration-200" />
-        </button>
-      )}
-
-      {/* Navigation - Right side */}
-      {images.length > 1 && (
-        <button
-          onClick={showNext}
-          className="absolute right-0 top-0 bottom-0 w-16 z-[10001] bg-transparent hover:bg-black/10 transition-all duration-200 disabled:cursor-not-allowed flex items-center justify-center"
-          aria-label="Next image"
-          disabled={activeIndex === images.length - 1}
-        >
-          <ChevronRight className="w-8 h-8 text-white opacity-0 hover:opacity-100 transition-opacity duration-200" />
-        </button>
-      )}
 
       {/* Image counter */}
       {images.length > 1 && (
