@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface ImageCarouselPopupProps {
@@ -70,7 +71,7 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
 
   if (!isOpen) return null;
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[9999] bg-black flex items-center justify-center" style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}>
       {/* Close Button */}
       <button
@@ -128,7 +129,8 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
         className="absolute inset-0 z-[10000]"
         onClick={onClose}
       />
-    </div>
+    </div>,
+    document.body
   );
 };
 
