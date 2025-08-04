@@ -79,7 +79,7 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
 
   return (
     <div 
-      className="fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center"
+      className="fixed inset-0 z-[100] bg-black/90 flex items-center justify-center w-screen h-screen"
       onClick={onClose}
     >
       {/* Close button */}
