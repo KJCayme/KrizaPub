@@ -21,10 +21,14 @@ const Skills = () => {
     rootMargin: '0px 0px -100px 0px'
   });
 
-  // Sort skills alphabetically by skill name
-  const sortedSkills = [...skillsWithExpertise].sort((a, b) => 
-    a.skill_name.localeCompare(b.skill_name)
-  );
+  // Sort skills by visibility first (visible skills first), then alphabetically by skill name
+  const sortedSkills = [...skillsWithExpertise].sort((a, b) => {
+    // First sort by visibility (hidden skills go to the end)
+    if (a.hidden && !b.hidden) return 1;
+    if (!a.hidden && b.hidden) return -1;
+    // Then sort alphabetically by skill name
+    return a.skill_name.localeCompare(b.skill_name);
+  });
 
   const handleSkillAdded = () => {
     console.log('Skill added - skills list will update automatically');
