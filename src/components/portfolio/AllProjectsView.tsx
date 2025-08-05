@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, Menu, X, Plus, Settings } from 'lucide-react';
+import { ArrowLeft, Menu, X, Plus, Settings, Sun, Moon } from 'lucide-react';
 import { useIsMobile } from '../../hooks/use-mobile';
 import { useAuth } from '../../hooks/useAuth';
 import { usePrefetchProjects } from '../../hooks/usePrefetchProjects';
@@ -188,9 +188,9 @@ const AllProjectsView = ({
                 className="text-white px-3 py-2 rounded-lg transition-colors hover:bg-white/20"
               >
                 {isDarkMode ? (
-                  <span className="text-lg">☀️</span>
+                  <Sun className="h-5 w-5" />
                 ) : (
-                  <span className="text-lg">🌙</span>
+                  <Moon className="h-5 w-5" />
                 )}
               </button>
             </div>

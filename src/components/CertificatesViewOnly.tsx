@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Award, ExternalLink, Calendar, ArrowLeft, Plus } from 'lucide-react';
+import { Award, ExternalLink, Calendar, ArrowLeft, Plus, Sun, Moon } from 'lucide-react';
 import { Button } from './ui/button';
 import { useIsMobile } from '../hooks/use-mobile';
 import { useCertificates } from '../hooks/useCertificates';
@@ -108,9 +108,9 @@ const CertificatesViewOnly = ({ isDarkMode, onToggleDarkMode, onBack }: Certific
                 className="text-white hover:bg-white/20 transition-colors"
               >
                 {isDarkMode ? (
-                  <span className="text-lg">☀️</span>
+                  <Sun className="h-5 w-5" />
                 ) : (
-                  <span className="text-lg">🌙</span>
+                  <Moon className="h-5 w-5" />
                 )}
               </Button>
             </div>
