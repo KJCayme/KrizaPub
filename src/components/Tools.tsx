@@ -43,7 +43,7 @@ const Tools = () => {
                   className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                 >
                   <Plus className="w-5 h-5 mr-2" />
-                  Add Tools
+                  Manage Tools
                 </Button>
               )}
             </div>
