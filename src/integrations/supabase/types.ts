@@ -327,6 +327,9 @@ export type Database = {
           id: string
           name: string | null
           profile_image: string | null
+          resume_filename: string | null
+          resume_uploaded_at: string | null
+          resume_url: string | null
           roles: string | null
           updated_at: string
         }
@@ -336,6 +339,9 @@ export type Database = {
           id: string
           name?: string | null
           profile_image?: string | null
+          resume_filename?: string | null
+          resume_uploaded_at?: string | null
+          resume_url?: string | null
           roles?: string | null
           updated_at?: string
         }
@@ -345,6 +351,9 @@ export type Database = {
           id?: string
           name?: string | null
           profile_image?: string | null
+          resume_filename?: string | null
+          resume_uploaded_at?: string | null
+          resume_url?: string | null
           roles?: string | null
           updated_at?: string
         }

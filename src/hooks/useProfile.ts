@@ -146,6 +146,97 @@ export const useProfile = () => {
     }
   };
 
+  const uploadResume = async (file: File) => {
+    if (!user) return { error: 'Not authenticated' };
+
+    try {
+      console.log('Starting resume upload for user:', user.id);
+      
+      // Delete existing resume if it exists
+      if (profile?.resume_url) {
+        const oldPath = profile.resume_url.split('/').pop();
+        if (oldPath) {
+          console.log('Deleting old resume:', oldPath);
+          await supabase.storage.from('portfolio').remove([`resumes/${oldPath}`]);
+        }
+      }
+
+      // Upload new resume to resumes folder
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}.${fileExt}`;
+      const filePath = `resumes/${fileName}`;
+
+      console.log('Uploading resume to:', filePath);
+      const { error: uploadError } = await supabase.storage
+        .from('portfolio')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) {
+        console.error('Error uploading resume:', uploadError);
+        return { error: uploadError };
+      }
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('portfolio')
+        .getPublicUrl(filePath);
+
+      console.log('Resume uploaded successfully, public URL:', publicUrl);
+
+      // Update profile with new resume data
+      const result = await updateProfile({ 
+        resume_url: publicUrl,
+        resume_filename: file.name,
+        resume_uploaded_at: new Date().toISOString()
+      });
+      
+      if (result.error) {
+        console.error('Error updating profile with new resume:', result.error);
+        return result;
+      }
+
+      console.log('Resume updated in database successfully');
+      return result;
+    } catch (error) {
+      console.error('Error uploading resume:', error);
+      return { error };
+    }
+  };
+
+  const deleteResume = async () => {
+    if (!user) return { error: 'Not authenticated' };
+    if (!profile?.resume_url) return { error: 'No resume to delete' };
+
+    try {
+      console.log('Deleting resume for user:', user.id);
+      
+      // Delete file from storage
+      const oldPath = profile.resume_url.split('/').pop();
+      if (oldPath) {
+        console.log('Deleting resume file:', oldPath);
+        await supabase.storage.from('portfolio').remove([`resumes/${oldPath}`]);
+      }
+
+      // Update profile to remove resume data
+      const result = await updateProfile({ 
+        resume_url: null,
+        resume_filename: null,
+        resume_uploaded_at: null
+      });
+      
+      if (result.error) {
+        console.error('Error removing resume from profile:', result.error);
+        return result;
+      }
+
+      console.log('Resume deleted successfully');
+      return result;
+    } catch (error) {
+      console.error('Error deleting resume:', error);
+      return { error };
+    }
+  };
+
   useEffect(() => {
     fetchProfile();
   }, []);
@@ -155,6 +246,8 @@ export const useProfile = () => {
     loading,
     updateProfile,
     uploadProfileImage,
+    uploadResume,
+    deleteResume,
     fetchProfile,
   };
 };

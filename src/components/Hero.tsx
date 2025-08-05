@@ -142,6 +142,27 @@ const Hero = () => {
           </h2>
         </div>
 
+        {/* Download CV Button */}
+        <div className={`mb-8 transition-all duration-1000 delay-700 ${
+          showAnimations ? 'animate-[heroCaptionSlideIn_0.8s_ease-out_forwards]' : 'opacity-0 -translate-x-32'
+        }`}>
+          {profile?.resume_url ? (
+            <button
+              onClick={() => window.open(profile.resume_url, '_blank')}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Download CV
+            </button>
+          ) : (
+            <div className="text-slate-400 text-sm">
+              No Resume Available
+            </div>
+          )}
+        </div>
+
         {/* Caption with slide-in from left animation */}
         <p className={`text-xl text-slate-300 max-w-2xl mx-auto mb-12 transition-all duration-1000 delay-500 ${
           showAnimations ? 'animate-[heroCaptionSlideIn_0.8s_ease-out_forwards]' : 'opacity-0 -translate-x-32'

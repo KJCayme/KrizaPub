@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
@@ -11,7 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from './ui/dialog';
-import { Edit } from 'lucide-react';
+import { Edit, Upload, Trash2, FileText } from 'lucide-react';
 import { useProfile } from '../hooks/useProfile';
 import { useAuth } from '../hooks/useAuth';
 import { toast } from 'sonner';
@@ -22,9 +22,11 @@ interface EditProfileFormProps {
 
 const EditProfileForm = ({ onProfileUpdated }: EditProfileFormProps) => {
   const { user } = useAuth();
-  const { profile, updateProfile } = useProfile();
+  const { profile, updateProfile, uploadResume, deleteResume } = useProfile();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [resumeUploading, setResumeUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [formData, setFormData] = useState({
     name: '',
     roles: '',
@@ -59,6 +61,56 @@ const EditProfileForm = ({ onProfileUpdated }: EditProfileFormProps) => {
     }
 
     setIsLoading(false);
+  };
+
+  const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Check if file is PDF
+    if (file.type !== 'application/pdf') {
+      toast.error('Please upload a PDF file');
+      return;
+    }
+
+    // Check file size (10MB limit)
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('File size must be less than 10MB');
+      return;
+    }
+
+    setResumeUploading(true);
+    const { error } = await uploadResume(file);
+
+    if (error) {
+      toast.error('Failed to upload resume');
+    } else {
+      toast.success('Resume uploaded successfully');
+      if (onProfileUpdated) {
+        onProfileUpdated();
+      }
+    }
+
+    setResumeUploading(false);
+    // Reset file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleResumeDelete = async () => {
+    if (!profile?.resume_url) return;
+
+    const { error } = await deleteResume();
+
+    if (error) {
+      toast.error('Failed to delete resume');
+    } else {
+      toast.success('Resume deleted successfully');
+      if (onProfileUpdated) {
+        onProfileUpdated();
+      }
+    }
   };
 
   if (!user) return null;
@@ -110,6 +162,67 @@ const EditProfileForm = ({ onProfileUpdated }: EditProfileFormProps) => {
               rows={3}
             />
           </div>
+
+          {/* Resume Upload Section */}
+          <div className="space-y-2 border-t pt-4">
+            <Label>Resume/CV</Label>
+            {profile?.resume_url ? (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+                  <div className="flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-blue-600" />
+                    <span className="text-sm font-medium">
+                      {profile.resume_filename || 'Resume.pdf'}
+                    </span>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={handleResumeDelete}
+                    className="text-red-600 hover:text-red-700"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={resumeUploading}
+                    className="flex-1"
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    {resumeUploading ? 'Updating...' : 'Update Resume'}
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={resumeUploading}
+                className="w-full"
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                {resumeUploading ? 'Uploading...' : 'Upload Resume'}
+              </Button>
+            )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf"
+              onChange={handleResumeUpload}
+              className="hidden"
+            />
+            <p className="text-xs text-slate-500">
+              Upload a PDF file (max 10MB). This will be available for download on your profile.
+            </p>
+          </div>
+
           <Button type="submit" disabled={isLoading} className="w-full">
             {isLoading ? 'Updating...' : 'Update'}
           </Button>
