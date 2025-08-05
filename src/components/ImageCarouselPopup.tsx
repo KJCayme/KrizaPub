@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useIsTablet } from '@/hooks/use-tablet';
 
 interface ImageCarouselPopupProps {
   isOpen: boolean;
@@ -19,19 +21,22 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
   currentIndex
 }) => {
   const [activeIndex, setActiveIndex] = useState(currentIndex);
+  const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
+  const isDesktop = !isMobile && !isTablet;
 
   useEffect(() => {
     setActiveIndex(currentIndex);
   }, [currentIndex]);
 
   const showPrev = () => {
-    const newIndex = activeIndex > 0 ? activeIndex - 1 : activeIndex;
+    const newIndex = activeIndex > 0 ? activeIndex - 1 : images.length - 1;
     setActiveIndex(newIndex);
     scrollToImage(newIndex);
   };
 
   const showNext = () => {
-    const newIndex = activeIndex < images.length - 1 ? activeIndex + 1 : activeIndex;
+    const newIndex = activeIndex < images.length - 1 ? activeIndex + 1 : 0;
     setActiveIndex(newIndex);
     scrollToImage(newIndex);
   };
@@ -111,6 +116,35 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
       >
         <X className="w-8 h-8" />
       </button>
+
+      {/* Desktop Navigation Buttons */}
+      {isDesktop && images.length > 1 && (
+        <>
+          {/* Previous Button */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              showPrev();
+            }}
+            className="absolute left-6 top-1/2 -translate-y-1/2 z-[10000] text-white hover:text-gray-300 transition-colors p-3 rounded-full bg-black/30 hover:bg-black/50"
+            aria-label="Previous image"
+          >
+            <ChevronLeft className="w-8 h-8" />
+          </button>
+
+          {/* Next Button */}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              showNext();
+            }}
+            className="absolute right-6 top-1/2 -translate-y-1/2 z-[10000] text-white hover:text-gray-300 transition-colors p-3 rounded-full bg-black/30 hover:bg-black/50"
+            aria-label="Next image"
+          >
+            <ChevronRight className="w-8 h-8" />
+          </button>
+        </>
+      )}
 
       {/* Image counter */}
       {images.length > 1 && (
