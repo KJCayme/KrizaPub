@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { ArrowLeft, Menu, X, Plus, Settings, Moon, Sun } from 'lucide-react';
+import { ArrowLeft, Menu, X, Plus, Settings } from 'lucide-react';
 import { useIsMobile } from '../../hooks/use-mobile';
 import { useAuth } from '../../hooks/useAuth';
 import { usePrefetchProjects } from '../../hooks/usePrefetchProjects';
@@ -185,12 +185,12 @@ const AllProjectsView = ({
               {/* Dark Mode Toggle */}
               <button
                 onClick={onToggleDarkMode}
-                className="text-white p-2 rounded-lg transition-colors hover:bg-white/20"
+                className="text-white px-3 py-2 rounded-lg transition-colors hover:bg-white/20"
               >
                 {isDarkMode ? (
-                  <Sun className="h-5 w-5 text-orange-400" />
+                  <span className="text-lg">☀️</span>
                 ) : (
-                  <Moon className="h-5 w-5 text-white" />
+                  <span className="text-lg">🌙</span>
                 )}
               </button>
             </div>
