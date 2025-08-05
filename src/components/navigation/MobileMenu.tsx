@@ -1,7 +1,9 @@
 
 import React from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, User, LogOut } from 'lucide-react';
 import { Button } from '../ui/button';
+import { useAuth } from '../../hooks/useAuth';
+import { useToast } from '../../hooks/use-toast';
 
 interface NavItem {
   id: string;
@@ -29,9 +31,29 @@ const MobileMenu = ({
   authLoading,
   onShowAuthDialog
 }: MobileMenuProps) => {
+  const { signOut } = useAuth();
+  const { toast } = useToast();
+
   const handleSectionClick = (sectionId: string) => {
     onSectionClick(sectionId);
     onToggleMenu(); // Close menu after clicking
+  };
+
+  const handleSignOut = async () => {
+    const { error } = await signOut();
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to sign out",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Success",
+        description: "Signed out successfully",
+      });
+    }
+    onToggleMenu(); // Close menu after signing out
   };
 
   return (
@@ -61,19 +83,42 @@ const MobileMenu = ({
               </button>
             ))}
             
-            {!authLoading && !user && (
+            {!authLoading && (
               <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={() => {
-                    onShowAuthDialog();
-                    onToggleMenu();
-                  }}
-                  className="w-full"
-                >
-                  Sign In
-                </Button>
+                {user ? (
+                  <>
+                    {/* User info */}
+                    <div className="flex items-center gap-2 px-3 py-2 mb-2 text-slate-600 dark:text-slate-300">
+                      <User className="h-4 w-4" />
+                      <span className="text-sm font-medium">
+                        {user?.email?.split('@')[0]}
+                      </span>
+                    </div>
+                    
+                    {/* Sign out button */}
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={handleSignOut}
+                      className="w-full flex items-center gap-2"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      Sign Out
+                    </Button>
+                  </>
+                ) : (
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      onShowAuthDialog();
+                      onToggleMenu();
+                    }}
+                    className="w-full"
+                  >
+                    Sign In
+                  </Button>
+                )}
               </div>
             )}
           </div>
