@@ -130,9 +130,9 @@ const Skills = () => {
               );
             })}
 
-            {/* Add Skill Button - Circular button */}
+            {/* Add Skill Button - Card style */}
             {user && (
-              <div className="flex justify-center items-center">
+              <div className="relative group bg-slate-50 dark:bg-slate-800 rounded-2xl p-6 md:p-8 shadow-lg transition-all duration-700 dark:shadow-slate-900/50 transform border-2 border-dashed border-slate-300 dark:border-slate-600 hover:border-blue-400 dark:hover:border-blue-500 flex items-center justify-center">
                 <Button
                   onClick={() => setShowAddSkillForm(true)}
                   className="w-16 h-16 rounded-full bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-110"
