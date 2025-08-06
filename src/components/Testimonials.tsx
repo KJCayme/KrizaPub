@@ -11,6 +11,7 @@ import AddClientTestimonialForm from './AddClientTestimonialForm';
 import CodeGenerationPopup from './CodeGenerationPopup';
 import TestimonialsHeader from './testimonials/TestimonialsHeader';
 import TestimonialsGrid from './testimonials/TestimonialsGrid';
+import TestimonialsSkeleton from './testimonials/TestimonialsSkeleton';
 
 interface TestimonialsProps {
   onShowTestimonialsOnly: (show: boolean) => void;
@@ -21,7 +22,7 @@ const Testimonials = ({ onShowTestimonialsOnly }: TestimonialsProps) => {
   const [showClientForm, setShowClientForm] = useState(false);
   const [showCodePopup, setShowCodePopup] = useState(false);
   const [generatedCode, setGeneratedCode] = useState('');
-  const { data: testimonials = [], isLoading } = useTestimonials(6);
+  const { data: testimonials = [], isLoading, error } = useTestimonials(6);
   const { user } = useAuth();
   const generateCode = useGenerateCode();
 
@@ -47,19 +48,25 @@ const Testimonials = ({ onShowTestimonialsOnly }: TestimonialsProps) => {
     }
   };
 
-  const displayedTestimonials = testimonials;
+  // Check if we're offline and have no cached data
+  const isOfflineWithNoCache = error && testimonials.length === 0;
+  const isNetworkError = error?.message?.includes('Failed to fetch') || error?.message?.includes('NetworkError');
 
   if (isLoading) {
+    return <TestimonialsSkeleton />;
+  }
+
+  // Show no data message if offline with no cache or if no testimonials exist
+  if (isOfflineWithNoCache || (testimonials.length === 0 && !user)) {
     return (
-      <section id="testimonials" className="py-20 bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-800 dark:to-slate-900 transition-colors duration-300">
-        <div className="container mx-auto px-6">
-          <div className="text-center">
-            <div className="animate-pulse">Loading testimonials...</div>
-          </div>
-        </div>
-      </section>
+      <TestimonialsSkeleton 
+        showNoDataMessage={true} 
+        isOffline={isNetworkError} 
+      />
     );
   }
+
+  const displayedTestimonials = testimonials;
 
   return (
     <>
@@ -98,40 +105,44 @@ const Testimonials = ({ onShowTestimonialsOnly }: TestimonialsProps) => {
             </p>
           </div>
 
-          {/* Add Client Testimonial Button - positioned below caption */}
-          <div className="mb-12 flex justify-center">
-            <Button
-              onClick={() => setShowClientForm(true)}
-              variant="outline"
-              className="bg-white/80 backdrop-blur-sm border-2 border-blue-200 text-blue-600 font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:bg-blue-50"
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              Add Client Testimonial
-            </Button>
-          </div>
+          {/* Add Client Testimonial Button - positioned below caption - only show for authenticated users */}
+          {user && (
+            <div className="mb-12 flex justify-center">
+              <Button
+                onClick={() => setShowClientForm(true)}
+                variant="outline"
+                className="bg-white/80 backdrop-blur-sm border-2 border-blue-200 text-blue-600 font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:bg-blue-50"
+              >
+                <Plus className="w-5 h-5 mr-2" />
+                Add Client Testimonial
+              </Button>
+            </div>
+          )}
 
           {displayedTestimonials.length > 0 ? (
             <TestimonialsGrid testimonials={displayedTestimonials} isLoading={false} />
           ) : (
             <div className="text-center text-slate-600 dark:text-slate-300">
               <p className="text-lg mb-4">No testimonials yet.</p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button
-                  onClick={() => setShowAddForm(true)}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-                >
-                  <Plus className="w-5 h-5 mr-2" />
-                  Be the First to Add a Testimonial
-                </Button>
-                <Button
-                  onClick={() => setShowClientForm(true)}
-                  variant="outline"
-                  className="bg-white/80 backdrop-blur-sm border-2 border-blue-200 text-blue-600 font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:bg-blue-50"
-                >
-                  <Plus className="w-5 h-5 mr-2" />
-                  Add Client Testimonial
-                </Button>
-              </div>
+              {user && (
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button
+                    onClick={() => setShowAddForm(true)}
+                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                  >
+                    <Plus className="w-5 h-5 mr-2" />
+                    Be the First to Add a Testimonial
+                  </Button>
+                  <Button
+                    onClick={() => setShowClientForm(true)}
+                    variant="outline"
+                    className="bg-white/80 backdrop-blur-sm border-2 border-blue-200 text-blue-600 font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:bg-blue-50"
+                  >
+                    <Plus className="w-5 h-5 mr-2" />
+                    Add Client Testimonial
+                  </Button>
+                </div>
+              )}
             </div>
           )}
 

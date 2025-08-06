@@ -1,4 +1,3 @@
-
 const CACHE_NAME = 'kenneth-portfolio-cache-v5';
 const STATIC_CACHE_NAME = 'static-cache-v5';
 const DYNAMIC_CACHE_NAME = 'dynamic-cache-v5';
@@ -297,8 +296,32 @@ self.addEventListener('fetch', (event) => {
               console.warn('Failed to access cache:', cacheError);
             }
             
-            // Return offline response when no cache available
-            console.log('No cache available, returning offline response');
+            // Return offline response when no cache available - differentiate by API type
+            console.log('No cache available, returning offline response for:', url.pathname);
+            
+            // Special handling for testimonials and certificates when offline with no cache
+            if (url.pathname.includes('testimonials')) {
+              return new Response(JSON.stringify([]), {
+                status: 200,
+                headers: { 
+                  'Content-Type': 'application/json',
+                  'sw-offline': 'true',
+                  'sw-no-cache': 'true'
+                }
+              });
+            }
+            
+            if (url.pathname.includes('certificates')) {
+              return new Response(JSON.stringify([]), {
+                status: 200,
+                headers: { 
+                  'Content-Type': 'application/json',
+                  'sw-offline': 'true',
+                  'sw-no-cache': 'true'
+                }
+              });
+            }
+            
             return new Response(JSON.stringify({ error: 'Offline', cached: false }), {
               status: 503,
               headers: { 'Content-Type': 'application/json' }
