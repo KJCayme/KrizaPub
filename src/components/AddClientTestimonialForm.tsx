@@ -225,7 +225,7 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
         <div className={`${
           isSmallScreen 
             ? `${showPreview ? 'hidden' : 'flex flex-col'} p-4 flex-1 min-h-0` 
-            : 'w-[500px] border-r border-slate-200 dark:border-slate-700 p-6 flex flex-col'
+            : 'w-[500px] border-r border-slate-200 dark:border-slate-700 p-6 flex flex-col max-h-full'
         }`}>
           <div className="flex justify-between items-center mb-6 flex-shrink-0">
             <h2 className="text-xl font-bold text-slate-800 dark:text-white">
@@ -239,8 +239,8 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto">
-            <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="flex-1 overflow-y-auto min-h-0">
+            <form onSubmit={handleSubmit} className="space-y-4 pb-4">
               <div>
                 <Label htmlFor="code" className="text-sm">Testimonial Code *</Label>
                 <Input
@@ -449,7 +449,7 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
         <div className={`${
           isSmallScreen 
             ? `${showPreview ? 'flex flex-col' : 'hidden'} p-4 flex-1 min-h-0` 
-            : 'flex-1 p-6 overflow-y-auto'
+            : 'flex-1 p-6 overflow-y-auto max-h-full'
         }`}>
           <PreviewCard />
         </div>
