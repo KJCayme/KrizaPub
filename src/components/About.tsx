@@ -136,56 +136,22 @@ const About = () => {
             <div className={`transition-all duration-1000 ${
               hasIntersected ? 'animate-[aboutContentFadeIn_1.2s_ease-out_forwards]' : 'opacity-0 -translate-y-8'
             }`}>
-              {/* Title row with action buttons and edit button */}
-              <div className="flex flex-col gap-4 mb-6">
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                  {/* Title and edit button */}
-                  <div className="flex items-center gap-4">
-                    <h2 className="text-4xl md:text-5xl font-bold text-slate-800">
-                      About Me
-                    </h2>
-                    {user && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-slate-600 hover:text-slate-800 hover:bg-slate-100"
-                        onClick={() => setShowEditInfo(true)}
-                      >
-                        <Edit className="w-4 h-4 mr-2" />
-                        Edit Info
-                      </Button>
-                    )}
-                  </div>
-                  
-                  {/* Action buttons - rightmost position on desktop only */}
-                  <div className="hidden lg:flex items-center gap-3">
-                    {profile?.resume_url && (
-                      <Button
-                        onClick={async () => {
-                          const signed = await getResumeSignedDownloadUrl(
-                            profile.resume_url as string,
-                            profile.resume_filename || 'CV.pdf'
-                          );
-                          if (signed) {
-                            window.location.href = signed;
-                          } else {
-                            window.open(profile.resume_url as string, '_blank');
-                          }
-                        }}
-                        aria-label="Download CV"
-                        title="Download CV"
-                        size="sm"
-                      >
-                        <Download className="w-4 h-4" />
-                        <span className="truncate">Download CV</span>
-                      </Button>
-                    )}
-                    <Button variant="secondary" aria-label="Video Introduction" title="Video Introduction" size="sm">
-                      <PlayCircle className="w-4 h-4" />
-                      <span className="truncate">Video Introduction</span>
-                    </Button>
-                  </div>
-                </div>
+              {/* Title and edit button row */}
+              <div className="flex items-center gap-4 mb-6">
+                <h2 className="text-4xl md:text-5xl font-bold text-slate-800">
+                  About Me
+                </h2>
+                {user && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-slate-600 hover:text-slate-800 hover:bg-slate-100"
+                    onClick={() => setShowEditInfo(true)}
+                  >
+                    <Edit className="w-4 h-4 mr-2" />
+                    Edit Info
+                  </Button>
+                )}
               </div>
               
               {aboutParagraphs.length > 0 ? (
@@ -242,8 +208,14 @@ const About = () => {
                 </>
               )}
 
-              {/* Action buttons shown above carousel on smaller screens but below highlights */}
-              <div className="lg:hidden flex items-center justify-center gap-3 mt-8 mb-6">
+            </div>
+
+            {/* Right side - Action buttons and Image Carousel with slide-in animation */}
+            <div className={`relative transition-all duration-1000 delay-300 ${
+              hasIntersected ? 'animate-[aboutImageSlideIn_1.2s_ease-out_forwards]' : 'opacity-0 translate-x-8'
+            }`}>
+              {/* Action buttons above carousel */}
+              <div className="flex justify-center gap-3 mb-6">
                 {profile?.resume_url && (
                   <Button
                     onClick={async () => {
@@ -260,29 +232,16 @@ const About = () => {
                     aria-label="Download CV"
                     title="Download CV"
                     size="sm"
-                    className="flex items-center gap-2 min-w-0"
                   >
-                    <Download className="w-4 h-4 flex-shrink-0" />
-                    <span className="truncate">Download CV</span>
+                    <Download className="w-4 h-4 mr-2" />
+                    Download CV
                   </Button>
                 )}
-                <Button 
-                  variant="secondary" 
-                  aria-label="Video Introduction" 
-                  title="Video Introduction" 
-                  size="sm"
-                  className="flex items-center gap-2 min-w-0"
-                >
-                  <PlayCircle className="w-4 h-4 flex-shrink-0" />
-                  <span className="truncate">Video Introduction</span>
+                <Button variant="secondary" aria-label="Video Introduction" title="Video Introduction" size="sm">
+                  <PlayCircle className="w-4 h-4 mr-2" />
+                  Video Introduction
                 </Button>
               </div>
-            </div>
-
-            {/* Right side - Side-scrolling Image Carousel with slide-in animation */}
-            <div className={`relative transition-all duration-1000 delay-300 ${
-              hasIntersected ? 'animate-[aboutImageSlideIn_1.2s_ease-out_forwards]' : 'opacity-0 translate-x-8'
-            }`}>
               <div className="relative z-10">
                 <div className="w-full h-96 rounded-2xl bg-gradient-to-br from-blue-200 to-purple-200 flex items-center justify-center overflow-hidden shadow-2xl relative">
                   {/* Scrollable container with scroll snap */}
