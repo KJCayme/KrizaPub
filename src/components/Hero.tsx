@@ -5,6 +5,7 @@ import { useHeroRoles } from '../hooks/useHeroRoles';
 import EditProfileForm from './EditProfileForm';
 import ProfileImageUpload from './ProfileImageUpload';
 import { Download } from 'lucide-react';
+import { getResumeSignedDownloadUrl } from '../utils/resumeDownload';
 
 const Hero = () => {
   const [currentRole, setCurrentRole] = useState(0);
@@ -33,8 +34,20 @@ const Hero = () => {
       refetchRoles()
     ]);
   };
-
-  // Trigger one-time animations on component mount
+  
+  const handleResumeDownload = async () => {
+    if (!profile?.resume_url) return;
+    const signed = await getResumeSignedDownloadUrl(
+      profile.resume_url,
+      profile.resume_filename || 'CV.pdf'
+    );
+    if (signed) {
+      window.location.href = signed;
+    } else {
+      // Fallback: open original URL (may open in new tab)
+      window.open(profile.resume_url, '_blank');
+    }
+  };
   useEffect(() => {
     if (!profileLoading && !rolesLoading) {
       const timer = setTimeout(() => {
@@ -132,17 +145,15 @@ const Hero = () => {
             {displayName}
           </h1>
           {profile?.resume_url && (
-            <a
-              href={profile.resume_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              download
+            <button
+              type="button"
+              onClick={handleResumeDownload}
               title="Download CV"
               aria-label="Download CV"
               className="p-2 rounded-full text-blue-200/80 hover:text-white hover:bg-white/10 transition-colors"
             >
               <Download className="w-6 h-6" />
-            </a>
+            </button>
           )}
         </div>
 

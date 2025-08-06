@@ -16,6 +16,7 @@ import EditThingsToDoForm from './EditThingsToDoForm';
 import EditHighlightsForm from './EditHighlightsForm';
 import DynamicIcon from './DynamicIcon';
 import { useProfile } from '../hooks/useProfile';
+import { getResumeSignedDownloadUrl } from '@/utils/resumeDownload';
 
 const About = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -266,21 +267,24 @@ const About = () => {
               
               <div className="absolute top-4 left-4 w-full h-full rounded-2xl bg-gradient-to-br from-blue-600/20 to-purple-600/20 -z-10"></div>
               
-              {/* Download CV below carousel */}
+              {/* Download CV below carousel (beneath overlay/shadow) */}
               {profile?.resume_url && (
-                <div className="mt-6 text-center">
-                  <Button asChild>
-                    <a
-                      href={profile.resume_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      download
-                      title="Download CV"
-                      aria-label="Download CV"
-                    >
-                      <Download className="w-4 h-4" />
-                      <span>Download CV</span>
-                    </a>
+                <div className="mt-8 text-center">
+                  <Button
+                    onClick={async () => {
+                      const signed = await getResumeSignedDownloadUrl(
+                        profile.resume_url as string,
+                        profile.resume_filename || 'CV.pdf'
+                      );
+                      if (signed) {
+                        window.location.href = signed;
+                      } else {
+                        window.open(profile.resume_url as string, '_blank');
+                      }
+                    }}
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>Download CV</span>
                   </Button>
                 </div>
               )}
