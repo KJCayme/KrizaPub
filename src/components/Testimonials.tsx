@@ -88,7 +88,13 @@ const Testimonials = ({ onShowTestimonialsOnly }: TestimonialsProps) => {
                     >
                       <Code className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 mr-1 sm:mr-2" />
                       <span className="text-xs sm:text-sm lg:text-base whitespace-nowrap">
-                        {generateCode.isPending ? 'Generating...' : 'Generate Code'}
+                        {generateCode.isPending ? 'Generating...' : (
+                          <>
+                            <span className="hidden sm:inline lg:inline">Generate Code</span>
+                            <span className="hidden sm:hidden md:inline lg:hidden">Generate</span>
+                            <span className="inline sm:hidden md:hidden lg:inline">{'<>'}</span>
+                          </>
+                        )}
                       </span>
                     </Button>
                     <Button
@@ -97,7 +103,9 @@ const Testimonials = ({ onShowTestimonialsOnly }: TestimonialsProps) => {
                     >
                       <Plus className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 mr-1 sm:mr-2" />
                       <span className="text-xs sm:text-sm lg:text-base whitespace-nowrap">
-                        Add Testimonial
+                        <span className="hidden sm:inline lg:inline">Add Testimonial</span>
+                        <span className="hidden sm:hidden md:inline lg:hidden">Add</span>
+                        <span className="inline sm:hidden md:hidden lg:inline">+</span>
                       </span>
                     </Button>
                   </>
