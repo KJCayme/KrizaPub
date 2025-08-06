@@ -1,6 +1,7 @@
 
 import React from 'react';
 import TestimonialCard from './TestimonialCard';
+import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
 
 interface TestimonialsGridProps {
   testimonials: any[];
@@ -8,6 +9,8 @@ interface TestimonialsGridProps {
 }
 
 const TestimonialsGrid = ({ testimonials, isLoading }: TestimonialsGridProps) => {
+  const { ref, hasIntersected } = useIntersectionObserver({ threshold: 0.1 });
+
   if (isLoading) {
     return (
       <div className="text-center">
@@ -27,15 +30,24 @@ const TestimonialsGrid = ({ testimonials, isLoading }: TestimonialsGridProps) =>
   const padding = 24; // 1.5rem = 24px - consistent padding throughout
 
   return (
-    <div className="block">
+    <div ref={ref} className="block">
       {/* Mobile: Single column layout */}
       <div className="md:hidden grid grid-cols-1 gap-6">
-        {testimonials.map((testimonial) => (
-          <TestimonialCard 
-            key={testimonial.id} 
-            testimonial={testimonial}
-            padding={padding}
-          />
+        {testimonials.map((testimonial, index) => (
+          <div
+            key={testimonial.id}
+            className={`${
+              hasIntersected 
+                ? 'animate-slide-in-left' 
+                : 'opacity-0'
+            }`}
+            style={{ animationDelay: `${index * 100}ms` }}
+          >
+            <TestimonialCard 
+              testimonial={testimonial}
+              padding={padding}
+            />
+          </div>
         ))}
       </div>
 
@@ -48,22 +60,34 @@ const TestimonialsGrid = ({ testimonials, isLoading }: TestimonialsGridProps) =>
           columnFill: 'balance'
         }}
       >
-        {testimonials.map((testimonial) => (
-          <div 
-            key={testimonial.id}
-            style={{ 
-              breakInside: 'avoid',
-              marginBottom: `${padding}px`,
-              display: 'inline-block',
-              width: '100%'
-            }}
-          >
-            <TestimonialCard 
-              testimonial={testimonial}
-              padding={padding}
-            />
-          </div>
-        ))}
+        {testimonials.map((testimonial, index) => {
+          // Determine which column this item will be in based on index
+          const isLeftColumn = index % 2 === 0;
+          const animationClass = isLeftColumn ? 'animate-slide-in-left' : 'animate-slide-in-right';
+          
+          return (
+            <div 
+              key={testimonial.id}
+              className={`${
+                hasIntersected 
+                  ? animationClass 
+                  : 'opacity-0'
+              }`}
+              style={{ 
+                breakInside: 'avoid',
+                marginBottom: `${padding}px`,
+                display: 'inline-block',
+                width: '100%',
+                animationDelay: `${Math.floor(index / 2) * 150}ms`
+              }}
+            >
+              <TestimonialCard 
+                testimonial={testimonial}
+                padding={padding}
+              />
+            </div>
+          );
+        })}
       </div>
     </div>
   );
