@@ -86,15 +86,19 @@ const Testimonials = ({ onShowTestimonialsOnly }: TestimonialsProps) => {
                       disabled={generateCode.isPending}
                       className="bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                     >
-                      <Code className="w-5 h-5 mr-2" />
-                      {generateCode.isPending ? 'Generating...' : 'Generate Code'}
+                      <Code className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 mr-1 sm:mr-2" />
+                      <span className="text-xs sm:text-sm lg:text-base whitespace-nowrap">
+                        {generateCode.isPending ? 'Generating...' : 'Generate Code'}
+                      </span>
                     </Button>
                     <Button
                       onClick={() => setShowAddForm(true)}
                       className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                     >
-                      <Plus className="w-5 h-5 mr-2" />
-                      Add Testimonial
+                      <Plus className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 mr-1 sm:mr-2" />
+                      <span className="text-xs sm:text-sm lg:text-base whitespace-nowrap">
+                        Add Testimonial
+                      </span>
                     </Button>
                   </>
                 )}
@@ -105,19 +109,19 @@ const Testimonials = ({ onShowTestimonialsOnly }: TestimonialsProps) => {
             </p>
           </div>
 
-          {/* Add Client Testimonial Button - positioned below caption - only show for authenticated users */}
-          {user && (
-            <div className="mb-12 flex justify-center">
-              <Button
-                onClick={() => setShowClientForm(true)}
-                variant="outline"
-                className="bg-white/80 backdrop-blur-sm border-2 border-blue-200 text-blue-600 font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:bg-blue-50"
-              >
-                <Plus className="w-5 h-5 mr-2" />
+          {/* Add Client Testimonial Button - positioned below caption - public use */}
+          <div className="mb-12 flex justify-center">
+            <Button
+              onClick={() => setShowClientForm(true)}
+              variant="outline"
+              className="bg-white/80 backdrop-blur-sm border-2 border-blue-200 text-blue-600 font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:bg-blue-50"
+            >
+              <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+              <span className="text-sm sm:text-base whitespace-nowrap">
                 Add Client Testimonial
-              </Button>
-            </div>
-          )}
+              </span>
+            </Button>
+          </div>
 
           {displayedTestimonials.length > 0 ? (
             <TestimonialsGrid testimonials={displayedTestimonials} isLoading={false} />
