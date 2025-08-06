@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { Award, Clock, Heart, Target, ChevronLeft, ChevronRight, MapPin, GraduationCap, Coffee, Users, Music, Camera, Book, Plane, Edit, Download, PlayCircle } from 'lucide-react';
 import { useIsMobile } from '../hooks/use-mobile';
@@ -137,9 +138,27 @@ const About = () => {
             }`}>
               {/* Title row with action buttons and edit button */}
               <div className="flex flex-col gap-4 mb-6">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                  {/* Action buttons - leftmost position */}
-                  <div className="flex items-center gap-3 order-1 sm:order-1">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                  {/* Title and edit button */}
+                  <div className="flex items-center gap-4">
+                    <h2 className="text-4xl md:text-5xl font-bold text-slate-800">
+                      About Me
+                    </h2>
+                    {user && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-slate-600 hover:text-slate-800 hover:bg-slate-100"
+                        onClick={() => setShowEditInfo(true)}
+                      >
+                        <Edit className="w-4 h-4 mr-2" />
+                        Edit Info
+                      </Button>
+                    )}
+                  </div>
+                  
+                  {/* Action buttons - rightmost position on desktop */}
+                  <div className="flex items-center gap-3">
                     {profile?.resume_url && (
                       <Button
                         onClick={async () => {
@@ -165,24 +184,6 @@ const About = () => {
                       <PlayCircle className="w-4 h-4" />
                       <span>Video Introduction</span>
                     </Button>
-                  </div>
-                  
-                  {/* Title and edit button */}
-                  <div className="flex items-center gap-4 order-2 sm:order-2">
-                    <h2 className="text-4xl md:text-5xl font-bold text-slate-800">
-                      About Me
-                    </h2>
-                    {user && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-slate-600 hover:text-slate-800 hover:bg-slate-100"
-                        onClick={() => setShowEditInfo(true)}
-                      >
-                        <Edit className="w-4 h-4 mr-2" />
-                        Edit Info
-                      </Button>
-                    )}
                   </div>
                 </div>
               </div>
@@ -240,6 +241,35 @@ const About = () => {
                   ) : null}
                 </>
               )}
+
+              {/* Action buttons shown above carousel on smaller screens but below highlights */}
+              <div className="lg:hidden flex items-center justify-center gap-3 mt-8 mb-6">
+                {profile?.resume_url && (
+                  <Button
+                    onClick={async () => {
+                      const signed = await getResumeSignedDownloadUrl(
+                        profile.resume_url as string,
+                        profile.resume_filename || 'CV.pdf'
+                      );
+                      if (signed) {
+                        window.location.href = signed;
+                      } else {
+                        window.open(profile.resume_url as string, '_blank');
+                      }
+                    }}
+                    aria-label="Download CV"
+                    title="Download CV"
+                    size="sm"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>Download CV</span>
+                  </Button>
+                )}
+                <Button variant="secondary" aria-label="Video Introduction" title="Video Introduction" size="sm">
+                  <PlayCircle className="w-4 h-4" />
+                  <span>Video Introduction</span>
+                </Button>
+              </div>
             </div>
 
             {/* Right side - Side-scrolling Image Carousel with slide-in animation */}
