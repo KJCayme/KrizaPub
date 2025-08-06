@@ -54,6 +54,22 @@ const Portfolio = ({ onShowAllProjectsChange }: PortfolioProps) => {
   // Hooks for prefetching
   const { prefetchProjectsByCategory } = usePrefetchProjects();
   const { prefetchAllProjects } = usePrefetchAllProjects();
+  
+  // Prefetch all categories when Portfolio section comes into view
+  useEffect(() => {
+    if (hasIntersected && categoriesData && categoriesData.length > 0 && !hasTriggeredPrefetch) {
+      console.log('🚀 Portfolio section visible - prefetching all categories');
+      setHasTriggeredPrefetch(true);
+      
+      // Prefetch 6 projects from each category
+      categoriesData.forEach(category => {
+        if (!category.hidden) {
+          console.log(`📂 Prefetching projects for category: ${category.category_key}`);
+          prefetchProjectsByCategory(category.category_key);
+        }
+      });
+    }
+  }, [hasIntersected, categoriesData, hasTriggeredPrefetch, prefetchProjectsByCategory]);
 
   // Set default category to the first available category
   useEffect(() => {

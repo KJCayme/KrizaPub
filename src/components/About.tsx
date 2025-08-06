@@ -18,6 +18,8 @@ import EditHighlightsForm from './EditHighlightsForm';
 import DynamicIcon from './DynamicIcon';
 import { useProfile } from '../hooks/useProfile';
 import { getResumeSignedDownloadUrl } from '@/utils/resumeDownload';
+import { usePrefetchProjects } from '../hooks/usePrefetchProjects';
+import { usePortfolioCategories } from '../hooks/usePortfolioCategories';
 
 const About = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -31,9 +33,24 @@ const About = () => {
   const isMobile = useIsMobile();
   const { user } = useAuth();
   const { profile } = useProfile();
+  
+  // Prefetching for portfolio
+  const { prefetchProjectsByCategory } = usePrefetchProjects();
+  const { data: categoriesData } = usePortfolioCategories();
 
-  // Use intersection observer for one-time animations
+  // Use intersection observer for one-time animations and prefetching
   const { ref: aboutRef, hasIntersected } = useIntersectionObserver({ threshold: 0.2 });
+
+  // Prefetch leftmost category projects when About section comes into view
+  useEffect(() => {
+    if (hasIntersected && categoriesData && categoriesData.length > 0) {
+      const leftmostCategory = categoriesData.find(cat => !cat.hidden);
+      if (leftmostCategory) {
+        console.log('🚀 About section visible - prefetching leftmost category:', leftmostCategory.category_key);
+        prefetchProjectsByCategory(leftmostCategory.category_key);
+      }
+    }
+  }, [hasIntersected, categoriesData, prefetchProjectsByCategory]);
 
   const { data: carouselImages = [], refetch: refetchImages } = useAboutCarousel();
   const { data: aboutInfo } = useAboutInfo();

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Plus, Code } from 'lucide-react';
 import { Button } from './ui/button';
 import { useTestimonials } from '../hooks/useTestimonials';
@@ -23,9 +23,30 @@ const TestimonialsViewOnly = ({ isDarkMode, onToggleDarkMode, onBack }: Testimon
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   const [showCodePopup, setShowCodePopup] = useState(false);
   const [generatedCode, setGeneratedCode] = useState('');
-  const { data: testimonials = [], isLoading } = useTestimonials();
+  const [isOffline, setIsOffline] = useState(false);
+  const { data: testimonials = [], isLoading, error } = useTestimonials();
   const { user } = useAuth();
   const generateCode = useGenerateCode();
+
+  // Track online/offline status
+  useEffect(() => {
+    const handleOnline = () => setIsOffline(false);
+    const handleOffline = () => setIsOffline(true);
+    
+    setIsOffline(!navigator.onLine);
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  // Determine if we have cached data when offline
+  const hasCachedData = isOffline && testimonials.length > 0;
+  const hasNoDataOffline = isOffline && testimonials.length === 0 && !isLoading;
 
   const handleBack = () => {
     // Simply call onBack - let the parent handle all navigation logic
@@ -121,20 +142,32 @@ const TestimonialsViewOnly = ({ isDarkMode, onToggleDarkMode, onBack }: Testimon
                 showAddButton={false}
               />
 
-              <div className="mb-12 flex justify-center">
-                <Button
-                  onClick={() => setShowClientForm(true)}
-                  variant="outline"
-                  className="bg-white/80 backdrop-blur-sm border-2 border-blue-200 text-blue-600 font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:bg-blue-50"
-                >
-                  <Plus className="w-5 h-5 mr-2" />
-                  Add Client Testimonial
-                </Button>
-              </div>
+              {!hasNoDataOffline && (
+                <div className="mb-12 flex justify-center">
+                  <Button
+                    onClick={() => setShowClientForm(true)}
+                    variant="outline"
+                    className="bg-white/80 backdrop-blur-sm border-2 border-blue-200 text-blue-600 font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:bg-blue-50"
+                  >
+                    <Plus className="w-5 h-5 mr-2" />
+                    Add Client Testimonial
+                  </Button>
+                </div>
+              )}
 
               <TestimonialsGrid testimonials={testimonials} isLoading={isLoading} />
 
-              {!isLoading && (
+              {/* Show cached data message when offline */}
+              {hasCachedData && (
+                <div className="mt-8 text-center">
+                  <p className="text-slate-500 dark:text-slate-400 text-sm">
+                    Failed to load more testimonials
+                  </p>
+                </div>
+              )}
+
+              {/* Show add buttons only when online or when there's cached data */}
+              {!isLoading && !hasNoDataOffline && (
                 <div className="mt-8 flex justify-center">
                   <Button
                     onClick={() => setShowClientForm(true)}
@@ -147,26 +180,41 @@ const TestimonialsViewOnly = ({ isDarkMode, onToggleDarkMode, onBack }: Testimon
                 </div>
               )}
 
+              {/* Show no data message for offline with no cache or online with no data */}
               {!isLoading && testimonials.length === 0 && (
                 <div className="text-center text-slate-600 dark:text-slate-300">
-                  <p className="text-lg mb-4">No testimonials yet.</p>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                    <Button
-                      onClick={handleAddTestimonial}
-                      className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-                    >
-                      <Plus className="w-5 h-5 mr-2" />
-                      Be the First to Add a Testimonial
-                    </Button>
-                    <Button
-                      onClick={() => setShowClientForm(true)}
-                      variant="outline"
-                      className="bg-white/80 backdrop-blur-sm border-2 border-blue-200 text-blue-600 font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:bg-blue-50"
-                    >
-                      <Plus className="w-5 h-5 mr-2" />
-                      Add Client Testimonial
-                    </Button>
-                  </div>
+                  {hasNoDataOffline ? (
+                    <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-2xl p-8 max-w-md mx-auto border border-slate-200 dark:border-slate-700">
+                      <div className="text-4xl mb-4 opacity-50">📝</div>
+                      <h3 className="text-xl font-semibold mb-2 text-slate-800 dark:text-white">
+                        No Testimonials Available
+                      </h3>
+                      <p className="text-slate-600 dark:text-slate-400">
+                        Connect to the internet to view testimonials.
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <p className="text-lg mb-4">No testimonials yet.</p>
+                      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <Button
+                          onClick={handleAddTestimonial}
+                          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                        >
+                          <Plus className="w-5 h-5 mr-2" />
+                          Be the First to Add a Testimonial
+                        </Button>
+                        <Button
+                          onClick={() => setShowClientForm(true)}
+                          variant="outline"
+                          className="bg-white/80 backdrop-blur-sm border-2 border-blue-200 text-blue-600 font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:bg-blue-50"
+                        >
+                          <Plus className="w-5 h-5 mr-2" />
+                          Add Client Testimonial
+                        </Button>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
             </div>
