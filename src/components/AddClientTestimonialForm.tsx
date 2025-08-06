@@ -193,13 +193,13 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4">
-      <div className={`bg-white dark:bg-slate-800 rounded-lg w-full max-h-[95vh] overflow-hidden ${
-        isSmallScreen ? 'max-w-lg' : 'max-w-7xl flex'
+      <div className={`bg-white dark:bg-slate-800 rounded-lg w-full max-h-[95vh] overflow-hidden flex flex-col ${
+        isSmallScreen ? 'max-w-lg' : 'max-w-7xl flex-row'
       }`}>
         
         {/* Toggle Buttons for Small Screens */}
         {isSmallScreen && (
-          <div className="flex border-b border-slate-200 dark:border-slate-700">
+          <div className="flex border-b border-slate-200 dark:border-slate-700 flex-shrink-0">
             <Button
               type="button"
               variant={!showPreview ? "default" : "ghost"}
@@ -224,10 +224,10 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
         {/* Form Section */}
         <div className={`${
           isSmallScreen 
-            ? `${showPreview ? 'hidden' : 'block'} p-4` 
-            : 'w-[500px] border-r border-slate-200 dark:border-slate-700 p-6'
-        } overflow-y-auto`}>
-          <div className="flex justify-between items-center mb-6">
+            ? `${showPreview ? 'hidden' : 'flex flex-col'} p-4 flex-1 min-h-0` 
+            : 'w-[500px] border-r border-slate-200 dark:border-slate-700 p-6 flex flex-col'
+        }`}>
+          <div className="flex justify-between items-center mb-6 flex-shrink-0">
             <h2 className="text-xl font-bold text-slate-800 dark:text-white">
               Add Client Testimonial
             </h2>
@@ -239,217 +239,221 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="code" className="text-sm">Testimonial Code *</Label>
-              <Input
-                id="code"
-                value={formData.code}
-                onChange={(e) => setFormData(prev => ({ ...prev, code: e.target.value }))}
-                placeholder="Enter your testimonial code"
-                required
-                className="mt-1"
-              />
-            </div>
+          <div className="flex-1 overflow-y-auto">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <Label htmlFor="code" className="text-sm">Testimonial Code *</Label>
+                <Input
+                  id="code"
+                  value={formData.code}
+                  onChange={(e) => setFormData(prev => ({ ...prev, code: e.target.value }))}
+                  placeholder="Enter your testimonial code"
+                  required
+                  className="mt-1"
+                />
+              </div>
 
-            <div>
-              <Label htmlFor="feedback" className="text-sm">Testimonial *</Label>
-              <Textarea
-                id="feedback"
-                value={formData.feedback}
-                onChange={(e) => setFormData(prev => ({ ...prev, feedback: e.target.value }))}
-                placeholder="Share your experience working with Kenneth..."
-                rows={3}
-                required
-                className="mt-1"
-              />
-            </div>
+              <div>
+                <Label htmlFor="feedback" className="text-sm">Testimonial *</Label>
+                <Textarea
+                  id="feedback"
+                  value={formData.feedback}
+                  onChange={(e) => setFormData(prev => ({ ...prev, feedback: e.target.value }))}
+                  placeholder="Share your experience working with Kenneth..."
+                  rows={3}
+                  required
+                  className="mt-1"
+                />
+              </div>
 
-            <div>
-              <Label className="text-sm">Rating *</Label>
-              <div className="flex items-center space-x-1 mt-1">
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <button
-                    key={star}
+              <div>
+                <Label className="text-sm">Rating *</Label>
+                <div className="flex items-center space-x-1 mt-1">
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      type="button"
+                      onClick={() => handleRatingClick(star)}
+                      className="text-lg focus:outline-none"
+                    >
+                      <Star
+                        className={`w-5 h-5 ${
+                          star <= formData.rate
+                            ? 'text-yellow-400 fill-yellow-400'
+                            : 'text-gray-300'
+                        }`}
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="name" className="text-sm">Your Name (optional)</Label>
+                <Input
+                  id="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
+                  placeholder="Enter your full name"
+                  className="mt-1"
+                />
+                <div className="flex items-center space-x-2 mt-1">
+                  <Checkbox
+                    id="name_censored"
+                    checked={formData.name_censored}
+                    onCheckedChange={(checked) => 
+                      setFormData(prev => ({ ...prev, name_censored: checked as boolean }))
+                    }
+                  />
+                  <Label htmlFor="name_censored" className="text-xs text-slate-600 dark:text-slate-400">
+                    Keep my name private
+                  </Label>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="email" className="text-sm">Email (optional)</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                  placeholder="Enter your email"
+                  className="mt-1"
+                />
+                <div className="flex items-center space-x-2 mt-1">
+                  <Checkbox
+                    id="email_censored"
+                    checked={formData.email_censored}
+                    onCheckedChange={(checked) => 
+                      setFormData(prev => ({ ...prev, email_censored: checked as boolean }))
+                    }
+                  />
+                  <Label htmlFor="email_censored" className="text-xs text-slate-600 dark:text-slate-400">
+                    Keep my email private
+                  </Label>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="company" className="text-sm">Company (optional)</Label>
+                <Input
+                  id="company"
+                  value={formData.company}
+                  onChange={(e) => setFormData(prev => ({ ...prev, company: e.target.value }))}
+                  placeholder="Enter your company name"
+                  className="mt-1"
+                />
+                <div className="flex items-center space-x-2 mt-1">
+                  <Checkbox
+                    id="company_censored"
+                    checked={formData.company_censored}
+                    onCheckedChange={(checked) => 
+                      setFormData(prev => ({ ...prev, company_censored: checked as boolean }))
+                    }
+                  />
+                  <Label htmlFor="company_censored" className="text-xs text-slate-600 dark:text-slate-400">
+                    Keep my company private
+                  </Label>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="image" className="text-sm">Profile Image (optional)</Label>
+                <div className="mt-1">
+                  <Input
+                    id="image"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageChange(e, 'image')}
+                    className="hidden"
+                  />
+                  <Button
                     type="button"
-                    onClick={() => handleRatingClick(star)}
-                    className="text-lg focus:outline-none"
+                    variant="outline"
+                    onClick={() => document.getElementById('image')?.click()}
+                    className="w-full text-sm"
+                    size="sm"
                   >
-                    <Star
-                      className={`w-5 h-5 ${
-                        star <= formData.rate
-                          ? 'text-yellow-400 fill-yellow-400'
-                          : 'text-gray-300'
-                      }`}
-                    />
-                  </button>
-                ))}
+                    <Upload className="w-4 h-4 mr-2" />
+                    Upload Profile Image
+                  </Button>
+                  {imagePreview && (
+                    <div className="mt-2">
+                      <img
+                        src={imagePreview}
+                        alt="Profile preview"
+                        className="w-12 h-12 rounded-full object-cover border-2 border-slate-200 dark:border-slate-600"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
 
-            <div>
-              <Label htmlFor="name" className="text-sm">Your Name (optional)</Label>
-              <Input
-                id="name"
-                value={formData.name}
-                onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                placeholder="Enter your full name"
-                className="mt-1"
-              />
-              <div className="flex items-center space-x-2 mt-1">
-                <Checkbox
-                  id="name_censored"
-                  checked={formData.name_censored}
-                  onCheckedChange={(checked) => 
-                    setFormData(prev => ({ ...prev, name_censored: checked as boolean }))
-                  }
-                />
-                <Label htmlFor="name_censored" className="text-xs text-slate-600 dark:text-slate-400">
-                  Keep my name private
-                </Label>
+              <div>
+                <Label htmlFor="feedback_picture" className="text-sm">Feedback Screenshot (optional)</Label>
+                <div className="mt-1">
+                  <Input
+                    id="feedback_picture"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleImageChange(e, 'feedback_picture')}
+                    className="hidden"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => document.getElementById('feedback_picture')?.click()}
+                    className="w-full text-sm"
+                    size="sm"
+                  >
+                    <Upload className="w-4 h-4 mr-2" />
+                    Upload Feedback Screenshot
+                  </Button>
+                  {feedbackImagePreview && (
+                    <div className="mt-2">
+                      <img
+                        src={feedbackImagePreview}
+                        alt="Feedback preview"
+                        className="max-w-full h-20 object-cover rounded-lg border border-slate-200 dark:border-slate-600"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
-            </div>
 
-            <div>
-              <Label htmlFor="email" className="text-sm">Email (optional)</Label>
-              <Input
-                id="email"
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                placeholder="Enter your email"
-                className="mt-1"
-              />
-              <div className="flex items-center space-x-2 mt-1">
-                <Checkbox
-                  id="email_censored"
-                  checked={formData.email_censored}
-                  onCheckedChange={(checked) => 
-                    setFormData(prev => ({ ...prev, email_censored: checked as boolean }))
-                  }
-                />
-                <Label htmlFor="email_censored" className="text-xs text-slate-600 dark:text-slate-400">
-                  Keep my email private
-                </Label>
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="company" className="text-sm">Company (optional)</Label>
-              <Input
-                id="company"
-                value={formData.company}
-                onChange={(e) => setFormData(prev => ({ ...prev, company: e.target.value }))}
-                placeholder="Enter your company name"
-                className="mt-1"
-              />
-              <div className="flex items-center space-x-2 mt-1">
-                <Checkbox
-                  id="company_censored"
-                  checked={formData.company_censored}
-                  onCheckedChange={(checked) => 
-                    setFormData(prev => ({ ...prev, company_censored: checked as boolean }))
-                  }
-                />
-                <Label htmlFor="company_censored" className="text-xs text-slate-600 dark:text-slate-400">
-                  Keep my company private
-                </Label>
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="image" className="text-sm">Profile Image (optional)</Label>
-              <div className="mt-1">
-                <Input
-                  id="image"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleImageChange(e, 'image')}
-                  className="hidden"
-                />
+              <div className="flex gap-2 pt-4">
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => document.getElementById('image')?.click()}
-                  className="w-full text-sm"
+                  onClick={onClose}
+                  className="flex-1"
                   size="sm"
                 >
-                  <Upload className="w-4 h-4 mr-2" />
-                  Upload Profile Image
+                  Cancel
                 </Button>
-                {imagePreview && (
-                  <div className="mt-2">
-                    <img
-                      src={imagePreview}
-                      alt="Profile preview"
-                      className="w-12 h-12 rounded-full object-cover border-2 border-slate-200 dark:border-slate-600"
-                    />
-                  </div>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <Label htmlFor="feedback_picture" className="text-sm">Feedback Screenshot (optional)</Label>
-              <div className="mt-1">
-                <Input
-                  id="feedback_picture"
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleImageChange(e, 'feedback_picture')}
-                  className="hidden"
-                />
                 <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => document.getElementById('feedback_picture')?.click()}
-                  className="w-full text-sm"
+                  type="submit"
+                  disabled={updateClientTestimonial.isPending}
+                  className="flex-1"
                   size="sm"
                 >
-                  <Upload className="w-4 h-4 mr-2" />
-                  Upload Feedback Screenshot
+                  {updateClientTestimonial.isPending ? 'Submitting...' : 'Submit'}
                 </Button>
-                {feedbackImagePreview && (
-                  <div className="mt-2">
-                    <img
-                      src={feedbackImagePreview}
-                      alt="Feedback preview"
-                      className="max-w-full h-20 object-cover rounded-lg border border-slate-200 dark:border-slate-600"
-                    />
-                  </div>
-                )}
               </div>
-            </div>
-
-            <div className="flex gap-2 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onClose}
-                className="flex-1"
-                size="sm"
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={updateClientTestimonial.isPending}
-                className="flex-1"
-                size="sm"
-              >
-                {updateClientTestimonial.isPending ? 'Submitting...' : 'Submit'}
-              </Button>
-            </div>
-          </form>
+            </form>
+          </div>
         </div>
 
         {/* Preview Section */}
         <div className={`${
           isSmallScreen 
-            ? `${showPreview ? 'block' : 'hidden'} p-4` 
-            : 'flex-1 p-6'
-        } overflow-y-auto`}>
-          <PreviewCard />
+            ? `${showPreview ? 'flex flex-col' : 'hidden'} p-4 flex-1 min-h-0` 
+            : 'flex-1 p-6 flex flex-col'
+        }`}>
+          <div className="flex-1 overflow-y-auto">
+            <PreviewCard />
+          </div>
         </div>
       </div>
     </div>
