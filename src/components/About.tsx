@@ -153,6 +153,35 @@ const About = () => {
                   </Button>
                 )}
               </div>
+
+              {/* Action buttons */}
+              {profile?.resume_url && (
+                <div className="flex flex-col sm:flex-row gap-3 mb-6">
+                  <Button
+                    onClick={async () => {
+                      const signed = await getResumeSignedDownloadUrl(
+                        profile.resume_url as string,
+                        profile.resume_filename || 'CV.pdf'
+                      );
+                      if (signed) {
+                        window.location.href = signed;
+                      } else {
+                        window.open(profile.resume_url as string, '_blank');
+                      }
+                    }}
+                    aria-label="Download CV"
+                    title="Download CV"
+                    size="sm"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Download CV
+                  </Button>
+                  <Button variant="secondary" aria-label="Video Introduction" title="Video Introduction" size="sm">
+                    <PlayCircle className="w-4 h-4 mr-2" />
+                    Video Introduction
+                  </Button>
+                </div>
+              )}
               
               {aboutParagraphs.length > 0 ? (
                 aboutParagraphs.map((paragraph, index) => (
@@ -214,34 +243,6 @@ const About = () => {
             <div className={`relative transition-all duration-1000 delay-300 ${
               hasIntersected ? 'animate-[aboutImageSlideIn_1.2s_ease-out_forwards]' : 'opacity-0 translate-x-8'
             }`}>
-              {/* Action buttons above carousel */}
-              <div className="flex justify-center gap-3 mb-6">
-                {profile?.resume_url && (
-                  <Button
-                    onClick={async () => {
-                      const signed = await getResumeSignedDownloadUrl(
-                        profile.resume_url as string,
-                        profile.resume_filename || 'CV.pdf'
-                      );
-                      if (signed) {
-                        window.location.href = signed;
-                      } else {
-                        window.open(profile.resume_url as string, '_blank');
-                      }
-                    }}
-                    aria-label="Download CV"
-                    title="Download CV"
-                    size="sm"
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    Download CV
-                  </Button>
-                )}
-                <Button variant="secondary" aria-label="Video Introduction" title="Video Introduction" size="sm">
-                  <PlayCircle className="w-4 h-4 mr-2" />
-                  Video Introduction
-                </Button>
-              </div>
               <div className="relative z-10">
                 <div className="w-full h-96 rounded-2xl bg-gradient-to-br from-blue-200 to-purple-200 flex items-center justify-center overflow-hidden shadow-2xl relative">
                   {/* Scrollable container with scroll snap */}
