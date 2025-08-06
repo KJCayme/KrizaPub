@@ -1,12 +1,14 @@
 
 import React, { useState } from 'react';
-import { X, Star, Upload, Eye, Quote } from 'lucide-react';
+import { X, Star, Upload, Eye, Quote, Edit } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
 import { Checkbox } from './ui/checkbox';
 import { useUpdateClientTestimonial } from '../hooks/useClientTestimonials';
+import { useIsMobile } from '../hooks/use-mobile';
+import { useIsTablet } from '../hooks/use-tablet';
 import { toast } from 'sonner';
 
 interface AddClientTestimonialFormProps {
@@ -31,6 +33,10 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
   const [showPreview, setShowPreview] = useState(false);
   const [imagePreview, setImagePreview] = useState<string>('');
   const [feedbackImagePreview, setFeedbackImagePreview] = useState<string>('');
+
+  const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
+  const isSmallScreen = isMobile || isTablet;
 
   const updateClientTestimonial = useUpdateClientTestimonial();
 
@@ -186,32 +192,51 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
   );
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-slate-800 rounded-lg max-w-7xl w-full max-h-[90vh] overflow-hidden flex">
-        {/* Form Section - Made wider */}
-        <div className="w-[500px] p-6 overflow-y-auto border-r border-slate-200 dark:border-slate-700">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-2 sm:p-4">
+      <div className={`bg-white dark:bg-slate-800 rounded-lg w-full max-h-[95vh] overflow-hidden ${
+        isSmallScreen ? 'max-w-lg' : 'max-w-7xl flex'
+      }`}>
+        
+        {/* Toggle Buttons for Small Screens */}
+        {isSmallScreen && (
+          <div className="flex border-b border-slate-200 dark:border-slate-700">
+            <Button
+              type="button"
+              variant={!showPreview ? "default" : "ghost"}
+              className="flex-1 rounded-none rounded-tl-lg"
+              onClick={() => setShowPreview(false)}
+            >
+              <Edit className="w-4 h-4 mr-2" />
+              Form
+            </Button>
+            <Button
+              type="button"
+              variant={showPreview ? "default" : "ghost"}
+              className="flex-1 rounded-none rounded-tr-lg"
+              onClick={() => setShowPreview(true)}
+            >
+              <Eye className="w-4 h-4 mr-2" />
+              Preview
+            </Button>
+          </div>
+        )}
+
+        {/* Form Section */}
+        <div className={`${
+          isSmallScreen 
+            ? `${showPreview ? 'hidden' : 'block'} p-4` 
+            : 'w-[500px] border-r border-slate-200 dark:border-slate-700 p-6'
+        } overflow-y-auto`}>
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-bold text-slate-800 dark:text-white">
               Add Client Testimonial
             </h2>
-            <div className="flex items-center gap-2">
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => setShowPreview(!showPreview)}
-                className="lg:hidden"
-              >
-                <Eye className="w-4 h-4 mr-2" />
-                {showPreview ? 'Hide Preview' : 'Show Preview'}
-              </Button>
-              <button
-                onClick={onClose}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
+            <button
+              onClick={onClose}
+              className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+            >
+              <X className="w-6 h-6" />
+            </button>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -418,8 +443,12 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
           </form>
         </div>
 
-        {/* Preview Section - Made bigger */}
-        <div className={`flex-1 p-6 overflow-y-auto ${showPreview ? 'block' : 'hidden lg:block'}`}>
+        {/* Preview Section */}
+        <div className={`${
+          isSmallScreen 
+            ? `${showPreview ? 'block' : 'hidden'} p-4` 
+            : 'flex-1 p-6'
+        } overflow-y-auto`}>
           <PreviewCard />
         </div>
       </div>
