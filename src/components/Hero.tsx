@@ -4,6 +4,7 @@ import { useProfile } from '../hooks/useProfile';
 import { useHeroRoles } from '../hooks/useHeroRoles';
 import EditProfileForm from './EditProfileForm';
 import ProfileImageUpload from './ProfileImageUpload';
+import { Download } from 'lucide-react';
 
 const Hero = () => {
   const [currentRole, setCurrentRole] = useState(0);
@@ -123,12 +124,27 @@ const Hero = () => {
           </div>
         </div>
 
-        {/* Name with decoding animation */}
-        <h1 className={`text-5xl md:text-7xl font-bold text-white mb-6 transition-all duration-1000 ${
+        {/* Name with decoding animation and Download CV icon */}
+        <div className={`mb-6 flex items-center justify-center gap-3 transition-all duration-1000 ${
           showAnimations ? 'animate-[heroNameDecode_1.5s_ease-out_forwards]' : 'opacity-0'
         }`}>
-          {displayName}
-        </h1>
+          <h1 className="text-5xl md:text-7xl font-bold text-white">
+            {displayName}
+          </h1>
+          {profile?.resume_url && (
+            <a
+              href={profile.resume_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              download
+              title="Download CV"
+              aria-label="Download CV"
+              className="p-2 rounded-full text-blue-200/80 hover:text-white hover:bg-white/10 transition-colors"
+            >
+              <Download className="w-6 h-6" />
+            </a>
+          )}
+        </div>
 
         {/* Roles with slide-in from right animation */}
         <div className="h-16 flex items-center justify-center mb-8">
@@ -142,23 +158,13 @@ const Hero = () => {
           </h2>
         </div>
 
-        {/* Download CV Button */}
+        {/* CV Fallback */}
         <div className={`mb-8 transition-all duration-1000 delay-700 ${
           showAnimations ? 'animate-[heroCaptionSlideIn_0.8s_ease-out_forwards]' : 'opacity-0 -translate-x-32'
         }`}>
-          {profile?.resume_url ? (
-            <button
-              onClick={() => window.open(profile.resume_url, '_blank')}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-lg transition-all duration-300 hover:scale-105 shadow-lg hover:shadow-xl"
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              Download CV
-            </button>
-          ) : (
+          {!profile?.resume_url && (
             <div className="text-slate-400 text-sm">
-              No Resume Available
+              No CV Available
             </div>
           )}
         </div>
