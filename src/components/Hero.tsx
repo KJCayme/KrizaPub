@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { handleBookCall } from '../utils/bookCall';
 import { useProfile } from '../hooks/useProfile';
@@ -137,7 +138,7 @@ const Hero = () => {
           </div>
         </div>
 
-        {/* Name with decoding animation and Download CV icon */}
+        {/* Name with decoding animation and Download CV icon - hide icon on mobile/tablet */}
         <div className={`mb-6 flex items-center justify-center gap-3 transition-all duration-1000 ${
           showAnimations ? 'animate-[heroNameDecode_1.5s_ease-out_forwards]' : 'opacity-0'
         }`}>
@@ -150,7 +151,7 @@ const Hero = () => {
               onClick={handleResumeDownload}
               title="Download CV"
               aria-label="Download CV"
-              className="p-2 rounded-full text-blue-200/80 hover:text-white hover:bg-white/10 transition-colors"
+              className="hidden lg:block p-2 rounded-full text-blue-200/80 hover:text-white hover:bg-white/10 transition-colors"
             >
               <Download className="w-6 h-6" />
             </button>

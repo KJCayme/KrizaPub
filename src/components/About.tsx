@@ -157,8 +157,8 @@ const About = () => {
                     )}
                   </div>
                   
-                  {/* Action buttons - rightmost position on desktop */}
-                  <div className="flex items-center gap-3">
+                  {/* Action buttons - rightmost position on desktop only */}
+                  <div className="hidden lg:flex items-center gap-3">
                     {profile?.resume_url && (
                       <Button
                         onClick={async () => {
@@ -177,12 +177,12 @@ const About = () => {
                         size="sm"
                       >
                         <Download className="w-4 h-4" />
-                        <span>Download CV</span>
+                        <span className="truncate">Download CV</span>
                       </Button>
                     )}
                     <Button variant="secondary" aria-label="Video Introduction" title="Video Introduction" size="sm">
                       <PlayCircle className="w-4 h-4" />
-                      <span>Video Introduction</span>
+                      <span className="truncate">Video Introduction</span>
                     </Button>
                   </div>
                 </div>
@@ -260,14 +260,21 @@ const About = () => {
                     aria-label="Download CV"
                     title="Download CV"
                     size="sm"
+                    className="flex items-center gap-2 min-w-0"
                   >
-                    <Download className="w-4 h-4" />
-                    <span>Download CV</span>
+                    <Download className="w-4 h-4 flex-shrink-0" />
+                    <span className="truncate">Download CV</span>
                   </Button>
                 )}
-                <Button variant="secondary" aria-label="Video Introduction" title="Video Introduction" size="sm">
-                  <PlayCircle className="w-4 h-4" />
-                  <span>Video Introduction</span>
+                <Button 
+                  variant="secondary" 
+                  aria-label="Video Introduction" 
+                  title="Video Introduction" 
+                  size="sm"
+                  className="flex items-center gap-2 min-w-0"
+                >
+                  <PlayCircle className="w-4 h-4 flex-shrink-0" />
+                  <span className="truncate">Video Introduction</span>
                 </Button>
               </div>
             </div>
