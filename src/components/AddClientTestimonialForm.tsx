@@ -445,7 +445,7 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
           </div>
         </div>
 
-        {/* Preview Section - Always visible on desktop, toggle on mobile/tablet */}
+        {/* Preview Section */}
         <div className={`${
           isSmallScreen 
             ? `${showPreview ? 'flex flex-col' : 'hidden'} p-4 flex-1 min-h-0` 
