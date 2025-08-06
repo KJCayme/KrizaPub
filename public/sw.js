@@ -2,6 +2,7 @@
 const CACHE_NAME = 'kenneth-portfolio-cache-v5';
 const STATIC_CACHE_NAME = 'static-cache-v5';
 const DYNAMIC_CACHE_NAME = 'dynamic-cache-v5';
+const CACHE_EXPIRATION_TIME = 6 * 60 * 60 * 1000; // 6 hours in milliseconds
 
 // Enhanced static assets to cache
 const STATIC_ASSETS = [
@@ -26,6 +27,48 @@ const DYNAMIC_CACHE_PATTERNS = [
 // Network status tracking
 let isOnline = true;
 
+// Helper function to add timestamp to cached responses
+const addCacheMetadata = (response, timestamp = Date.now()) => {
+  const headers = new Headers(response.headers);
+  headers.set('sw-cache-timestamp', timestamp.toString());
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers: headers
+  });
+};
+
+// Helper function to check if cache entry is expired
+const isCacheExpired = (response) => {
+  const cacheTimestamp = response.headers.get('sw-cache-timestamp');
+  if (!cacheTimestamp) return true; // If no timestamp, consider expired
+  
+  const timestamp = parseInt(cacheTimestamp);
+  const now = Date.now();
+  const isExpired = (now - timestamp) > CACHE_EXPIRATION_TIME;
+  
+  console.log(`Cache check - Age: ${Math.round((now - timestamp) / 1000 / 60)}min, Expired: ${isExpired}`);
+  return isExpired;
+};
+
+// Helper function to clean expired cache entries
+const cleanExpiredCache = async (cacheName) => {
+  try {
+    const cache = await caches.open(cacheName);
+    const requests = await cache.keys();
+    
+    for (const request of requests) {
+      const response = await cache.match(request);
+      if (response && isCacheExpired(response)) {
+        console.log('Removing expired cache entry:', request.url);
+        await cache.delete(request);
+      }
+    }
+  } catch (error) {
+    console.warn('Failed to clean expired cache:', error);
+  }
+};
+
 // Install event - cache static assets and skeleton
 self.addEventListener('install', (event) => {
   console.log('Service Worker installing with network-first strategy v5');
@@ -39,8 +82,12 @@ self.addEventListener('install', (event) => {
         // Cache static assets one by one to avoid failures
         for (const asset of STATIC_ASSETS) {
           try {
-            await cache.add(asset);
-            console.log('Cached static asset:', asset);
+            const response = await fetch(asset);
+            if (response.ok) {
+              const responseWithTimestamp = addCacheMetadata(response);
+              await cache.put(asset, responseWithTimestamp);
+              console.log('Cached static asset:', asset);
+            }
           } catch (error) {
             console.warn(`Failed to cache static asset: ${asset}`, error);
           }
@@ -76,7 +123,8 @@ self.addEventListener('install', (event) => {
             try {
               const response = await fetch(url);
               if (response.ok) {
-                await cache.put(url, response);
+                const responseWithTimestamp = addCacheMetadata(response);
+                await cache.put(url, responseWithTimestamp);
                 console.log('Cached asset:', url);
               } else {
                 console.warn(`Asset returned ${response.status}:`, url);
@@ -102,7 +150,7 @@ self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
 
-// Activate event - clean up old caches
+// Activate event - clean up old caches and expired entries
 self.addEventListener('activate', (event) => {
   console.log('Service Worker activating with cache cleanup v5');
   
@@ -122,6 +170,10 @@ self.addEventListener('activate', (event) => {
           })
         );
       }),
+      
+      // Clean expired entries from current caches
+      cleanExpiredCache(STATIC_CACHE_NAME),
+      cleanExpiredCache(DYNAMIC_CACHE_NAME),
       
       // Take control of all clients immediately
       self.clients.claim().then(() => {
@@ -145,7 +197,7 @@ const checkNetworkConnectivity = async () => {
   }
 };
 
-// Enhanced fetch handler with network-first approach
+// Enhanced fetch handler with network-first approach and cache expiration
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -185,14 +237,15 @@ self.addEventListener('fetch', (event) => {
             });
           });
           
-          // Cache successful responses for offline use
+          // Cache successful responses for offline use with timestamp
           if (response.ok) {
             const responseClone = response.clone();
             caches.open(DYNAMIC_CACHE_NAME).then((cache) => {
-              cache.put(request, responseClone).catch(error => {
+              const responseWithTimestamp = addCacheMetadata(responseClone);
+              cache.put(request, responseWithTimestamp).catch(error => {
                 console.warn('Failed to cache API response:', error);
               });
-              console.log('API response cached for offline use');
+              console.log('API response cached for offline use with 6hr expiration');
             }).catch(error => {
               console.warn('Failed to open dynamic cache:', error);
             });
@@ -206,7 +259,7 @@ self.addEventListener('fetch', (event) => {
           const isReallyOffline = !(await checkNetworkConnectivity());
           
           if (isReallyOffline) {
-            console.log('Network confirmed offline, using cached data');
+            console.log('Network confirmed offline, checking cached data');
             isOnline = false;
             
             // Notify main thread about offline status
@@ -219,12 +272,26 @@ self.addEventListener('fetch', (event) => {
               });
             });
             
-            // Only use cache when truly offline
+            // Check cache but respect expiration
             try {
               const cachedResponse = await caches.match(request);
               if (cachedResponse) {
-                console.log('Serving API response from cache (offline)');
-                return cachedResponse;
+                if (!isCacheExpired(cachedResponse)) {
+                  console.log('Serving fresh API response from cache (offline)');
+                  return cachedResponse;
+                } else {
+                  console.log('Cache expired, serving stale data with warning');
+                  // Still serve expired cache in offline mode, but could add headers to indicate staleness
+                  const staleResponse = new Response(cachedResponse.body, {
+                    status: cachedResponse.status,
+                    statusText: cachedResponse.statusText,
+                    headers: {
+                      ...Object.fromEntries(cachedResponse.headers.entries()),
+                      'sw-cache-stale': 'true'
+                    }
+                  });
+                  return staleResponse;
+                }
               }
             } catch (cacheError) {
               console.warn('Failed to access cache:', cacheError);
@@ -262,12 +329,13 @@ self.addEventListener('fetch', (event) => {
         .then(async (response) => {
           console.log('Static asset response received:', response.status);
           
-          // Cache successful responses
+          // Cache successful responses with timestamp
           if (response.ok) {
             try {
               const cache = await caches.open(STATIC_CACHE_NAME);
-              await cache.put(request, response.clone());
-              console.log('Static asset cached');
+              const responseWithTimestamp = addCacheMetadata(response.clone());
+              await cache.put(request, responseWithTimestamp);
+              console.log('Static asset cached with 6hr expiration');
             } catch (cacheError) {
               console.warn('Failed to cache static asset:', cacheError);
             }
@@ -280,8 +348,13 @@ self.addEventListener('fetch', (event) => {
           try {
             const cachedResponse = await caches.match(request);
             if (cachedResponse) {
-              console.log('Serving static asset from cache');
-              return cachedResponse;
+              if (!isCacheExpired(cachedResponse)) {
+                console.log('Serving fresh static asset from cache');
+                return cachedResponse;
+              } else {
+                console.log('Serving expired static asset from cache (better than nothing)');
+                return cachedResponse;
+              }
             }
           } catch (cacheError) {
             console.warn('Failed to access cache for static asset:', cacheError);
@@ -303,12 +376,13 @@ self.addEventListener('fetch', (event) => {
         .then(async (response) => {
           console.log('Navigation response received:', response.status);
           
-          // Cache successful navigation responses
+          // Cache successful navigation responses with timestamp
           if (response.ok) {
             try {
               const cache = await caches.open(STATIC_CACHE_NAME);
-              await cache.put(request, response.clone());
-              console.log('Navigation response cached');
+              const responseWithTimestamp = addCacheMetadata(response.clone());
+              await cache.put(request, responseWithTimestamp);
+              console.log('Navigation response cached with 6hr expiration');
             } catch (cacheError) {
               console.warn('Failed to cache navigation response:', cacheError);
             }
@@ -319,21 +393,21 @@ self.addEventListener('fetch', (event) => {
           console.log('Navigation request failed, trying offline fallbacks:', error);
           
           try {
-            // Try cached version of the specific page
+            // Try cached version of the specific page (respect expiration for navigation)
             const cachedResponse = await caches.match(request);
-            if (cachedResponse) {
-              console.log('Serving navigation from cache');
+            if (cachedResponse && !isCacheExpired(cachedResponse)) {
+              console.log('Serving fresh navigation from cache');
               return cachedResponse;
             }
             
             // Try cached index.html
             const indexResponse = await caches.match('/index.html');
-            if (indexResponse) {
-              console.log('Serving index.html from cache');
+            if (indexResponse && !isCacheExpired(indexResponse)) {
+              console.log('Serving fresh index.html from cache');
               return indexResponse;
             }
             
-            // Final fallback to skeleton
+            // Final fallback to skeleton (even if expired, better than nothing)
             const skeletonResponse = await caches.match('/skeleton.html');
             if (skeletonResponse) {
               console.log('Serving skeleton.html from cache');
@@ -381,12 +455,13 @@ self.addEventListener('fetch', (event) => {
           });
         });
         
-        // Cache successful responses for offline use
+        // Cache successful responses for offline use with timestamp
         if (response.ok) {
           try {
             const cache = await caches.open(DYNAMIC_CACHE_NAME);
-            await cache.put(request, response.clone());
-            console.log('Response cached for offline use');
+            const responseWithTimestamp = addCacheMetadata(response.clone());
+            await cache.put(request, responseWithTimestamp);
+            console.log('Response cached for offline use with 6hr expiration');
           } catch (cacheError) {
             console.warn('Failed to cache response:', cacheError);
           }
@@ -415,8 +490,13 @@ self.addEventListener('fetch', (event) => {
           try {
             const cachedResponse = await caches.match(request);
             if (cachedResponse) {
-              console.log('Serving from cache (offline)');
-              return cachedResponse;
+              if (!isCacheExpired(cachedResponse)) {
+                console.log('Serving fresh response from cache (offline)');
+                return cachedResponse;
+              } else {
+                console.log('Serving expired response from cache (offline, better than nothing)');
+                return cachedResponse;
+              }
             }
           } catch (cacheError) {
             console.warn('Failed to access cache:', cacheError);
@@ -428,6 +508,13 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
+// Periodic cleanup of expired cache entries
+setInterval(async () => {
+  console.log('Running periodic cache cleanup...');
+  await cleanExpiredCache(STATIC_CACHE_NAME);
+  await cleanExpiredCache(DYNAMIC_CACHE_NAME);
+}, 60 * 60 * 1000); // Run every hour
+
 // Listen for messages from the main thread
 self.addEventListener('message', (event) => {
   console.log('Service worker received message:', event.data);
@@ -435,6 +522,12 @@ self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     console.log('Skipping waiting...');
     self.skipWaiting();
+  }
+  
+  if (event.data && event.data.type === 'CLEAN_EXPIRED_CACHE') {
+    console.log('Manual cache cleanup requested...');
+    cleanExpiredCache(STATIC_CACHE_NAME);
+    cleanExpiredCache(DYNAMIC_CACHE_NAME);
   }
 });
 
@@ -444,8 +537,10 @@ self.addEventListener('sync', (event) => {
   
   if (event.tag === 'background-sync') {
     event.waitUntil(
-      // Refresh critical data when back online
+      // Refresh critical data when back online and clean expired cache
       Promise.all([
+        cleanExpiredCache(STATIC_CACHE_NAME),
+        cleanExpiredCache(DYNAMIC_CACHE_NAME),
         fetch('/api/skills').then(() => console.log('Skills synced')).catch(() => {}),
         fetch('/api/portfolio').then(() => console.log('Portfolio synced')).catch(() => {}),
         fetch('/api/certificates').then(() => console.log('Certificates synced')).catch(() => {}),
