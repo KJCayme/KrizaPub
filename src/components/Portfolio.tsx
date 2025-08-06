@@ -227,6 +227,10 @@ const Portfolio = ({ onShowAllProjectsChange }: PortfolioProps) => {
     toast.success('Project added successfully!');
   };
 
+  const handleProjectDeleted = () => {
+    refetch(); // Refresh the projects list after deletion
+  };
+
   const handleCategoryAdded = () => {
     refetchCategories(); // Refresh the categories list
     toast.success('Category added successfully!');
@@ -356,6 +360,7 @@ const Portfolio = ({ onShowAllProjectsChange }: PortfolioProps) => {
           onViewProject={handleViewProject}
           source="section"
           lastOpenedProject={lastOpenedProject}
+          onProjectDeleted={handleProjectDeleted}
         />
 
         {/* See More Button */}

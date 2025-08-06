@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Eye, Clock, CheckCircle, ExternalLink } from 'lucide-react';
+import { Eye, Clock, CheckCircle, ExternalLink, Trash2 } from 'lucide-react';
 import { useIsMobile } from '../../hooks/use-mobile';
 import { getProjectCardImage } from '../../utils/imageMap';
 import { useCarouselImages } from '../../hooks/useCarouselImages';
+import { useAuth } from '../../hooks/useAuth';
+import { useDeleteProject } from '../../hooks/useDeleteProject';
 
 interface ProjectCardProps {
   project: any;
@@ -10,18 +12,32 @@ interface ProjectCardProps {
   source?: 'section' | 'view-only';
   isHovered?: boolean;
   onHover?: (projectId: string, isHovered: boolean) => void;
+  onProjectDeleted?: () => void;
 }
 
-const ProjectCard = ({ project, onViewProject, source = 'section', isHovered = false, onHover }: ProjectCardProps) => {
+const ProjectCard = ({ project, onViewProject, source = 'section', isHovered = false, onHover, onProjectDeleted }: ProjectCardProps) => {
   const isMobile = useIsMobile();
   const { data: carouselImages = [] } = useCarouselImages(project.id);
   const [isInternalHovered, setIsInternalHovered] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const { user } = useAuth();
+  const deleteProject = useDeleteProject();
 
   const handleLinkClick = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (project.link) {
       window.open(project.link, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  const handleDeleteClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (window.confirm('Are you sure you want to delete this project?')) {
+      deleteProject.mutate(project.id, {
+        onSuccess: () => {
+          onProjectDeleted?.();
+        }
+      });
     }
   };
 
@@ -177,6 +193,17 @@ const ProjectCard = ({ project, onViewProject, source = 'section', isHovered = f
         <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-responsive-xs font-bold px-2 py-1 rounded-full z-10">
           {project.badge}
         </div>
+      )}
+
+      {/* Delete Button - Only show if user is authenticated */}
+      {user && (
+        <button
+          onClick={handleDeleteClick}
+          className="absolute top-4 left-4 bg-red-500 hover:bg-red-600 text-white p-2 rounded-full shadow-lg transition-all duration-300 transform hover:scale-110 z-10"
+          title="Delete Project"
+        >
+          <Trash2 className="w-4 h-4" />
+        </button>
       )}
       
       {/* Project Image - Enhanced size and fit */}

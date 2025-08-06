@@ -10,6 +10,7 @@ interface ProjectGridProps {
   onViewProject: (project: any, source?: 'section' | 'view-only') => void;
   source?: 'section' | 'view-only';
   lastOpenedProject?: any;
+  onProjectDeleted?: () => void;
 }
 
 interface ProjectGridRef {
@@ -17,7 +18,7 @@ interface ProjectGridRef {
 }
 
 const ProjectGrid = forwardRef<ProjectGridRef, ProjectGridProps>(
-  ({ projects, activeCategory, onViewProject, source = 'section', lastOpenedProject }, ref) => {
+  ({ projects, activeCategory, onViewProject, source = 'section', lastOpenedProject, onProjectDeleted }, ref) => {
     const isMobile = useIsMobile();
     const scrollContainerRef = useRef<HTMLDivElement>(null);
     const [showLeftArrow, setShowLeftArrow] = useState(false);
@@ -165,6 +166,7 @@ const ProjectGrid = forwardRef<ProjectGridRef, ProjectGridProps>(
                 source={source}
                 isHovered={hoveredProjectId === project.id}
                 onHover={handleProjectHover}
+                onProjectDeleted={onProjectDeleted}
               />
             </div>
           ))}
