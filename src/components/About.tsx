@@ -135,51 +135,55 @@ const About = () => {
             <div className={`transition-all duration-1000 ${
               hasIntersected ? 'animate-[aboutContentFadeIn_1.2s_ease-out_forwards]' : 'opacity-0 -translate-y-8'
             }`}>
-              <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
-                <div className="flex items-center gap-4">
-                  <h2 className="text-4xl md:text-5xl font-bold text-slate-800">
-                    About Me
-                  </h2>
-                  {user && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-slate-600 hover:text-slate-800 hover:bg-slate-100"
-                      onClick={() => setShowEditInfo(true)}
-                    >
-                      <Edit className="w-4 h-4 mr-2" />
-                      Edit Info
+              {/* Title row with action buttons and edit button */}
+              <div className="flex flex-col gap-4 mb-6">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                  {/* Action buttons - leftmost position */}
+                  <div className="flex items-center gap-3 order-1 sm:order-1">
+                    {profile?.resume_url && (
+                      <Button
+                        onClick={async () => {
+                          const signed = await getResumeSignedDownloadUrl(
+                            profile.resume_url as string,
+                            profile.resume_filename || 'CV.pdf'
+                          );
+                          if (signed) {
+                            window.location.href = signed;
+                          } else {
+                            window.open(profile.resume_url as string, '_blank');
+                          }
+                        }}
+                        aria-label="Download CV"
+                        title="Download CV"
+                        size="sm"
+                      >
+                        <Download className="w-4 h-4" />
+                        <span>Download CV</span>
+                      </Button>
+                    )}
+                    <Button variant="secondary" aria-label="Video Introduction" title="Video Introduction" size="sm">
+                      <PlayCircle className="w-4 h-4" />
+                      <span>Video Introduction</span>
                     </Button>
-                  )}
-                </div>
-                
-                {/* Action buttons - shown next to title on large screens */}
-                <div className="hidden lg:flex items-center gap-3">
-                  {profile?.resume_url && (
-                    <Button
-                      onClick={async () => {
-                        const signed = await getResumeSignedDownloadUrl(
-                          profile.resume_url as string,
-                          profile.resume_filename || 'CV.pdf'
-                        );
-                        if (signed) {
-                          window.location.href = signed;
-                        } else {
-                          window.open(profile.resume_url as string, '_blank');
-                        }
-                      }}
-                      aria-label="Download CV"
-                      title="Download CV"
-                      size="sm"
-                    >
-                      <Download className="w-4 h-4" />
-                      <span>Download CV</span>
-                    </Button>
-                  )}
-                  <Button variant="secondary" aria-label="Video Introduction" title="Video Introduction" size="sm">
-                    <PlayCircle className="w-4 h-4" />
-                    <span>Video Introduction</span>
-                  </Button>
+                  </div>
+                  
+                  {/* Title and edit button */}
+                  <div className="flex items-center gap-4 order-2 sm:order-2">
+                    <h2 className="text-4xl md:text-5xl font-bold text-slate-800">
+                      About Me
+                    </h2>
+                    {user && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-slate-600 hover:text-slate-800 hover:bg-slate-100"
+                        onClick={() => setShowEditInfo(true)}
+                      >
+                        <Edit className="w-4 h-4 mr-2" />
+                        Edit Info
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
               
@@ -297,36 +301,6 @@ const About = () => {
               </div>
               
               <div className="absolute top-4 left-4 w-full h-full rounded-2xl bg-gradient-to-br from-blue-600/20 to-purple-600/20 -z-10"></div>
-              
-              {/* Action buttons below carousel on mobile/tablet only */}
-              <div className="mt-6 md:mt-8 lg:hidden">
-                <div className="flex flex-wrap items-center justify-center gap-3">
-                  {profile?.resume_url && (
-                    <Button
-                      onClick={async () => {
-                        const signed = await getResumeSignedDownloadUrl(
-                          profile.resume_url as string,
-                          profile.resume_filename || 'CV.pdf'
-                        );
-                        if (signed) {
-                          window.location.href = signed;
-                        } else {
-                          window.open(profile.resume_url as string, '_blank');
-                        }
-                      }}
-                      aria-label="Download CV"
-                      title="Download CV"
-                    >
-                      <Download className="w-4 h-4" />
-                      <span>Download CV</span>
-                    </Button>
-                  )}
-                  <Button variant="secondary" aria-label="Video Introduction" title="Video Introduction">
-                    <PlayCircle className="w-4 h-4" />
-                    <span>Video Introduction</span>
-                  </Button>
-                </div>
-              </div>
               
               {/* Edit Images Button */}
               {user && (
