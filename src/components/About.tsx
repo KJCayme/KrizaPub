@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Award, Clock, Heart, Target, ChevronLeft, ChevronRight, MapPin, GraduationCap, Coffee, Users, Music, Camera, Book, Plane, Edit } from 'lucide-react';
+import { Award, Clock, Heart, Target, ChevronLeft, ChevronRight, MapPin, GraduationCap, Coffee, Users, Music, Camera, Book, Plane, Edit, Download } from 'lucide-react';
 import { useIsMobile } from '../hooks/use-mobile';
 import { useAboutCarousel } from '../hooks/useAboutCarousel';
 import { useAboutInfo } from '../hooks/useAboutInfo';
@@ -15,6 +15,7 @@ import EditHobbiesForm from './EditHobbiesForm';
 import EditThingsToDoForm from './EditThingsToDoForm';
 import EditHighlightsForm from './EditHighlightsForm';
 import DynamicIcon from './DynamicIcon';
+import { useProfile } from '../hooks/useProfile';
 
 const About = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -27,6 +28,7 @@ const About = () => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   const { user } = useAuth();
+  const { profile } = useProfile();
 
   // Use intersection observer for one-time animations
   const { ref: aboutRef, hasIntersected } = useIntersectionObserver({ threshold: 0.2 });
@@ -263,6 +265,25 @@ const About = () => {
               </div>
               
               <div className="absolute top-4 left-4 w-full h-full rounded-2xl bg-gradient-to-br from-blue-600/20 to-purple-600/20 -z-10"></div>
+              
+              {/* Download CV below carousel */}
+              {profile?.resume_url && (
+                <div className="mt-6 text-center">
+                  <Button asChild>
+                    <a
+                      href={profile.resume_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      download
+                      title="Download CV"
+                      aria-label="Download CV"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span>Download CV</span>
+                    </a>
+                  </Button>
+                </div>
+              )}
               
               {/* Edit Images Button */}
               {user && (
