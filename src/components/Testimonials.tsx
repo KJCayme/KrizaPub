@@ -6,6 +6,8 @@ import { handleBookCall } from '../utils/bookCall';
 import { useTestimonials } from '../hooks/useTestimonials';
 import { useAuth } from '../hooks/useAuth';
 import { useGenerateCode } from '../hooks/useClientTestimonials';
+import { useIsMobile } from '../hooks/use-mobile';
+import { useIsTablet } from '../hooks/use-tablet';
 import AddTestimonialForm from './AddTestimonialForm';
 import AddClientTestimonialForm from './AddClientTestimonialForm';
 import CodeGenerationPopup from './CodeGenerationPopup';
@@ -22,9 +24,11 @@ const Testimonials = ({ onShowTestimonialsOnly }: TestimonialsProps) => {
   const [showClientForm, setShowClientForm] = useState(false);
   const [showCodePopup, setShowCodePopup] = useState(false);
   const [generatedCode, setGeneratedCode] = useState('');
-  const { data: testimonials = [], isLoading, error } = useTestimonials(6);
-  const { user } = useAuth();
-  const generateCode = useGenerateCode();
+   const { data: testimonials = [], isLoading, error } = useTestimonials(6);
+   const { user } = useAuth();
+   const generateCode = useGenerateCode();
+   const isMobile = useIsMobile();
+   const isTablet = useIsTablet();
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -81,25 +85,25 @@ const Testimonials = ({ onShowTestimonialsOnly }: TestimonialsProps) => {
               <div className="flex-1 flex justify-end gap-2">
                 {user && (
                   <>
-                    <Button
-                      onClick={handleGenerateCode}
-                      disabled={generateCode.isPending}
-                      className="bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-                    >
-                      <Code className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 mr-1 sm:mr-2" />
-                      <span className="text-xs sm:text-sm lg:text-base whitespace-nowrap">
-                        {generateCode.isPending ? 'Generating...' : 'Generate Code'}
-                      </span>
-                    </Button>
-                    <Button
-                      onClick={() => setShowAddForm(true)}
-                      className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-                    >
-                      <Plus className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5 mr-1 sm:mr-2" />
-                      <span className="text-xs sm:text-sm lg:text-base whitespace-nowrap">
-                        Add Testimonial
-                      </span>
-                    </Button>
+                     <Button
+                       onClick={handleGenerateCode}
+                       disabled={generateCode.isPending}
+                       className="bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                     >
+                       <Code className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5" />
+                       <span className={`text-xs sm:text-sm lg:text-base whitespace-nowrap ${isMobile ? 'sr-only' : isTablet ? 'ml-1 sm:ml-2' : 'ml-1 sm:ml-2'}`}>
+                         {generateCode.isPending ? 'Generating...' : isTablet ? 'Generate' : 'Generate Code'}
+                       </span>
+                     </Button>
+                     <Button
+                       onClick={() => setShowAddForm(true)}
+                       className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                     >
+                       <Plus className="w-3 h-3 sm:w-4 sm:h-4 lg:w-5 lg:h-5" />
+                       <span className={`text-xs sm:text-sm lg:text-base whitespace-nowrap ${isMobile ? 'sr-only' : isTablet ? 'ml-1 sm:ml-2' : 'ml-1 sm:ml-2'}`}>
+                         {isTablet ? 'Add' : 'Add Testimonial'}
+                       </span>
+                     </Button>
                   </>
                 )}
               </div>

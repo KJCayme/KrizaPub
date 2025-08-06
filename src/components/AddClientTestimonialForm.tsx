@@ -449,11 +449,9 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
         <div className={`${
           isSmallScreen 
             ? `${showPreview ? 'flex flex-col' : 'hidden'} p-4 flex-1 min-h-0` 
-            : 'flex-1 p-6 flex flex-col'
+            : 'flex-1 p-6 overflow-y-auto'
         }`}>
-          <div className="flex-1 overflow-y-auto">
-            <PreviewCard />
-          </div>
+          <PreviewCard />
         </div>
       </div>
     </div>
