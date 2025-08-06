@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Award, Clock, Heart, Target, ChevronLeft, ChevronRight, MapPin, GraduationCap, Coffee, Users, Music, Camera, Book, Plane, Edit, Download } from 'lucide-react';
+import { Award, Clock, Heart, Target, ChevronLeft, ChevronRight, MapPin, GraduationCap, Coffee, Users, Music, Camera, Book, Plane, Edit, Download, PlayCircle } from 'lucide-react';
 import { useIsMobile } from '../hooks/use-mobile';
 import { useAboutCarousel } from '../hooks/useAboutCarousel';
 import { useAboutInfo } from '../hooks/useAboutInfo';
@@ -267,27 +267,35 @@ const About = () => {
               
               <div className="absolute top-4 left-4 w-full h-full rounded-2xl bg-gradient-to-br from-blue-600/20 to-purple-600/20 -z-10"></div>
               
-              {/* Download CV below carousel (beneath overlay/shadow) */}
-              {profile?.resume_url && (
-                <div className="mt-8 text-center">
-                  <Button
-                    onClick={async () => {
-                      const signed = await getResumeSignedDownloadUrl(
-                        profile.resume_url as string,
-                        profile.resume_filename || 'CV.pdf'
-                      );
-                      if (signed) {
-                        window.location.href = signed;
-                      } else {
-                        window.open(profile.resume_url as string, '_blank');
-                      }
-                    }}
-                  >
-                    <Download className="w-4 h-4" />
-                    <span>Download CV</span>
+              {/* Action buttons below carousel (fully outside shadow/overlay) */}
+              <div className="mt-6 md:mt-8">
+                <div className="flex flex-wrap items-center justify-center gap-3">
+                  {profile?.resume_url && (
+                    <Button
+                      onClick={async () => {
+                        const signed = await getResumeSignedDownloadUrl(
+                          profile.resume_url as string,
+                          profile.resume_filename || 'CV.pdf'
+                        );
+                        if (signed) {
+                          window.location.href = signed;
+                        } else {
+                          window.open(profile.resume_url as string, '_blank');
+                        }
+                      }}
+                      aria-label="Download CV"
+                      title="Download CV"
+                    >
+                      <Download className="w-4 h-4" />
+                      <span>Download CV</span>
+                    </Button>
+                  )}
+                  <Button variant="secondary" aria-label="Video Introduction" title="Video Introduction">
+                    <PlayCircle className="w-4 h-4" />
+                    <span>Video Introduction</span>
                   </Button>
                 </div>
-              )}
+              </div>
               
               {/* Edit Images Button */}
               {user && (

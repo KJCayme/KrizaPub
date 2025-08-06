@@ -126,7 +126,7 @@ const EditProfileForm = ({ onProfileUpdated }: EditProfileFormProps) => {
           Edit Info
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[540px] md:max-w-[720px]">
         <DialogHeader>
           <DialogTitle>Edit Profile Information</DialogTitle>
         </DialogHeader>
