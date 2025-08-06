@@ -446,13 +446,15 @@ const AddClientTestimonialForm = ({ onClose }: AddClientTestimonialFormProps) =>
         </div>
 
         {/* Preview Section */}
-        <div className={`${
-          isSmallScreen 
-            ? `${showPreview ? 'flex flex-col' : 'hidden'} p-4 flex-1 min-h-0` 
-            : 'flex-1 p-6 overflow-y-auto max-h-full'
-        }`}>
-          <PreviewCard />
-        </div>
+        {isSmallScreen ? (
+          <div className={`${showPreview ? 'flex flex-col' : 'hidden'} p-4 flex-1 min-h-0`}>
+            <PreviewCard />
+          </div>
+        ) : (
+          <div className="flex-1 p-6 overflow-y-auto max-h-full">
+            <PreviewCard />
+          </div>
+        )}
       </div>
     </div>
   );
