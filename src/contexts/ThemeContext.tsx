@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-export type Theme = 'default' | 'lavender' | 'custom';
+export type Theme = 'default' | 'lavender' | 'colorful' | 'custom';
 
 interface ThemeContextType {
   currentTheme: Theme;
@@ -36,6 +36,36 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       root.style.setProperty('--about-bg-end', '280 30% 97%');
       root.style.setProperty('--config-button-purple-start', '270 91% 65%');
       root.style.setProperty('--config-button-purple-end', '300 81% 60%');
+    } else if (theme === 'colorful') {
+      // Colorful theme with provided HSL values
+      root.style.setProperty('--hero-bg-start', '0 0% 0%');           // Black
+      root.style.setProperty('--hero-bg-mid', '277 83% 54%');         // Purple/Violet
+      root.style.setProperty('--hero-bg-end', '290 59% 63%');         // Light Purple
+      root.style.setProperty('--hero-blob-1', '277 83% 54%');         // Purple/Violet
+      root.style.setProperty('--hero-blob-2', '290 59% 63%');         // Light Purple
+      root.style.setProperty('--hero-blob-3', '50 91% 77%');          // Light Yellow
+      
+      // Apply colorful theme to other sections
+      root.style.setProperty('--about-bg-start', '0 0% 5%');
+      root.style.setProperty('--about-bg-end', '277 83% 10%');
+      root.style.setProperty('--config-button-purple-start', '277 83% 54%');
+      root.style.setProperty('--config-button-purple-end', '290 59% 63%');
+      
+      // Navigation colors for colorful theme
+      root.style.setProperty('--nav-bg', '0 0% 0% / 0.9');
+      root.style.setProperty('--nav-text', '50 91% 77%');
+      root.style.setProperty('--nav-text-hover', '290 59% 63%');
+      root.style.setProperty('--nav-text-active', '277 83% 54%');
+      
+      // Skills section for colorful theme
+      root.style.setProperty('--skills-bg-start', '0 0% 5%');
+      root.style.setProperty('--skills-bg-end', '277 83% 10%');
+      root.style.setProperty('--skills-text-primary', '50 91% 77%');
+      
+      // Portfolio section for colorful theme
+      root.style.setProperty('--portfolio-bg-start', '0 0% 0%');
+      root.style.setProperty('--portfolio-bg-end', '277 83% 10%');
+      root.style.setProperty('--portfolio-text-primary', '50 91% 77%');
     } else if (theme === 'custom') {
       // Custom theme placeholder - will be implemented later
       console.log('Custom theme selected - implementation coming soon');
@@ -82,7 +112,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   useEffect(() => {
     // Load saved theme preference on mount
     const savedTheme = localStorage.getItem('selectedTheme') as Theme;
-    if (savedTheme && (savedTheme === 'default' || savedTheme === 'lavender')) {
+    if (savedTheme && (savedTheme === 'default' || savedTheme === 'lavender' || savedTheme === 'colorful')) {
       setCurrentTheme(savedTheme);
       applyTheme(savedTheme);
     } else {

@@ -13,8 +13,10 @@ const Config = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleQuickToggle = () => {
-    const newTheme = currentTheme === 'default' ? 'lavender' : 'default';
-    setTheme(newTheme);
+    const themes: Theme[] = ['default', 'lavender', 'colorful'];
+    const currentIndex = themes.indexOf(currentTheme);
+    const nextIndex = (currentIndex + 1) % themes.length;
+    setTheme(themes[nextIndex]);
   };
 
   const handleThemeSelect = () => {
@@ -28,6 +30,19 @@ const Config = () => {
   React.useEffect(() => {
     setSelectedTheme(currentTheme);
   }, [currentTheme]);
+
+  const getQuickToggleText = () => {
+    switch (currentTheme) {
+      case 'default':
+        return 'Switch to Lavender Theme';
+      case 'lavender':
+        return 'Switch to Colorful Theme';
+      case 'colorful':
+        return 'Switch to Default Theme';
+      default:
+        return 'Switch Theme';
+    }
+  };
 
   return (
     <section id="config" className="py-20 bg-gradient-to-br from-config-bg-start to-config-bg-end transition-colors duration-300">
@@ -47,7 +62,7 @@ const Config = () => {
             className="bg-gradient-to-r from-config-button-purple-start to-config-button-purple-end text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 px-8 py-4"
           >
             <Palette className="w-5 h-5 mr-2" />
-            {currentTheme === 'default' ? 'Switch to Lavender Theme' : 'Switch to Default Theme'}
+            {getQuickToggleText()}
           </Button>
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -72,6 +87,10 @@ const Config = () => {
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="lavender" id="lavender" />
                     <Label htmlFor="lavender">Lavender Theme</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="colorful" id="colorful" />
+                    <Label htmlFor="colorful">Colorful Theme</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="custom" id="custom" disabled />
