@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
-export type Theme = 'default' | 'lavender';
+export type Theme = 'default' | 'lavender' | 'custom';
 
 interface ThemeContextType {
   currentTheme: Theme;
@@ -36,6 +36,10 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
       root.style.setProperty('--about-bg-end', '280 30% 97%');
       root.style.setProperty('--config-button-purple-start', '270 91% 65%');
       root.style.setProperty('--config-button-purple-end', '300 81% 60%');
+    } else if (theme === 'custom') {
+      // Custom theme placeholder - will be implemented later
+      console.log('Custom theme selected - implementation coming soon');
+      return;
     } else {
       // Default theme - restore original values based on current mode
       if (isDark) {
@@ -65,6 +69,11 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
   };
 
   const setTheme = (theme: Theme) => {
+    if (theme === 'custom') {
+      // Don't actually set custom theme yet - just log for now
+      console.log('Custom theme not yet implemented');
+      return;
+    }
     setCurrentTheme(theme);
     applyTheme(theme);
     localStorage.setItem('selectedTheme', theme);
