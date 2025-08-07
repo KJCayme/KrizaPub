@@ -1,11 +1,36 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Palette } from 'lucide-react';
 import { Button } from './ui/button';
 
 const Config = () => {
+  const [currentTheme, setCurrentTheme] = useState('default');
+
+  const applyTheme = (theme: 'default' | 'lavender') => {
+    const root = document.documentElement;
+    
+    if (theme === 'lavender') {
+      // Lavender-based color palette
+      root.style.setProperty('--bg-start', '270 30% 25%');    // Deep lavender
+      root.style.setProperty('--bg-mid', '280 60% 45%');      // Medium lavender
+      root.style.setProperty('--bg-end', '290 70% 65%');      // Light lavender
+      root.style.setProperty('--blob-1', '270 80% 75%');      // Soft lavender
+      root.style.setProperty('--blob-2', '300 80% 75%');      // Pink lavender
+      root.style.setProperty('--blob-3', '260 80% 75%');      // Blue lavender
+    } else {
+      // Default theme - restore original values
+      root.style.setProperty('--bg-start', '222.2 47.4% 11.2%');
+      root.style.setProperty('--bg-mid', '220 60% 40%');
+      root.style.setProperty('--bg-end', '270 60% 50%');
+      root.style.setProperty('--blob-1', '210 100% 70%');
+      root.style.setProperty('--blob-2', '270 100% 70%');
+      root.style.setProperty('--blob-3', '330 100% 70%');
+    }
+  };
+
   const handleChooseTheme = () => {
-    // Not functional yet - placeholder for future implementation
-    console.log('Choose theme functionality not implemented yet');
+    const newTheme = currentTheme === 'default' ? 'lavender' : 'default';
+    setCurrentTheme(newTheme);
+    applyTheme(newTheme);
   };
 
   return (
