@@ -164,13 +164,13 @@ const Certificates = ({ onShowCertificatesOnly }: CertificatesProps) => {
                       <Button
                         size="icon"
                         variant="secondary"
-                        className="w-8 h-8 bg-red-500/20 backdrop-blur-sm hover:bg-red-500/30 border-none"
+                        className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 border-none shadow-lg"
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDeleteCertificate(cert.id);
                         }}
                       >
-                        <Trash2 className="w-4 h-4 text-red-300" />
+                        <Trash2 className="w-4 h-4 text-white" />
                       </Button>
                     </div>
                   )}
