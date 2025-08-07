@@ -196,18 +196,10 @@ const TestimonialsViewOnly = ({ isDarkMode, onToggleDarkMode, onBack }: Testimon
                   ) : (
                     <>
                       <p className="text-lg mb-4">No testimonials yet.</p>
-                      <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                        <Button
-                          onClick={handleAddTestimonial}
-                          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-                        >
-                          <Plus className="w-5 h-5 mr-2" />
-                          Be the First to Add a Testimonial
-                        </Button>
+                      <div className="flex justify-center">
                         <Button
                           onClick={() => setShowClientForm(true)}
-                          variant="outline"
-                          className="bg-white/80 backdrop-blur-sm border-2 border-blue-200 text-blue-600 font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:bg-blue-50"
+                          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                         >
                           <Plus className="w-5 h-5 mr-2" />
                           Add Client Testimonial
