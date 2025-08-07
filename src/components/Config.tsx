@@ -5,57 +5,29 @@ import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
+import { useTheme, Theme } from '../contexts/ThemeContext';
 
 const Config = () => {
-  const [currentTheme, setCurrentTheme] = useState('default');
-  const [selectedTheme, setSelectedTheme] = useState('default');
+  const { currentTheme, setTheme } = useTheme();
+  const [selectedTheme, setSelectedTheme] = useState<Theme>(currentTheme);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const applyTheme = (theme: 'default' | 'lavender') => {
-    const root = document.documentElement;
-    
-    if (theme === 'lavender') {
-      // Lavender-based color palette
-      root.style.setProperty('--hero-bg-start', '270 30% 25%');
-      root.style.setProperty('--hero-bg-mid', '280 60% 45%');
-      root.style.setProperty('--hero-bg-end', '290 70% 65%');
-      root.style.setProperty('--hero-blob-1', '270 80% 75%');
-      root.style.setProperty('--hero-blob-2', '300 80% 75%');
-      root.style.setProperty('--hero-blob-3', '260 80% 75%');
-    } else {
-      // Default theme - restore original values based on current mode
-      const isDark = document.documentElement.classList.contains('dark');
-      if (isDark) {
-        root.style.setProperty('--hero-bg-start', '222.2 47.4% 6%');
-        root.style.setProperty('--hero-bg-mid', '220 60% 20%');
-        root.style.setProperty('--hero-bg-end', '270 60% 30%');
-        root.style.setProperty('--hero-blob-1', '210 100% 60%');
-        root.style.setProperty('--hero-blob-2', '270 100% 60%');
-        root.style.setProperty('--hero-blob-3', '330 100% 60%');
-      } else {
-        root.style.setProperty('--hero-bg-start', '222.2 47.4% 11.2%');
-        root.style.setProperty('--hero-bg-mid', '220 60% 40%');
-        root.style.setProperty('--hero-bg-end', '270 60% 50%');
-        root.style.setProperty('--hero-blob-1', '210 100% 70%');
-        root.style.setProperty('--hero-blob-2', '270 100% 70%');
-        root.style.setProperty('--hero-blob-3', '330 100% 70%');
-      }
-    }
-  };
-
-  const handleChooseTheme = () => {
+  const handleQuickToggle = () => {
     const newTheme = currentTheme === 'default' ? 'lavender' : 'default';
-    setCurrentTheme(newTheme);
-    applyTheme(newTheme);
+    setTheme(newTheme);
   };
 
   const handleThemeSelect = () => {
     if (selectedTheme !== 'custom') {
-      setCurrentTheme(selectedTheme);
-      applyTheme(selectedTheme as 'default' | 'lavender');
+      setTheme(selectedTheme);
     }
     setIsDialogOpen(false);
   };
+
+  // Update selectedTheme when currentTheme changes
+  React.useEffect(() => {
+    setSelectedTheme(currentTheme);
+  }, [currentTheme]);
 
   return (
     <section id="config" className="py-20 bg-gradient-to-br from-config-bg-start to-config-bg-end transition-colors duration-300">
@@ -71,7 +43,7 @@ const Config = () => {
 
         <div className="flex justify-center gap-4">
           <Button
-            onClick={handleChooseTheme}
+            onClick={handleQuickToggle}
             className="bg-gradient-to-r from-config-button-purple-start to-config-button-purple-end text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 px-8 py-4"
           >
             <Palette className="w-5 h-5 mr-2" />
@@ -92,7 +64,7 @@ const Config = () => {
                 <DialogTitle>Choose Theme</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
-                <RadioGroup value={selectedTheme} onValueChange={setSelectedTheme}>
+                <RadioGroup value={selectedTheme} onValueChange={(value) => setSelectedTheme(value as Theme)}>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="default" id="default" />
                     <Label htmlFor="default">Default Theme</Label>
