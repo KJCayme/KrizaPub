@@ -13,7 +13,6 @@ export interface Skill {
   hidden?: boolean;
   created_at: string;
   updated_at: string;
-  skills_expertise?: SkillExpertise[];
 }
 
 export interface SkillExpertise {
@@ -25,15 +24,6 @@ export interface SkillExpertise {
   created_at: string;
   updated_at: string;
 }
-
-export type SkillWithExpertise = Skill & {
-  skills_expertise?: Array<{
-    id: string;
-    expertise_level: string;
-    years_experience: number;
-    details?: string[];
-  }>;
-};
 
 export const useSkills = (showHidden: boolean = false) => {
   return useQuery({
@@ -95,7 +85,7 @@ export const useSkillsWithExpertise = (showHidden: boolean = false) => {
       const { data, error } = await query;
       
       if (error) throw error;
-      return data as SkillWithExpertise[];
+      return data;
     },
   });
 };
@@ -197,61 +187,6 @@ export const useToggleSkillVisibility = () => {
     onError: (error) => {
       console.error('Error toggling skill visibility:', error);
       toast.error('Failed to update skill visibility');
-    },
-  });
-};
-
-export const useUpdateSkill = () => {
-  const queryClient = useQueryClient();
-  
-  return useMutation({
-    mutationFn: async ({ skillId, skillData }: {
-      skillId: string;
-      skillData: {
-        skill_name: string;
-        description?: string;
-        icon?: string;
-        badge?: string;
-        color?: string;
-        details?: string[];
-      }
-    }) => {
-      const { data, error } = await supabase
-        .from('skills_main')
-        .update({
-          skill_name: skillData.skill_name,
-          description: skillData.description || `Professional ${skillData.skill_name} services`,
-          icon: skillData.icon || 'Star',
-          badge: skillData.badge,
-          color: skillData.color || 'from-blue-500 to-cyan-500'
-        })
-        .eq('id', skillId)
-        .select()
-        .single();
-      
-      if (error) throw error;
-
-      // If details are provided, update the skills_expertise table
-      if (skillData.details && skillData.details.length > 0) {
-        const { error: expertiseError } = await supabase
-          .from('skills_expertise')
-          .update({ details: skillData.details })
-          .eq('skill_id', skillId);
-        
-        if (expertiseError) throw expertiseError;
-      }
-
-      return data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['skills'] });
-      queryClient.invalidateQueries({ queryKey: ['all-skills'] });
-      queryClient.invalidateQueries({ queryKey: ['skills-with-expertise'] });
-      toast.success('Skill updated successfully!');
-    },
-    onError: (error) => {
-      console.error('Error updating skill:', error);
-      toast.error('Failed to update skill');
     },
   });
 };

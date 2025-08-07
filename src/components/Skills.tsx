@@ -6,16 +6,12 @@ import { useAuth } from '../hooks/useAuth';
 import { useSkillsWithExpertise } from '../hooks/useSkills';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
 import AddSkillForm from './AddSkillForm';
-import EditSkillForm from './EditSkillForm';
 import SkillActions from './SkillActions';
 import DynamicIcon from './DynamicIcon';
-import type { SkillWithExpertise } from '../hooks/useSkills';
 
 const Skills = () => {
   const { user } = useAuth();
   const [showAddSkillForm, setShowAddSkillForm] = useState(false);
-  const [showEditSkillForm, setShowEditSkillForm] = useState(false);
-  const [editingSkill, setEditingSkill] = useState<SkillWithExpertise | null>(null);
   // Show hidden skills only when user is logged in
   const { data: skillsWithExpertise = [] } = useSkillsWithExpertise(!!user);
   
@@ -37,15 +33,6 @@ const Skills = () => {
 
   const handleSkillAdded = () => {
     console.log('Skill added - skills list will update automatically');
-  };
-
-  const handleEditSkill = (skill: SkillWithExpertise) => {
-    setEditingSkill(skill);
-    setShowEditSkillForm(true);
-  };
-
-  const handleSkillUpdated = () => {
-    console.log('Skill updated - skills list will update automatically');
   };
 
   return (
@@ -99,7 +86,6 @@ const Skills = () => {
                       skillId={skill.id}
                       skillName={skill.skill_name}
                       isHidden={skill.hidden}
-                      onEdit={() => handleEditSkill(skill)}
                     />
                   )}
 
@@ -183,14 +169,6 @@ const Skills = () => {
         isOpen={showAddSkillForm}
         onClose={() => setShowAddSkillForm(false)}
         onSkillAdded={handleSkillAdded}
-      />
-
-      {/* Edit Skill Form Dialog */}
-      <EditSkillForm
-        isOpen={showEditSkillForm}
-        onClose={() => setShowEditSkillForm(false)}
-        skill={editingSkill}
-        onSkillUpdated={handleSkillUpdated}
       />
     </>
   );
