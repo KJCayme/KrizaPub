@@ -11,8 +11,8 @@ const DeviceSelector = ({ selectedDevice, onDeviceChange }: DeviceSelectorProps)
   const buttonClass = (device: 'desktop' | 'tablet' | 'mobile') => 
     `flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
       selectedDevice === device
-        ? 'bg-blue-600 text-white'
-        : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
+        ? 'bg-funnel-device-bg-active text-funnel-device-text-active'
+        : 'bg-funnel-device-bg text-funnel-device-text hover:bg-nav-bg-hover'
     }`;
 
   return (

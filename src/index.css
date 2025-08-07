@@ -1,3 +1,4 @@
+
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 @tailwind base;
 @tailwind components;
@@ -19,6 +20,7 @@ html {
 
 @layer base {
   :root {
+    /* Base Shadcn/UI Colors */
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
@@ -44,16 +46,22 @@ html {
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
-    --bg-start: 222.2 47.4% 11.2%;   /* slate-900 replacement */
-    --bg-mid: 220 60% 40%;           /* blue-900 replacement */
-    --bg-end: 270 60% 50%;           /* purple-900 replacement */
-    --blob-1: 210 100% 70%;          /* blue-400 replacement */
-    --blob-2: 270 100% 70%;          /* purple-400 replacement */
-    --blob-3: 330 100% 70%;          /* pink-400 replacement */
+
+    /* Hero Section Semantic Variables */
+    --hero-bg-start: 222.2 47.4% 11.2%;   /* slate-900 replacement */
+    --hero-bg-mid: 220 60% 40%;           /* blue-900 replacement */
+    --hero-bg-end: 270 60% 50%;           /* purple-900 replacement */
+    --hero-blob-1: 210 100% 70%;          /* blue-400 replacement */
+    --hero-blob-2: 270 100% 70%;          /* purple-400 replacement */
+    --hero-blob-3: 330 100% 70%;          /* pink-400 replacement */
+    --hero-text-primary: 0 0% 100%;       /* white */
+    --hero-text-secondary: 215 20.2% 65.1%; /* slate-300 */
+    --hero-button-bg-start: 213 100% 60%; /* blue-500 */
+    --hero-button-bg-end: 270 91% 65%;    /* purple-500 */
     
-    /* About section semantic variables */
-    --about-bg-start: 210 40% 98%;     /* slate-50 */
-    --about-bg-end: 214 100% 97%;      /* blue-50 */
+    /* About Section Semantic Variables */
+    --about-bg-start: 210 40% 98%;        /* slate-50 */
+    --about-bg-end: 214 100% 97%;         /* blue-50 */
     --about-text-primary: 215.4 16.3% 25.1%;    /* slate-800 */
     --about-text-secondary: 215.4 16.3% 46.9%;  /* slate-600 */
     --about-highlight-bg-start: 213 100% 60%;   /* blue-500 */
@@ -68,9 +76,129 @@ html {
     --about-image-overlay-end: 270 91% 65% / 0.2; /* purple-600/20 */
     --about-carousel-bg-start: 214 100% 80%;    /* blue-200 */
     --about-carousel-bg-end: 270 100% 80%;      /* purple-200 */
+
+    /* Navigation Semantic Variables */
+    --nav-bg: 0 0% 100% / 0.9;            /* white/90 */
+    --nav-text: 215.4 16.3% 46.9%;       /* slate-600 */
+    --nav-text-hover: 213 100% 60%;      /* blue-600 */
+    --nav-text-active: 213 100% 60%;     /* blue-600 */
+    --nav-bg-active: 214 100% 97%;       /* blue-50 */
+    --nav-bg-hover: 210 40% 98%;         /* slate-50 */
+    --nav-border: 214.3 31.8% 91.4%;     /* slate-200 */
+    --nav-button-bg-start: 213 100% 60%; /* blue-500 */
+    --nav-button-bg-end: 270 91% 65%;    /* purple-500 */
+
+    /* Skills Section Semantic Variables */
+    --skills-bg-start: 210 40% 98%;      /* slate-50 */
+    --skills-bg-end: 214 100% 97%;       /* blue-50 */
+    --skills-text-primary: 215.4 16.3% 25.1%;  /* slate-800 */
+    --skills-text-secondary: 215.4 16.3% 46.9%; /* slate-600 */
+    --skills-card-bg: 0 0% 100%;         /* white */
+    --skills-card-border: 214.3 31.8% 91.4%; /* slate-200 */
+    --skills-progress-bg: 214 100% 95%;  /* blue-100 */
+    --skills-progress-fill-start: 213 100% 60%; /* blue-500 */
+    --skills-progress-fill-end: 270 91% 65%;   /* purple-500 */
+
+    /* Portfolio Section Semantic Variables */
+    --portfolio-bg-start: 0 0% 100%;     /* white */
+    --portfolio-bg-end: 214 100% 97%;    /* blue-50 */
+    --portfolio-text-primary: 215.4 16.3% 25.1%;  /* slate-800 */
+    --portfolio-text-secondary: 215.4 16.3% 46.9%; /* slate-600 */
+    --portfolio-card-bg: 0 0% 100%;      /* white */
+    --portfolio-card-border: 214.3 31.8% 91.4%; /* slate-200 */
+    --portfolio-tag-bg: 214 100% 95%;    /* blue-100 */
+    --portfolio-tag-text: 213 100% 50%;  /* blue-600 */
+    --portfolio-button-bg-start: 213 100% 60%; /* blue-500 */
+    --portfolio-button-bg-end: 270 91% 65%;    /* purple-500 */
+
+    /* Testimonials Section Semantic Variables */
+    --testimonials-bg-start: 214 100% 97%; /* blue-50 */
+    --testimonials-bg-end: 270 100% 97%;   /* purple-50 */
+    --testimonials-text-primary: 215.4 16.3% 25.1%;  /* slate-800 */
+    --testimonials-text-secondary: 215.4 16.3% 46.9%; /* slate-600 */
+    --testimonials-card-bg: 0 0% 100%;     /* white */
+    --testimonials-card-border: 214.3 31.8% 91.4%; /* slate-200 */
+    --testimonials-star-fill: 45 93% 58%;  /* yellow-400 */
+    --testimonials-star-empty: 214.3 31.8% 91.4%; /* slate-200 */
+    --testimonials-button-bg-start: 213 100% 60%; /* blue-500 */
+    --testimonials-button-bg-end: 270 91% 65%;    /* purple-500 */
+
+    /* Certificates Section Semantic Variables */
+    --certificates-bg-start: 210 40% 98%;  /* slate-50 */
+    --certificates-bg-end: 214 100% 97%;   /* blue-50 */
+    --certificates-text-primary: 215.4 16.3% 25.1%;  /* slate-800 */
+    --certificates-text-secondary: 215.4 16.3% 46.9%; /* slate-600 */
+    --certificates-card-bg: 0 0% 100%;     /* white */
+    --certificates-card-border: 214.3 31.8% 91.4%; /* slate-200 */
+    --certificates-badge-bg-start: 213 100% 60%; /* blue-500 */
+    --certificates-badge-bg-end: 270 91% 65%;    /* purple-500 */
+
+    /* Tools Section Semantic Variables */
+    --tools-bg-start: 0 0% 100%;         /* white */
+    --tools-bg-end: 214 100% 97%;        /* blue-50 */
+    --tools-text-primary: 215.4 16.3% 25.1%;  /* slate-800 */
+    --tools-text-secondary: 215.4 16.3% 46.9%; /* slate-600 */
+    --tools-card-bg: 0 0% 100%;          /* white */
+    --tools-card-border: 214.3 31.8% 91.4%; /* slate-200 */
+    --tools-icon-bg: 214 100% 95%;       /* blue-100 */
+    --tools-icon-text: 213 100% 50%;     /* blue-600 */
+
+    /* Contact Section Semantic Variables */
+    --contact-bg-start: 214 100% 97%;    /* blue-50 */
+    --contact-bg-end: 270 100% 97%;      /* purple-50 */
+    --contact-text-primary: 215.4 16.3% 25.1%;  /* slate-800 */
+    --contact-text-secondary: 215.4 16.3% 46.9%; /* slate-600 */
+    --contact-form-bg: 0 0% 100%;        /* white */
+    --contact-form-border: 214.3 31.8% 91.4%; /* slate-200 */
+    --contact-input-bg: 0 0% 100%;       /* white */
+    --contact-input-border: 214.3 31.8% 91.4%; /* slate-200 */
+    --contact-button-bg-start: 213 100% 60%; /* blue-500 */
+    --contact-button-bg-end: 270 91% 65%;    /* purple-500 */
+
+    /* Config Section Semantic Variables */
+    --config-bg-start: 210 40% 98%;      /* slate-50 */
+    --config-bg-end: 214 100% 97%;       /* blue-50 */
+    --config-text-primary: 215.4 16.3% 25.1%;  /* slate-800 */
+    --config-text-secondary: 215.4 16.3% 46.9%; /* slate-600 */
+    --config-button-purple-start: 270 91% 65%;  /* purple-600 */
+    --config-button-purple-end: 330 81% 60%;    /* pink-600 */
+    --config-button-blue-start: 213 100% 60%;   /* blue-600 */
+    --config-button-blue-end: 239 84% 67%;      /* indigo-600 */
+
+    /* Funnel Section Semantic Variables */
+    --funnel-bg-start: 210 40% 98%;      /* slate-50 */
+    --funnel-bg-end: 214 100% 97%;       /* blue-50 */
+    --funnel-text-primary: 215.4 16.3% 25.1%;  /* slate-800 */
+    --funnel-text-secondary: 215.4 16.3% 46.9%; /* slate-600 */
+    --funnel-device-bg: 220 14.3% 95.9%; /* slate-100 */
+    --funnel-device-bg-active: 213 100% 60%; /* blue-600 */
+    --funnel-device-text: 215.4 16.3% 39.2%; /* slate-700 */
+    --funnel-device-text-active: 0 0% 100%;  /* white */
+    --funnel-container-bg: 215.4 16.3% 25.1%; /* slate-800 */
+    --funnel-container-bg-dark: 220 14.3% 4.1%; /* slate-900 */
+    --funnel-screen-bg: 0 0% 0%;         /* black */
+
+    /* Status and Success Colors */
+    --success-bg: 142 76% 36%;           /* green-600 */
+    --success-bg-light: 142 69% 58%;     /* green-500 */
+    --success-text: 0 0% 100%;           /* white */
+    --success-border: 142 76% 36%;       /* green-600 */
+    --warning-bg: 45 93% 58%;            /* yellow-500 */
+    --warning-text: 26 83% 14%;          /* yellow-900 */
+    --error-bg: 0 84% 60%;               /* red-500 */
+    --error-text: 0 0% 100%;             /* white */
+
+    /* Legacy Blob Variables (for backward compatibility) */
+    --bg-start: 222.2 47.4% 11.2%;
+    --bg-mid: 220 60% 40%;
+    --bg-end: 270 60% 50%;
+    --blob-1: 210 100% 70%;
+    --blob-2: 270 100% 70%;
+    --blob-3: 330 100% 70%;
   }
 
   .dark {
+    /* Base Shadcn/UI Colors - Dark Mode */
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
     --card: 222.2 84% 4.9%;
@@ -95,30 +223,145 @@ html {
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
-    --bg-start: 222.2 47.4% 6%;      /* slate-950 replacement */
-    --bg-mid: 220 60% 20%;           /* blue-950 replacement */
-    --bg-end: 270 60% 30%;           /* purple-950 replacement */
+
+    /* Hero Section - Dark Mode */
+    --hero-bg-start: 222.2 47.4% 6%;
+    --hero-bg-mid: 220 60% 20%;
+    --hero-bg-end: 270 60% 30%;
+    --hero-blob-1: 210 100% 60%;
+    --hero-blob-2: 270 100% 60%;
+    --hero-blob-3: 330 100% 60%;
+    --hero-text-primary: 210 40% 98%;
+    --hero-text-secondary: 215 20.2% 65.1%;
+    --hero-button-bg-start: 213 100% 50%;
+    --hero-button-bg-end: 270 91% 55%;
+    
+    /* About Section - Dark Mode */
+    --about-bg-start: 222.2 84% 4.9%;
+    --about-bg-end: 215.4 16.3% 25.1%;
+    --about-text-primary: 210 40% 98%;
+    --about-text-secondary: 215 20.2% 65.1%;
+    --about-highlight-bg-start: 213 100% 50%;
+    --about-highlight-bg-end: 270 91% 55%;
+    --about-highlight-icon-bg: 214 100% 15%;
+    --about-highlight-icon-bg-end: 270 100% 15%;
+    --about-highlight-icon-text: 214 100% 80%;
+    --about-card-bg: 222.2 84% 4.9%;
+    --about-hobby-bg-start: 215.4 16.3% 15%;
+    --about-hobby-bg-end: 217.2 32.6% 17.5%;
+    --about-image-overlay: 213 100% 50% / 0.3;
+    --about-image-overlay-end: 270 91% 55% / 0.3;
+    --about-carousel-bg-start: 214 100% 30%;
+    --about-carousel-bg-end: 270 100% 30%;
+
+    /* Navigation - Dark Mode */
+    --nav-bg: 222.2 84% 4.9% / 0.9;
+    --nav-text: 215 20.2% 65.1%;
+    --nav-text-hover: 214 100% 80%;
+    --nav-text-active: 214 100% 80%;
+    --nav-bg-active: 220 60% 20% / 0.3;
+    --nav-bg-hover: 217.2 32.6% 17.5%;
+    --nav-border: 217.2 32.6% 17.5%;
+    --nav-button-bg-start: 213 100% 50%;
+    --nav-button-bg-end: 270 91% 55%;
+
+    /* Skills Section - Dark Mode */
+    --skills-bg-start: 222.2 84% 4.9%;
+    --skills-bg-end: 215.4 16.3% 25.1%;
+    --skills-text-primary: 210 40% 98%;
+    --skills-text-secondary: 215 20.2% 65.1%;
+    --skills-card-bg: 222.2 84% 4.9%;
+    --skills-card-border: 217.2 32.6% 17.5%;
+    --skills-progress-bg: 214 100% 15%;
+    --skills-progress-fill-start: 213 100% 50%;
+    --skills-progress-fill-end: 270 91% 55%;
+
+    /* Portfolio Section - Dark Mode */
+    --portfolio-bg-start: 222.2 84% 4.9%;
+    --portfolio-bg-end: 215.4 16.3% 25.1%;
+    --portfolio-text-primary: 210 40% 98%;
+    --portfolio-text-secondary: 215 20.2% 65.1%;
+    --portfolio-card-bg: 222.2 84% 4.9%;
+    --portfolio-card-border: 217.2 32.6% 17.5%;
+    --portfolio-tag-bg: 214 100% 15%;
+    --portfolio-tag-text: 214 100% 80%;
+    --portfolio-button-bg-start: 213 100% 50%;
+    --portfolio-button-bg-end: 270 91% 55%;
+
+    /* Testimonials Section - Dark Mode */
+    --testimonials-bg-start: 215.4 16.3% 25.1%;
+    --testimonials-bg-end: 217.2 32.6% 17.5%;
+    --testimonials-text-primary: 210 40% 98%;
+    --testimonials-text-secondary: 215 20.2% 65.1%;
+    --testimonials-card-bg: 222.2 84% 4.9%;
+    --testimonials-card-border: 217.2 32.6% 17.5%;
+    --testimonials-star-fill: 45 93% 58%;
+    --testimonials-star-empty: 217.2 32.6% 17.5%;
+    --testimonials-button-bg-start: 213 100% 50%;
+    --testimonials-button-bg-end: 270 91% 55%;
+
+    /* Certificates Section - Dark Mode */
+    --certificates-bg-start: 222.2 84% 4.9%;
+    --certificates-bg-end: 215.4 16.3% 25.1%;
+    --certificates-text-primary: 210 40% 98%;
+    --certificates-text-secondary: 215 20.2% 65.1%;
+    --certificates-card-bg: 222.2 84% 4.9%;
+    --certificates-card-border: 217.2 32.6% 17.5%;
+    --certificates-badge-bg-start: 213 100% 50%;
+    --certificates-badge-bg-end: 270 91% 55%;
+
+    /* Tools Section - Dark Mode */
+    --tools-bg-start: 222.2 84% 4.9%;
+    --tools-bg-end: 215.4 16.3% 25.1%;
+    --tools-text-primary: 210 40% 98%;
+    --tools-text-secondary: 215 20.2% 65.1%;
+    --tools-card-bg: 222.2 84% 4.9%;
+    --tools-card-border: 217.2 32.6% 17.5%;
+    --tools-icon-bg: 214 100% 15%;
+    --tools-icon-text: 214 100% 80%;
+
+    /* Contact Section - Dark Mode */
+    --contact-bg-start: 215.4 16.3% 25.1%;
+    --contact-bg-end: 217.2 32.6% 17.5%;
+    --contact-text-primary: 210 40% 98%;
+    --contact-text-secondary: 215 20.2% 65.1%;
+    --contact-form-bg: 222.2 84% 4.9%;
+    --contact-form-border: 217.2 32.6% 17.5%;
+    --contact-input-bg: 222.2 84% 4.9%;
+    --contact-input-border: 217.2 32.6% 17.5%;
+    --contact-button-bg-start: 213 100% 50%;
+    --contact-button-bg-end: 270 91% 55%;
+
+    /* Config Section - Dark Mode */
+    --config-bg-start: 222.2 84% 4.9%;
+    --config-bg-end: 215.4 16.3% 25.1%;
+    --config-text-primary: 210 40% 98%;
+    --config-text-secondary: 215 20.2% 65.1%;
+    --config-button-purple-start: 270 91% 55%;
+    --config-button-purple-end: 330 81% 50%;
+    --config-button-blue-start: 213 100% 50%;
+    --config-button-blue-end: 239 84% 57%;
+
+    /* Funnel Section - Dark Mode */
+    --funnel-bg-start: 222.2 84% 4.9%;
+    --funnel-bg-end: 215.4 16.3% 25.1%;
+    --funnel-text-primary: 210 40% 98%;
+    --funnel-text-secondary: 215 20.2% 65.1%;
+    --funnel-device-bg: 217.2 32.6% 17.5%;
+    --funnel-device-bg-active: 213 100% 50%;
+    --funnel-device-text: 215 20.2% 65.1%;
+    --funnel-device-text-active: 210 40% 98%;
+    --funnel-container-bg: 215.4 16.3% 25.1%;
+    --funnel-container-bg-dark: 220 14.3% 4.1%;
+    --funnel-screen-bg: 0 0% 0%;
+
+    /* Legacy Blob Variables - Dark Mode */
+    --bg-start: 222.2 47.4% 6%;
+    --bg-mid: 220 60% 20%;
+    --bg-end: 270 60% 30%;
     --blob-1: 210 100% 60%;
     --blob-2: 270 100% 60%;
     --blob-3: 330 100% 60%;
-    
-    /* About section dark mode variables */
-    --about-bg-start: 222.2 84% 4.9%;          /* slate-900 */
-    --about-bg-end: 215.4 16.3% 25.1%;         /* slate-800 */
-    --about-text-primary: 210 40% 98%;         /* white */
-    --about-text-secondary: 215 20.2% 65.1%;   /* slate-300 */
-    --about-highlight-bg-start: 213 100% 50%;  /* blue-500 dark */
-    --about-highlight-bg-end: 270 91% 55%;     /* purple-500 dark */
-    --about-highlight-icon-bg: 214 100% 15%;   /* blue-900 */
-    --about-highlight-icon-bg-end: 270 100% 15%; /* purple-900 */
-    --about-highlight-icon-text: 214 100% 80%; /* blue-300 */
-    --about-card-bg: 222.2 84% 4.9%;           /* slate-900 */
-    --about-hobby-bg-start: 215.4 16.3% 15%;   /* slate-800 */
-    --about-hobby-bg-end: 217.2 32.6% 17.5%;   /* slate-700 */
-    --about-image-overlay: 213 100% 50% / 0.3; /* blue-500/30 */
-    --about-image-overlay-end: 270 91% 55% / 0.3; /* purple-500/30 */
-    --about-carousel-bg-start: 214 100% 30%;   /* blue-800 */
-    --about-carousel-bg-end: 270 100% 30%;     /* purple-800 */
   }
 }
 

@@ -10,8 +10,8 @@ interface DeviceContainerProps {
 
 const DeviceContainer = ({ deviceType, displayImage, projectTitle }: DeviceContainerProps) => {
   const renderDesktopContainer = () => (
-    <div className="relative bg-slate-800 rounded-lg p-6 shadow-2xl w-full max-w-6xl h-[500px]">
-      <div className="bg-black rounded-md overflow-hidden relative h-full">
+    <div className="relative bg-funnel-container-bg rounded-lg p-6 shadow-2xl w-full max-w-6xl h-[500px]">
+      <div className="bg-funnel-screen-bg rounded-md overflow-hidden relative h-full">
         <div className="w-full h-full overflow-hidden">
           <div className="animate-[scrollLoop_10s_ease-in-out_infinite] hover:[animation-play-state:paused]">
             <img
@@ -26,8 +26,8 @@ const DeviceContainer = ({ deviceType, displayImage, projectTitle }: DeviceConta
   );
 
   const renderTabletContainer = () => (
-    <div className="relative bg-slate-900 rounded-2xl p-3 shadow-2xl w-full max-w-2xl">
-      <div className="w-full bg-black rounded-xl overflow-hidden relative h-[600px]">
+    <div className="relative bg-funnel-container-bg-dark rounded-2xl p-3 shadow-2xl w-full max-w-2xl">
+      <div className="w-full bg-funnel-screen-bg rounded-xl overflow-hidden relative h-[600px]">
         <div className="w-full h-full overflow-hidden">
           <div className="animate-[scrollLoop_10s_ease-in-out_infinite] hover:[animation-play-state:paused]">
             <img
@@ -39,13 +39,13 @@ const DeviceContainer = ({ deviceType, displayImage, projectTitle }: DeviceConta
           </div>
         </div>
       </div>
-      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-10 h-10 bg-slate-800 rounded-full border-2 border-slate-700"></div>
+      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-10 h-10 bg-funnel-container-bg rounded-full border-2 border-nav-border"></div>
     </div>
   );
 
   const renderMobileContainer = () => (
-    <div className="relative bg-slate-900 rounded-3xl p-2 shadow-2xl w-full max-w-sm h-[550px]">
-      <div className="w-full h-full bg-black rounded-3xl overflow-hidden relative">
+    <div className="relative bg-funnel-container-bg-dark rounded-3xl p-2 shadow-2xl w-full max-w-sm h-[550px]">
+      <div className="w-full h-full bg-funnel-screen-bg rounded-3xl overflow-hidden relative">
         <div className="w-full h-full overflow-hidden">
           <div className="animate-[scrollLoop_10s_ease-in-out_infinite] hover:[animation-play-state:paused]">
             <img
@@ -57,7 +57,7 @@ const DeviceContainer = ({ deviceType, displayImage, projectTitle }: DeviceConta
           </div>
         </div>
       </div>
-      <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-slate-600 rounded-full"></div>
+      <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-nav-text rounded-full"></div>
     </div>
   );
 

@@ -21,8 +21,8 @@ const DesktopNavigation = ({ navItems, activeSection, onSectionClick }: DesktopN
           onClick={() => onSectionClick(item.id)}
           className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
             activeSection === item.id
-              ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/30'
-              : 'text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-50 dark:hover:bg-slate-800'
+              ? 'text-nav-text-active bg-nav-bg-active'
+              : 'text-nav-text hover:text-nav-text-hover hover:bg-nav-bg-hover'
           }`}
         >
           {item.label}
