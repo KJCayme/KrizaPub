@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&display=swap');
 @tailwind base;
 @tailwind components;
@@ -51,6 +50,24 @@ html {
     --blob-1: 210 100% 70%;          /* blue-400 replacement */
     --blob-2: 270 100% 70%;          /* purple-400 replacement */
     --blob-3: 330 100% 70%;          /* pink-400 replacement */
+    
+    /* About section semantic variables */
+    --about-bg-start: 210 40% 98%;     /* slate-50 */
+    --about-bg-end: 214 100% 97%;      /* blue-50 */
+    --about-text-primary: 215.4 16.3% 25.1%;    /* slate-800 */
+    --about-text-secondary: 215.4 16.3% 46.9%;  /* slate-600 */
+    --about-highlight-bg-start: 213 100% 60%;   /* blue-500 */
+    --about-highlight-bg-end: 270 91% 65%;      /* purple-500 */
+    --about-highlight-icon-bg: 214 100% 92%;    /* blue-100 */
+    --about-highlight-icon-bg-end: 270 100% 92%; /* purple-100 */
+    --about-highlight-icon-text: 213 100% 60%;  /* blue-600 */
+    --about-card-bg: 0 0% 100%;                 /* white */
+    --about-hobby-bg-start: 214 100% 97%;       /* blue-50 */
+    --about-hobby-bg-end: 270 100% 97%;         /* purple-50 */
+    --about-image-overlay: 213 100% 60% / 0.2;  /* blue-600/20 */
+    --about-image-overlay-end: 270 91% 65% / 0.2; /* purple-600/20 */
+    --about-carousel-bg-start: 214 100% 80%;    /* blue-200 */
+    --about-carousel-bg-end: 270 100% 80%;      /* purple-200 */
   }
 
   .dark {
@@ -84,6 +101,24 @@ html {
     --blob-1: 210 100% 60%;
     --blob-2: 270 100% 60%;
     --blob-3: 330 100% 60%;
+    
+    /* About section dark mode variables */
+    --about-bg-start: 222.2 84% 4.9%;          /* slate-900 */
+    --about-bg-end: 215.4 16.3% 25.1%;         /* slate-800 */
+    --about-text-primary: 210 40% 98%;         /* white */
+    --about-text-secondary: 215 20.2% 65.1%;   /* slate-300 */
+    --about-highlight-bg-start: 213 100% 50%;  /* blue-500 dark */
+    --about-highlight-bg-end: 270 91% 55%;     /* purple-500 dark */
+    --about-highlight-icon-bg: 214 100% 15%;   /* blue-900 */
+    --about-highlight-icon-bg-end: 270 100% 15%; /* purple-900 */
+    --about-highlight-icon-text: 214 100% 80%; /* blue-300 */
+    --about-card-bg: 222.2 84% 4.9%;           /* slate-900 */
+    --about-hobby-bg-start: 215.4 16.3% 15%;   /* slate-800 */
+    --about-hobby-bg-end: 217.2 32.6% 17.5%;   /* slate-700 */
+    --about-image-overlay: 213 100% 50% / 0.3; /* blue-500/30 */
+    --about-image-overlay-end: 270 91% 55% / 0.3; /* purple-500/30 */
+    --about-carousel-bg-start: 214 100% 30%;   /* blue-800 */
+    --about-carousel-bg-end: 270 100% 30%;     /* purple-800 */
   }
 }
 
