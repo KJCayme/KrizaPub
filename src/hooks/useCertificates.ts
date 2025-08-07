@@ -79,6 +79,49 @@ export const useCertificates = (limit?: number) => {
     }
   };
 
+  const updateCertificate = async (id: string, certificateData: Partial<Omit<Certificate, 'id' | 'created_at' | 'updated_at' | 'user_id'>>) => {
+    if (!user) throw new Error('User must be logged in to update certificates');
+
+    try {
+      const { data, error } = await supabase
+        .from('certificates')
+        .update(certificateData)
+        .eq('id', id)
+        .eq('user_id', user.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      // Re-fetch and sort certificates after updating
+      await fetchCertificates(limit);
+      return data;
+    } catch (err: any) {
+      setError(err.message);
+      throw err;
+    }
+  };
+
+  const deleteCertificate = async (id: string) => {
+    if (!user) throw new Error('User must be logged in to delete certificates');
+
+    try {
+      const { error } = await supabase
+        .from('certificates')
+        .delete()
+        .eq('id', id)
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+      
+      // Re-fetch and sort certificates after deleting
+      await fetchCertificates(limit);
+    } catch (err: any) {
+      setError(err.message);
+      throw err;
+    }
+  };
+
   useEffect(() => {
     fetchCertificates(limit);
   }, [limit]);
@@ -88,6 +131,8 @@ export const useCertificates = (limit?: number) => {
     loading,
     error,
     addCertificate,
+    updateCertificate,
+    deleteCertificate,
     refetch: () => fetchCertificates(limit),
     fetchAll: () => fetchCertificates()
   };

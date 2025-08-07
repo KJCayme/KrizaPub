@@ -45,10 +45,18 @@ export const CertificateCard: React.FC<CertificateCardProps> = ({
       <div className="p-6 flex flex-col flex-grow">
         {/* Title and Year */}
         <div className="mb-4">
-          <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-2">
+          <h3 className={`text-xl font-bold mb-2 ${
+            certificate.title_color === 'dark' 
+              ? 'text-slate-900 dark:text-slate-100' 
+              : 'text-white dark:text-white'
+          }`}>
             {certificate.name}
           </h3>
-          <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+          <div className={`flex items-center gap-2 text-sm ${
+            certificate.title_color === 'dark'
+              ? 'text-slate-700 dark:text-slate-300'
+              : 'text-white/90 dark:text-white/90'
+          }`}>
             <Calendar className="w-4 h-4" />
             <span>{certificate.year}</span>
           </div>

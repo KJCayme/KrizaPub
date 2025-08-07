@@ -1,12 +1,14 @@
 
 import React, { useState } from 'react';
-import { Award, ExternalLink, Calendar, Plus } from 'lucide-react';
+import { Award, ExternalLink, Calendar, Plus, Edit3, Trash2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { useIsMobile } from '../hooks/use-mobile';
-import { useCertificates } from '../hooks/useCertificates';
+import { useCertificates, Certificate } from '../hooks/useCertificates';
 import { useAuth } from '../hooks/useAuth';
 import AddCertificateForm from './AddCertificateForm';
+import EditCertificateForm from './EditCertificateForm';
 import AuthRequiredDialog from './auth/AuthRequiredDialog';
+import { toast } from 'sonner';
 
 interface CertificatesProps {
   onShowCertificatesOnly: (show: boolean) => void;
@@ -15,9 +17,11 @@ interface CertificatesProps {
 const Certificates = ({ onShowCertificatesOnly }: CertificatesProps) => {
   const isMobile = useIsMobile();
   const [showAddForm, setShowAddForm] = useState(false);
+  const [showEditForm, setShowEditForm] = useState(false);
+  const [editingCertificate, setEditingCertificate] = useState<Certificate | null>(null);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   
-  const { certificates, loading, error } = useCertificates(3);
+  const { certificates, loading, error, deleteCertificate } = useCertificates(3);
   const { user } = useAuth();
 
   const handleViewCertificate = (url: string) => {
@@ -32,6 +36,31 @@ const Certificates = ({ onShowCertificatesOnly }: CertificatesProps) => {
       return;
     }
     setShowAddForm(true);
+  };
+
+  const handleEditCertificate = (certificate: Certificate) => {
+    if (!user) {
+      setShowAuthDialog(true);
+      return;
+    }
+    setEditingCertificate(certificate);
+    setShowEditForm(true);
+  };
+
+  const handleDeleteCertificate = async (certificateId: string) => {
+    if (!user) {
+      setShowAuthDialog(true);
+      return;
+    }
+    
+    if (window.confirm('Are you sure you want to delete this certificate?')) {
+      try {
+        await deleteCertificate(certificateId);
+        toast.success('Certificate deleted successfully!');
+      } catch (error: any) {
+        toast.error(error.message || 'Failed to delete certificate');
+      }
+    }
   };
 
   if (loading) {
@@ -101,14 +130,50 @@ const Certificates = ({ onShowCertificatesOnly }: CertificatesProps) => {
                     </div>
                   </div>
                   <div className="absolute bottom-4 left-4 right-4">
-                    <h3 className="text-xl font-bold text-white mb-1">
+                    <h3 className={`text-xl font-bold mb-1 ${
+                      cert.title_color === 'dark' 
+                        ? 'text-slate-900' 
+                        : 'text-white'
+                    }`}>
                       {cert.name}
                     </h3>
-                    <div className="flex items-center gap-2 text-white/90 text-sm">
+                    <div className={`flex items-center gap-2 text-sm ${
+                      cert.title_color === 'dark'
+                        ? 'text-slate-700'
+                        : 'text-white/90'
+                    }`}>
                       <Calendar className="w-4 h-4" />
                       <span>{cert.year}</span>
                     </div>
                   </div>
+                  
+                  {/* Edit/Delete buttons for authenticated users */}
+                  {user && (
+                    <div className="absolute top-4 left-4 flex gap-2">
+                      <Button
+                        size="icon"
+                        variant="secondary"
+                        className="w-8 h-8 bg-white/20 backdrop-blur-sm hover:bg-white/30 border-none"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditCertificate(cert);
+                        }}
+                      >
+                        <Edit3 className="w-4 h-4 text-white" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="secondary"
+                        className="w-8 h-8 bg-red-500/20 backdrop-blur-sm hover:bg-red-500/30 border-none"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteCertificate(cert.id);
+                        }}
+                      >
+                        <Trash2 className="w-4 h-4 text-red-300" />
+                      </Button>
+                    </div>
+                  )}
                 </div>
 
                 <div className="p-6 flex flex-col flex-grow">
@@ -179,6 +244,17 @@ const Certificates = ({ onShowCertificatesOnly }: CertificatesProps) => {
         isOpen={showAddForm}
         onClose={() => setShowAddForm(false)}
       />
+
+      {editingCertificate && (
+        <EditCertificateForm
+          isOpen={showEditForm}
+          onClose={() => {
+            setShowEditForm(false);
+            setEditingCertificate(null);
+          }}
+          certificate={editingCertificate}
+        />
+      )}
 
       <AuthRequiredDialog
         isOpen={showAuthDialog}
