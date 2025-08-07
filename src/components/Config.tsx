@@ -17,13 +17,23 @@ const Config = () => {
       root.style.setProperty('--blob-2', '300 80% 75%');      // Pink lavender
       root.style.setProperty('--blob-3', '260 80% 75%');      // Blue lavender
     } else {
-      // Default theme - restore original values
-      root.style.setProperty('--bg-start', '222.2 47.4% 11.2%');
-      root.style.setProperty('--bg-mid', '220 60% 40%');
-      root.style.setProperty('--bg-end', '270 60% 50%');
-      root.style.setProperty('--blob-1', '210 100% 70%');
-      root.style.setProperty('--blob-2', '270 100% 70%');
-      root.style.setProperty('--blob-3', '330 100% 70%');
+      // Default theme - restore original values based on current mode
+      const isDark = document.documentElement.classList.contains('dark');
+      if (isDark) {
+        root.style.setProperty('--bg-start', '222.2 47.4% 6%');
+        root.style.setProperty('--bg-mid', '220 60% 20%');
+        root.style.setProperty('--bg-end', '270 60% 30%');
+        root.style.setProperty('--blob-1', '210 100% 60%');
+        root.style.setProperty('--blob-2', '270 100% 60%');
+        root.style.setProperty('--blob-3', '330 100% 60%');
+      } else {
+        root.style.setProperty('--bg-start', '222.2 47.4% 11.2%');
+        root.style.setProperty('--bg-mid', '220 60% 40%');
+        root.style.setProperty('--bg-end', '270 60% 50%');
+        root.style.setProperty('--blob-1', '210 100% 70%');
+        root.style.setProperty('--blob-2', '270 100% 70%');
+        root.style.setProperty('--blob-3', '330 100% 70%');
+      }
     }
   };
 
@@ -45,13 +55,13 @@ const Config = () => {
           </p>
         </div>
 
-        <div className="flex justify-center">
+        <div className="flex justify-center gap-4">
           <Button
             onClick={handleChooseTheme}
             className="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 px-8 py-4"
           >
             <Palette className="w-5 h-5 mr-2" />
-            Choose Theme
+            {currentTheme === 'default' ? 'Switch to Lavender Theme' : 'Switch to Default Theme'}
           </Button>
         </div>
       </div>
