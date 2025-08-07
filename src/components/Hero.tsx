@@ -87,7 +87,7 @@ const Hero = () => {
 
   if (profileLoading || rolesLoading) {
     return (
-      <section className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 dark:from-slate-950 dark:via-blue-950 dark:to-purple-950 flex items-center justify-center relative overflow-hidden transition-colors duration-300">
+      <section className="min-h-screen bg-gradient-to-br from-[hsl(var(--bg-start))] via-[hsl(var(--bg-mid))] to-[hsl(var(--bg-end))] flex items-center justify-center relative overflow-hidden transition-colors duration-300">
         <div className="text-white text-xl">Loading...</div>
       </section>
     );
@@ -97,12 +97,12 @@ const Hero = () => {
   const displayCaption = profile?.caption || 'Empowering businesses through exceptional virtual assistance, strategic social media management, seamless administrative support, creative design, and utilizing Artificial Intelligence.';
 
   return (
-    <section className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 dark:from-slate-950 dark:via-blue-950 dark:to-purple-950 flex items-center justify-center relative overflow-hidden transition-colors duration-300">
+    <section className="min-h-screen bg-gradient-to-br from-[hsl(var(--bg-start))] via-[hsl(var(--bg-mid))] to-[hsl(var(--bg-end))] flex items-center justify-center relative overflow-hidden transition-colors duration-300">
       {/* Background Animation */}
       <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-blue-400 rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-purple-400 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-1000"></div>
-        <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-pink-400 rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-2000"></div>
+        <div className="absolute top-0 left-0 w-96 h-96 bg-[hsl(var(--blob-1))] rounded-full mix-blend-multiply filter blur-xl animate-pulse"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[hsl(var(--blob-2))] rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-1000"></div>
+        <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-[hsl(var(--blob-3))] rounded-full mix-blend-multiply filter blur-xl animate-pulse delay-2000"></div>
       </div>
 
       <div className="container mx-auto px-6 text-center relative z-10">

@@ -45,6 +45,12 @@ html {
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    --bg-start: 222.2 47.4% 11.2%;   /* slate-900 replacement */
+    --bg-mid: 220 60% 40%;           /* blue-900 replacement */
+    --bg-end: 270 60% 50%;           /* purple-900 replacement */
+    --blob-1: 210 100% 70%;          /* blue-400 replacement */
+    --blob-2: 270 100% 70%;          /* purple-400 replacement */
+    --blob-3: 330 100% 70%;          /* pink-400 replacement */
   }
 
   .dark {
@@ -72,6 +78,12 @@ html {
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+    --bg-start: 222.2 47.4% 6%;      /* slate-950 replacement */
+    --bg-mid: 220 60% 20%;           /* blue-950 replacement */
+    --bg-end: 270 60% 30%;           /* purple-950 replacement */
+    --blob-1: 210 100% 60%;
+    --blob-2: 270 100% 60%;
+    --blob-3: 330 100% 60%;
   }
 }
 
