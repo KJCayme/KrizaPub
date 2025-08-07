@@ -132,17 +132,6 @@ const Testimonials = ({ onShowTestimonialsOnly }: TestimonialsProps) => {
           ) : (
             <div className="text-center text-slate-600 dark:text-slate-300">
               <p className="text-lg mb-4">No testimonials yet.</p>
-              {user && (
-                <div className="flex justify-center">
-                  <Button
-                    onClick={() => setShowClientForm(true)}
-                    className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
-                  >
-                    <Plus className="w-5 h-5 mr-2" />
-                    Add Client Testimonial
-                  </Button>
-                </div>
-              )}
             </div>
           )}
 
