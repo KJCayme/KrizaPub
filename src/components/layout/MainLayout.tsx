@@ -7,6 +7,7 @@ import Tools from '../Tools';
 import Certificates from '../Certificates';
 import Testimonials from '../Testimonials';
 import Contact from '../Contact';
+import Config from '../Config';
 import NetworkStatusIndicator from '../NetworkStatusIndicator';
 import { Toaster } from 'sonner';
 
@@ -64,6 +65,11 @@ const MainLayout = ({
         {!showAllProjects && (
           <section id="contact">
             <Contact />
+          </section>
+        )}
+        {!showAllProjects && (
+          <section id="config">
+            <Config />
           </section>
         )}
       </div>
