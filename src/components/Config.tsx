@@ -1,9 +1,14 @@
 import React, { useState } from 'react';
-import { Palette } from 'lucide-react';
+import { Palette, Settings } from 'lucide-react';
 import { Button } from './ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { RadioGroup, RadioGroupItem } from './ui/radio-group';
+import { Label } from './ui/label';
 
 const Config = () => {
   const [currentTheme, setCurrentTheme] = useState('default');
+  const [selectedTheme, setSelectedTheme] = useState('default');
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const applyTheme = (theme: 'default' | 'lavender') => {
     const root = document.documentElement;
@@ -43,6 +48,14 @@ const Config = () => {
     applyTheme(newTheme);
   };
 
+  const handleThemeSelect = () => {
+    if (selectedTheme !== 'custom') {
+      setCurrentTheme(selectedTheme);
+      applyTheme(selectedTheme as 'default' | 'lavender');
+    }
+    setIsDialogOpen(false);
+  };
+
   return (
     <section id="config" className="py-20 bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800 transition-colors duration-300">
       <div className="container mx-auto px-6">
@@ -63,6 +76,46 @@ const Config = () => {
             <Palette className="w-5 h-5 mr-2" />
             {currentTheme === 'default' ? 'Switch to Lavender Theme' : 'Switch to Default Theme'}
           </Button>
+
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button
+                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 px-8 py-4"
+              >
+                <Settings className="w-5 h-5 mr-2" />
+                Custom Color Palette
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Choose Theme</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <RadioGroup value={selectedTheme} onValueChange={setSelectedTheme}>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="default" id="default" />
+                    <Label htmlFor="default">Default Theme</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="lavender" id="lavender" />
+                    <Label htmlFor="lavender">Lavender Theme</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="custom" id="custom" disabled />
+                    <Label htmlFor="custom" className="text-muted-foreground">Custom Theme (Coming Soon)</Label>
+                  </div>
+                </RadioGroup>
+                <div className="flex justify-end gap-2 pt-4">
+                  <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button onClick={handleThemeSelect}>
+                    Apply Theme
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </section>
