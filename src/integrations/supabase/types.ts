@@ -456,6 +456,195 @@ export type Database = {
           },
         ]
       }
+      site_theme_settings: {
+        Row: {
+          about_bg_end_dark: string | null
+          about_bg_end_light: string | null
+          about_bg_start_dark: string | null
+          about_bg_start_light: string | null
+          about_text_primary_dark: string | null
+          about_text_primary_light: string | null
+          about_text_secondary_dark: string | null
+          about_text_secondary_light: string | null
+          config_bg_end_dark: string | null
+          config_bg_end_light: string | null
+          config_bg_start_dark: string | null
+          config_bg_start_light: string | null
+          config_button_purple_end_dark: string | null
+          config_button_purple_end_light: string | null
+          config_button_purple_start_dark: string | null
+          config_button_purple_start_light: string | null
+          config_text_primary_dark: string | null
+          config_text_primary_light: string | null
+          created_at: string
+          created_by: string | null
+          hero_bg_end_dark: string | null
+          hero_bg_end_light: string | null
+          hero_bg_mid_dark: string | null
+          hero_bg_mid_light: string | null
+          hero_bg_start_dark: string | null
+          hero_bg_start_light: string | null
+          hero_blob_1_dark: string | null
+          hero_blob_1_light: string | null
+          hero_blob_2_dark: string | null
+          hero_blob_2_light: string | null
+          hero_blob_3_dark: string | null
+          hero_blob_3_light: string | null
+          hero_text_primary_dark: string | null
+          hero_text_primary_light: string | null
+          hero_text_secondary_dark: string | null
+          hero_text_secondary_light: string | null
+          id: string
+          is_active: boolean
+          nav_bg_dark: string | null
+          nav_bg_light: string | null
+          nav_text_active_dark: string | null
+          nav_text_active_light: string | null
+          nav_text_dark: string | null
+          nav_text_hover_dark: string | null
+          nav_text_hover_light: string | null
+          nav_text_light: string | null
+          portfolio_bg_end_dark: string | null
+          portfolio_bg_end_light: string | null
+          portfolio_bg_start_dark: string | null
+          portfolio_bg_start_light: string | null
+          portfolio_text_primary_dark: string | null
+          portfolio_text_primary_light: string | null
+          skills_bg_end_dark: string | null
+          skills_bg_end_light: string | null
+          skills_bg_start_dark: string | null
+          skills_bg_start_light: string | null
+          skills_text_primary_dark: string | null
+          skills_text_primary_light: string | null
+          theme_name: string
+          updated_at: string
+        }
+        Insert: {
+          about_bg_end_dark?: string | null
+          about_bg_end_light?: string | null
+          about_bg_start_dark?: string | null
+          about_bg_start_light?: string | null
+          about_text_primary_dark?: string | null
+          about_text_primary_light?: string | null
+          about_text_secondary_dark?: string | null
+          about_text_secondary_light?: string | null
+          config_bg_end_dark?: string | null
+          config_bg_end_light?: string | null
+          config_bg_start_dark?: string | null
+          config_bg_start_light?: string | null
+          config_button_purple_end_dark?: string | null
+          config_button_purple_end_light?: string | null
+          config_button_purple_start_dark?: string | null
+          config_button_purple_start_light?: string | null
+          config_text_primary_dark?: string | null
+          config_text_primary_light?: string | null
+          created_at?: string
+          created_by?: string | null
+          hero_bg_end_dark?: string | null
+          hero_bg_end_light?: string | null
+          hero_bg_mid_dark?: string | null
+          hero_bg_mid_light?: string | null
+          hero_bg_start_dark?: string | null
+          hero_bg_start_light?: string | null
+          hero_blob_1_dark?: string | null
+          hero_blob_1_light?: string | null
+          hero_blob_2_dark?: string | null
+          hero_blob_2_light?: string | null
+          hero_blob_3_dark?: string | null
+          hero_blob_3_light?: string | null
+          hero_text_primary_dark?: string | null
+          hero_text_primary_light?: string | null
+          hero_text_secondary_dark?: string | null
+          hero_text_secondary_light?: string | null
+          id?: string
+          is_active?: boolean
+          nav_bg_dark?: string | null
+          nav_bg_light?: string | null
+          nav_text_active_dark?: string | null
+          nav_text_active_light?: string | null
+          nav_text_dark?: string | null
+          nav_text_hover_dark?: string | null
+          nav_text_hover_light?: string | null
+          nav_text_light?: string | null
+          portfolio_bg_end_dark?: string | null
+          portfolio_bg_end_light?: string | null
+          portfolio_bg_start_dark?: string | null
+          portfolio_bg_start_light?: string | null
+          portfolio_text_primary_dark?: string | null
+          portfolio_text_primary_light?: string | null
+          skills_bg_end_dark?: string | null
+          skills_bg_end_light?: string | null
+          skills_bg_start_dark?: string | null
+          skills_bg_start_light?: string | null
+          skills_text_primary_dark?: string | null
+          skills_text_primary_light?: string | null
+          theme_name?: string
+          updated_at?: string
+        }
+        Update: {
+          about_bg_end_dark?: string | null
+          about_bg_end_light?: string | null
+          about_bg_start_dark?: string | null
+          about_bg_start_light?: string | null
+          about_text_primary_dark?: string | null
+          about_text_primary_light?: string | null
+          about_text_secondary_dark?: string | null
+          about_text_secondary_light?: string | null
+          config_bg_end_dark?: string | null
+          config_bg_end_light?: string | null
+          config_bg_start_dark?: string | null
+          config_bg_start_light?: string | null
+          config_button_purple_end_dark?: string | null
+          config_button_purple_end_light?: string | null
+          config_button_purple_start_dark?: string | null
+          config_button_purple_start_light?: string | null
+          config_text_primary_dark?: string | null
+          config_text_primary_light?: string | null
+          created_at?: string
+          created_by?: string | null
+          hero_bg_end_dark?: string | null
+          hero_bg_end_light?: string | null
+          hero_bg_mid_dark?: string | null
+          hero_bg_mid_light?: string | null
+          hero_bg_start_dark?: string | null
+          hero_bg_start_light?: string | null
+          hero_blob_1_dark?: string | null
+          hero_blob_1_light?: string | null
+          hero_blob_2_dark?: string | null
+          hero_blob_2_light?: string | null
+          hero_blob_3_dark?: string | null
+          hero_blob_3_light?: string | null
+          hero_text_primary_dark?: string | null
+          hero_text_primary_light?: string | null
+          hero_text_secondary_dark?: string | null
+          hero_text_secondary_light?: string | null
+          id?: string
+          is_active?: boolean
+          nav_bg_dark?: string | null
+          nav_bg_light?: string | null
+          nav_text_active_dark?: string | null
+          nav_text_active_light?: string | null
+          nav_text_dark?: string | null
+          nav_text_hover_dark?: string | null
+          nav_text_hover_light?: string | null
+          nav_text_light?: string | null
+          portfolio_bg_end_dark?: string | null
+          portfolio_bg_end_light?: string | null
+          portfolio_bg_start_dark?: string | null
+          portfolio_bg_start_light?: string | null
+          portfolio_text_primary_dark?: string | null
+          portfolio_text_primary_light?: string | null
+          skills_bg_end_dark?: string | null
+          skills_bg_end_light?: string | null
+          skills_bg_start_dark?: string | null
+          skills_bg_start_light?: string | null
+          skills_text_primary_dark?: string | null
+          skills_text_primary_light?: string | null
+          theme_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       skills_expertise: {
         Row: {
           created_at: string

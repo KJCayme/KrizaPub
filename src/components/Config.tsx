@@ -3,46 +3,61 @@ import React, { useState } from 'react';
 import { Palette, Settings } from 'lucide-react';
 import { Button } from './ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
-import { RadioGroup, RadioGroupItem } from './ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Label } from './ui/label';
-import { useTheme, Theme } from '../contexts/ThemeContext';
+import { useDatabaseTheme } from '../contexts/DatabaseThemeContext';
 
 const Config = () => {
-  const { currentTheme, setTheme } = useTheme();
-  const [selectedTheme, setSelectedTheme] = useState<Theme>(currentTheme);
+  const { activeTheme, allThemes, setActiveTheme, isSettingTheme, isLoading } = useDatabaseTheme();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedThemeId, setSelectedThemeId] = useState<string>(activeTheme?.id || '');
+
+  React.useEffect(() => {
+    if (activeTheme?.id) {
+      setSelectedThemeId(activeTheme.id);
+    }
+  }, [activeTheme]);
 
   const handleQuickToggle = () => {
-    const themes: Theme[] = ['default', 'lavender', 'colorful'];
-    const currentIndex = themes.indexOf(currentTheme);
-    const nextIndex = (currentIndex + 1) % themes.length;
-    setTheme(themes[nextIndex]);
+    if (!activeTheme || allThemes.length === 0) return;
+    
+    const currentIndex = allThemes.findIndex(theme => theme.id === activeTheme.id);
+    const nextIndex = (currentIndex + 1) % allThemes.length;
+    const nextTheme = allThemes[nextIndex];
+    
+    if (nextTheme) {
+      setActiveTheme(nextTheme.id);
+    }
   };
 
   const handleThemeSelect = () => {
-    if (selectedTheme !== 'custom') {
-      setTheme(selectedTheme);
+    if (selectedThemeId && selectedThemeId !== activeTheme?.id) {
+      setActiveTheme(selectedThemeId);
     }
     setIsDialogOpen(false);
   };
 
-  // Update selectedTheme when currentTheme changes
-  React.useEffect(() => {
-    setSelectedTheme(currentTheme);
-  }, [currentTheme]);
-
   const getQuickToggleText = () => {
-    switch (currentTheme) {
-      case 'default':
-        return 'Switch to Lavender Theme';
-      case 'lavender':
-        return 'Switch to Colorful Theme';
-      case 'colorful':
-        return 'Switch to Default Theme';
-      default:
-        return 'Switch Theme';
-    }
+    if (!activeTheme || allThemes.length === 0) return 'Switch Theme';
+    
+    const currentIndex = allThemes.findIndex(theme => theme.id === activeTheme.id);
+    const nextIndex = (currentIndex + 1) % allThemes.length;
+    const nextTheme = allThemes[nextIndex];
+    
+    return nextTheme ? `Switch to ${nextTheme.theme_name} Theme` : 'Switch Theme';
   };
+
+  if (isLoading) {
+    return (
+      <section id="config" className="py-20 bg-gradient-to-br from-config-bg-start to-config-bg-end transition-colors duration-300">
+        <div className="container mx-auto px-6">
+          <div className="text-center">
+            <p className="text-config-text-primary">Loading themes...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="config" className="py-20 bg-gradient-to-br from-config-bg-start to-config-bg-end transition-colors duration-300">
@@ -59,10 +74,11 @@ const Config = () => {
         <div className="flex justify-center gap-4">
           <Button
             onClick={handleQuickToggle}
-            className="bg-gradient-to-r from-config-button-purple-start to-config-button-purple-end text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 px-8 py-4"
+            disabled={isSettingTheme || allThemes.length <= 1}
+            className="bg-gradient-to-r from-config-button-purple-start to-config-button-purple-end text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 px-8 py-4 disabled:opacity-50"
           >
             <Palette className="w-5 h-5 mr-2" />
-            {getQuickToggleText()}
+            {isSettingTheme ? 'Switching...' : getQuickToggleText()}
           </Button>
 
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -71,7 +87,7 @@ const Config = () => {
                 className="bg-gradient-to-r from-config-button-blue-start to-config-button-blue-end text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 px-8 py-4"
               >
                 <Settings className="w-5 h-5 mr-2" />
-                Custom Color Palette
+                Theme Manager
               </Button>
             </DialogTrigger>
             <DialogContent className="sm:max-w-md">
@@ -79,30 +95,38 @@ const Config = () => {
                 <DialogTitle>Choose Theme</DialogTitle>
               </DialogHeader>
               <div className="space-y-4">
-                <RadioGroup value={selectedTheme} onValueChange={(value) => setSelectedTheme(value as Theme)}>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="default" id="default" />
-                    <Label htmlFor="default">Default Theme</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="lavender" id="lavender" />
-                    <Label htmlFor="lavender">Lavender Theme</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="colorful" id="colorful" />
-                    <Label htmlFor="colorful">Colorful Theme</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="custom" id="custom" disabled />
-                    <Label htmlFor="custom" className="text-muted-foreground">Custom Theme (Coming Soon)</Label>
-                  </div>
-                </RadioGroup>
+                <div className="space-y-2">
+                  <Label htmlFor="theme-select">Available Themes</Label>
+                  <Select value={selectedThemeId} onValueChange={setSelectedThemeId}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a theme" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {allThemes.map((theme) => (
+                        <SelectItem key={theme.id} value={theme.id}>
+                          <div className="flex items-center gap-2">
+                            <span className="capitalize">{theme.theme_name}</span>
+                            {theme.is_active && (
+                              <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded">
+                                Active
+                              </span>
+                            )}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
                 <div className="flex justify-end gap-2 pt-4">
                   <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
                     Cancel
                   </Button>
-                  <Button onClick={handleThemeSelect}>
-                    Apply Theme
+                  <Button 
+                    onClick={handleThemeSelect} 
+                    disabled={isSettingTheme || selectedThemeId === activeTheme?.id}
+                  >
+                    {isSettingTheme ? 'Applying...' : 'Apply Theme'}
                   </Button>
                 </div>
               </div>
