@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useEffect, ReactNode } from 'react';
 import { useThemeSettings, ThemeSettings } from '../hooks/useThemeSettings';
 import { useDarkMode } from '../hooks/useDarkMode';
+import { supabase } from '@/integrations/supabase/client';
 
 interface DatabaseThemeContextType {
   activeTheme: ThemeSettings | undefined;
@@ -38,8 +39,6 @@ export const DatabaseThemeProvider: React.FC<DatabaseThemeProviderProps> = ({ ch
 
   // Subscribe to real-time theme changes
   useEffect(() => {
-    const { supabase } = await import('@/integrations/supabase/client');
-    
     const channel = supabase
       .channel('theme-changes')
       .on(
