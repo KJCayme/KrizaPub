@@ -20,6 +20,8 @@ import { useProfile } from '../hooks/useProfile';
 import { getResumeSignedDownloadUrl } from '@/utils/resumeDownload';
 import { usePrefetchProjects } from '../hooks/usePrefetchProjects';
 import { usePortfolioCategories } from '../hooks/usePortfolioCategories';
+import VideoIntroModal from './VideoIntroModal';
+import { useSiteVideo } from '@/hooks/useSiteVideo';
 
 const About = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -33,6 +35,8 @@ const About = () => {
   const isMobile = useIsMobile();
   const { user } = useAuth();
   const { profile } = useProfile();
+  const { publicVideoUrl, publicPosterUrl, publicCaptionsUrl, video } = useSiteVideo();
+  const [isVideoOpen, setIsVideoOpen] = useState(false);
   
   // Prefetching for portfolio
   const { prefetchProjectsByCategory } = usePrefetchProjects();
@@ -193,10 +197,12 @@ const About = () => {
                     <Download className="w-4 h-4 mr-2" />
                     Download CV
                   </Button>
-                  <Button variant="secondary" aria-label="Video Introduction" title="Video Introduction" size="sm">
-                    <PlayCircle className="w-4 h-4 mr-2" />
-                    Video Introduction
-                  </Button>
+                  {publicVideoUrl && (
+                    <Button variant="secondary" aria-label="Video Introduction" title="Video Introduction" size="sm" onClick={() => setIsVideoOpen(true)}>
+                      <PlayCircle className="w-4 h-4 mr-2" />
+                      Video Introduction
+                    </Button>
+                  )}
                 </div>
               )}
               
@@ -275,16 +281,19 @@ const About = () => {
                         <Download className="w-4 h-4 mr-2 flex-shrink-0" />
                         <span className="truncate">Download CV</span>
                       </Button>
-                      <Button 
-                        variant="secondary" 
-                        aria-label="Video Introduction" 
-                        title="Video Introduction" 
-                        size="sm"
-                        className="flex-1 truncate"
-                      >
-                        <PlayCircle className="w-4 h-4 mr-2 flex-shrink-0" />
-                        <span className="truncate">Video Introduction</span>
-                      </Button>
+                      {publicVideoUrl && (
+                        <Button 
+                          variant="secondary" 
+                          aria-label="Video Introduction" 
+                          title="Video Introduction" 
+                          size="sm"
+                          className="flex-1 truncate"
+                          onClick={() => setIsVideoOpen(true)}
+                        >
+                          <PlayCircle className="w-4 h-4 mr-2 flex-shrink-0" />
+                          <span className="truncate">Video Introduction</span>
+                        </Button>
+                      )}
                     </div>
                   )}
                 </>
@@ -514,6 +523,17 @@ const About = () => {
         isOpen={showEditHighlights}
         onClose={() => setShowEditHighlights(false)}
       />
+
+      {publicVideoUrl && (
+        <VideoIntroModal
+          open={isVideoOpen}
+          onOpenChange={setIsVideoOpen}
+          videoUrl={publicVideoUrl}
+          posterUrl={publicPosterUrl ?? undefined}
+          captionsUrl={publicCaptionsUrl ?? undefined}
+          title={video?.title ?? null}
+        />
+      )}
     </>
   );
 };
