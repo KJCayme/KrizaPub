@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Label } from './ui/label';
 import { useDatabaseTheme } from '../contexts/DatabaseThemeContext';
+import VideoIntroManager from './VideoIntroManager';
 
 const Config = () => {
   const { activeTheme, allThemes, setActiveTheme, isSettingTheme, isLoading } = useDatabaseTheme();
@@ -133,6 +134,9 @@ const Config = () => {
             </DialogContent>
           </Dialog>
         </div>
+
+        {/* Video Intro Manager */}
+        <VideoIntroManager />
       </div>
     </section>
   );

@@ -1338,6 +1338,45 @@ export type Database = {
         }
         Relationships: []
       }
+      site_video: {
+        Row: {
+          captions_path: string | null
+          created_at: string
+          created_by: string | null
+          description: string | null
+          id: string
+          is_active: boolean
+          poster_path: string | null
+          title: string | null
+          updated_at: string
+          video_path: string
+        }
+        Insert: {
+          captions_path?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          poster_path?: string | null
+          title?: string | null
+          updated_at?: string
+          video_path: string
+        }
+        Update: {
+          captions_path?: string | null
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          poster_path?: string | null
+          title?: string | null
+          updated_at?: string
+          video_path?: string
+        }
+        Relationships: []
+      }
       skills_expertise: {
         Row: {
           created_at: string

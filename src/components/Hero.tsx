@@ -5,8 +5,11 @@ import { useProfile } from '../hooks/useProfile';
 import { useHeroRoles } from '../hooks/useHeroRoles';
 import EditProfileForm from './EditProfileForm';
 import ProfileImageUpload from './ProfileImageUpload';
-import { Download } from 'lucide-react';
+import { Download, PlayCircle } from 'lucide-react';
 import { getResumeSignedDownloadUrl } from '../utils/resumeDownload';
+import { Button } from './ui/button';
+import VideoIntroModal from './VideoIntroModal';
+import { useSiteVideo } from '@/hooks/useSiteVideo';
 
 const Hero = () => {
   const [currentRole, setCurrentRole] = useState(0);
@@ -16,6 +19,8 @@ const Hero = () => {
   const [showAnimations, setShowAnimations] = useState(false);
   const { profile, loading: profileLoading, fetchProfile } = useProfile();
   const { roles, loading: rolesLoading, refetchRoles } = useHeroRoles();
+  const { publicVideoUrl, publicPosterUrl, publicCaptionsUrl, video } = useSiteVideo();
+  const [isVideoOpen, setIsVideoOpen] = useState(false);
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -106,7 +111,7 @@ const Hero = () => {
       </div>
 
       <div className="container mx-auto px-6 text-center relative z-10">
-        {/* Buttons positioned above the name */}
+        {/* Admin Buttons positioned above the name */}
         <div className="flex justify-center items-center gap-4 mb-8">
           <ProfileImageUpload onImageUploaded={handleDataRefresh} />
           <EditProfileForm onProfileUpdated={handleDataRefresh} />
@@ -182,11 +187,31 @@ const Hero = () => {
         </div>
 
         {/* Caption with slide-in from left animation */}
-        <p className={`text-xl text-slate-300 max-w-2xl mx-auto mb-12 transition-all duration-1000 delay-500 ${
+        <p className={`text-xl text-slate-300 max-w-2xl mx-auto mb-6 transition-all duration-1000 delay-500 ${
           showAnimations ? 'animate-[heroCaptionSlideIn_0.8s_ease-out_forwards]' : 'opacity-0 -translate-x-32'
         }`}>
           {displayCaption}
         </p>
+
+        {/* Watch Intro CTA */}
+        {publicVideoUrl && (
+          <div className="mb-12 flex items-center justify-center">
+            <Button size="lg" onClick={() => setIsVideoOpen(true)}>
+              <PlayCircle className="w-5 h-5" />
+              Watch Intro
+            </Button>
+          </div>
+        )}
+
+        {/* Video Modal */}
+        <VideoIntroModal
+          open={isVideoOpen}
+          onOpenChange={setIsVideoOpen}
+          videoUrl={publicVideoUrl}
+          posterUrl={publicPosterUrl ?? undefined}
+          captionsUrl={publicCaptionsUrl ?? undefined}
+          title={video?.title ?? null}
+        />
       </div>
 
       {/* Updated one-time animation keyframes with new triple bounce */}
