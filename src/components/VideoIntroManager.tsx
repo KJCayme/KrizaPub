@@ -20,6 +20,11 @@ const VideoIntroManager: React.FC = () => {
       toast.error('Please choose a video file to upload.');
       return;
     }
+    const MAX_BYTES = 50 * 1024 * 1024; // 50 MB
+    if (videoFile.size > MAX_BYTES) {
+      toast.error('Video must be 50 MB or smaller.');
+      return;
+    }
     try {
       setSubmitting(true);
       await uploadAndActivate({
@@ -66,7 +71,7 @@ const VideoIntroManager: React.FC = () => {
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>Video file</Label>
+            <Label>Video file <span className="text-xs text-muted-foreground ml-1">(Max 50 MB)</span></Label>
             <input type="file" accept="video/*" onChange={(e) => setVideoFile(e.target.files?.[0] || null)} className="block w-full text-sm" />
           </div>
           <div className="space-y-2">

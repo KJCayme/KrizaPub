@@ -5,11 +5,11 @@ import { useProfile } from '../hooks/useProfile';
 import { useHeroRoles } from '../hooks/useHeroRoles';
 import EditProfileForm from './EditProfileForm';
 import ProfileImageUpload from './ProfileImageUpload';
-import { Download, PlayCircle } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { getResumeSignedDownloadUrl } from '../utils/resumeDownload';
-import { Button } from './ui/button';
-import VideoIntroModal from './VideoIntroModal';
-import { useSiteVideo } from '@/hooks/useSiteVideo';
+
+
+
 
 const Hero = () => {
   const [currentRole, setCurrentRole] = useState(0);
@@ -19,8 +19,6 @@ const Hero = () => {
   const [showAnimations, setShowAnimations] = useState(false);
   const { profile, loading: profileLoading, fetchProfile } = useProfile();
   const { roles, loading: rolesLoading, refetchRoles } = useHeroRoles();
-  const { publicVideoUrl, publicPosterUrl, publicCaptionsUrl, video } = useSiteVideo();
-  const [isVideoOpen, setIsVideoOpen] = useState(false);
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -193,25 +191,7 @@ const Hero = () => {
           {displayCaption}
         </p>
 
-        {/* Watch Intro CTA */}
-        {publicVideoUrl && (
-          <div className="mb-12 flex items-center justify-center">
-            <Button size="lg" onClick={() => setIsVideoOpen(true)}>
-              <PlayCircle className="w-5 h-5" />
-              Watch Intro
-            </Button>
-          </div>
-        )}
 
-        {/* Video Modal */}
-        <VideoIntroModal
-          open={isVideoOpen}
-          onOpenChange={setIsVideoOpen}
-          videoUrl={publicVideoUrl}
-          posterUrl={publicPosterUrl ?? undefined}
-          captionsUrl={publicCaptionsUrl ?? undefined}
-          title={video?.title ?? null}
-        />
       </div>
 
       {/* Updated one-time animation keyframes with new triple bounce */}
