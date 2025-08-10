@@ -24,7 +24,7 @@ const Navigation = () => {
   const isTablet = useIsTablet();
   const { user, loading: authLoading } = useAuth();
 
-  const navItems = [
+  const baseNavItems = [
     { id: 'skills', label: 'Skills' },
     { id: 'portfolio', label: 'Projects' },
     { id: 'tools', label: 'Tools' },
@@ -32,6 +32,9 @@ const Navigation = () => {
     { id: 'testimonials', label: 'Testimonials' },
     { id: 'contact', label: 'Contacts' }
   ];
+
+  // Add Config item only for authenticated users
+  const navItems = user ? [...baseNavItems, { id: 'config', label: 'Config' }] : baseNavItems;
 
   const portfolioCategories = [
     { id: 'admin', name: 'Admin Support' },
@@ -50,7 +53,9 @@ const Navigation = () => {
     const handleScroll = () => {
       if (!scrollHandlerEnabled) return;
       
-      const sections = ['hero', 'skills', 'portfolio', 'tools', 'certificates', 'testimonials', 'contact'];
+      const sections = user 
+        ? ['hero', 'skills', 'portfolio', 'tools', 'certificates', 'testimonials', 'contact', 'config']
+        : ['hero', 'skills', 'portfolio', 'tools', 'certificates', 'testimonials', 'contact'];
       const scrollPosition = window.scrollY + 100;
 
       for (const section of sections) {
@@ -103,7 +108,7 @@ const Navigation = () => {
       window.removeEventListener('disableNavScroll', handleDisableNavScroll);
       window.removeEventListener('enableNavScroll', handleEnableNavScroll);
     };
-  }, [isMobile]);
+  }, [isMobile, user]);
 
   const scrollToSection = (sectionId: string) => {
     const element = document.getElementById(sectionId);

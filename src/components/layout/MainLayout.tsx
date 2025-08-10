@@ -1,3 +1,4 @@
+
 import Navigation from '../Navigation';
 import Hero from '../Hero';
 import About from '../About';
@@ -10,6 +11,7 @@ import Contact from '../Contact';
 import Config from '../Config';
 import NetworkStatusIndicator from '../NetworkStatusIndicator';
 import { Toaster } from 'sonner';
+import { useAuth } from '../../hooks/useAuth';
 
 interface MainLayoutProps {
   showAllProjects: boolean;
@@ -24,6 +26,8 @@ const MainLayout = ({
   onShowCertificatesOnly, 
   onShowTestimonialsOnly 
 }: MainLayoutProps) => {
+  const { user, loading: authLoading } = useAuth();
+
   return (
     <div className="min-h-screen transition-colors duration-300">
       <NetworkStatusIndicator />
@@ -67,7 +71,7 @@ const MainLayout = ({
             <Contact />
           </section>
         )}
-        {!showAllProjects && (
+        {!showAllProjects && !authLoading && user && (
           <section id="config">
             <Config />
           </section>
