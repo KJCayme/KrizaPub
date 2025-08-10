@@ -462,22 +462,143 @@ export type Database = {
           about_bg_end_light: string | null
           about_bg_start_dark: string | null
           about_bg_start_light: string | null
+          about_card_bg_dark: string | null
+          about_card_bg_light: string | null
+          about_carousel_bg_end_dark: string | null
+          about_carousel_bg_end_light: string | null
+          about_carousel_bg_start_dark: string | null
+          about_carousel_bg_start_light: string | null
+          about_highlight_bg_end_dark: string | null
+          about_highlight_bg_end_light: string | null
+          about_highlight_bg_start_dark: string | null
+          about_highlight_bg_start_light: string | null
+          about_highlight_icon_bg_dark: string | null
+          about_highlight_icon_bg_end_dark: string | null
+          about_highlight_icon_bg_end_light: string | null
+          about_highlight_icon_bg_light: string | null
+          about_highlight_icon_text_dark: string | null
+          about_highlight_icon_text_light: string | null
+          about_hobby_bg_end_dark: string | null
+          about_hobby_bg_end_light: string | null
+          about_hobby_bg_start_dark: string | null
+          about_hobby_bg_start_light: string | null
+          about_image_overlay_dark: string | null
+          about_image_overlay_end_dark: string | null
+          about_image_overlay_end_light: string | null
+          about_image_overlay_light: string | null
           about_text_primary_dark: string | null
           about_text_primary_light: string | null
           about_text_secondary_dark: string | null
           about_text_secondary_light: string | null
+          accent_dark: string | null
+          accent_foreground_dark: string | null
+          accent_foreground_light: string | null
+          accent_light: string | null
+          background_dark: string | null
+          background_light: string | null
+          bg_end_dark: string | null
+          bg_end_light: string | null
+          bg_mid_dark: string | null
+          bg_mid_light: string | null
+          bg_start_dark: string | null
+          bg_start_light: string | null
+          blob_1_dark: string | null
+          blob_1_light: string | null
+          blob_2_dark: string | null
+          blob_2_light: string | null
+          blob_3_dark: string | null
+          blob_3_light: string | null
+          border_dark: string | null
+          border_light: string | null
+          card_dark: string | null
+          card_foreground_dark: string | null
+          card_foreground_light: string | null
+          card_light: string | null
+          certificates_badge_bg_end_dark: string | null
+          certificates_badge_bg_end_light: string | null
+          certificates_badge_bg_start_dark: string | null
+          certificates_badge_bg_start_light: string | null
+          certificates_card_border_dark: string | null
+          certificates_card_border_light: string | null
+          chart_1_dark: string | null
+          chart_1_light: string | null
+          chart_2_dark: string | null
+          chart_2_light: string | null
+          chart_3_dark: string | null
+          chart_3_light: string | null
+          chart_4_dark: string | null
+          chart_4_light: string | null
+          chart_5_light: string | null
           config_bg_end_dark: string | null
           config_bg_end_light: string | null
           config_bg_start_dark: string | null
           config_bg_start_light: string | null
+          config_button_blue_end_dark: string | null
+          config_button_blue_end_light: string | null
+          config_button_blue_start_dark: string | null
+          config_button_blue_start_light: string | null
           config_button_purple_end_dark: string | null
           config_button_purple_end_light: string | null
           config_button_purple_start_dark: string | null
           config_button_purple_start_light: string | null
           config_text_primary_dark: string | null
           config_text_primary_light: string | null
+          config_text_secondary_dark: string | null
+          config_text_secondary_light: string | null
+          contact_bg_end_dark: string | null
+          contact_bg_end_light: string | null
+          contact_bg_start_dark: string | null
+          contact_bg_start_light: string | null
+          contact_button_bg_end_dark: string | null
+          contact_button_bg_end_light: string | null
+          contact_button_bg_start_dark: string | null
+          contact_button_bg_start_light: string | null
+          contact_form_bg_dark: string | null
+          contact_form_bg_light: string | null
+          contact_form_border_dark: string | null
+          contact_form_border_light: string | null
+          contact_input_bg_dark: string | null
+          contact_input_bg_light: string | null
+          contact_input_border_dark: string | null
+          contact_input_border_light: string | null
+          contact_text_primary_dark: string | null
+          contact_text_primary_light: string | null
+          contact_text_secondary_dark: string | null
+          contact_text_secondary_light: string | null
           created_at: string
           created_by: string | null
+          destructive_dark: string | null
+          destructive_foreground_dark: string | null
+          destructive_foreground_light: string | null
+          destructive_light: string | null
+          error_bg_dark: string | null
+          error_bg_light: string | null
+          error_text_dark: string | null
+          error_text_light: string | null
+          foreground_dark: string | null
+          foreground_light: string | null
+          funnel_bg_end_dark: string | null
+          funnel_bg_end_light: string | null
+          funnel_bg_start_dark: string | null
+          funnel_bg_start_light: string | null
+          funnel_container_bg_dark: string | null
+          funnel_container_bg_dark_dark: string | null
+          funnel_container_bg_dark_light: string | null
+          funnel_container_bg_light: string | null
+          funnel_device_bg_active_dark: string | null
+          funnel_device_bg_active_light: string | null
+          funnel_device_bg_dark: string | null
+          funnel_device_bg_light: string | null
+          funnel_device_text_active_dark: string | null
+          funnel_device_text_active_light: string | null
+          funnel_device_text_dark: string | null
+          funnel_device_text_light: string | null
+          funnel_screen_bg_dark: string | null
+          funnel_screen_bg_light: string | null
+          funnel_text_primary_dark: string | null
+          funnel_text_primary_light: string | null
+          funnel_text_secondary_dark: string | null
+          funnel_text_secondary_light: string | null
           hero_bg_end_dark: string | null
           hero_bg_end_light: string | null
           hero_bg_mid_dark: string | null
@@ -490,56 +611,287 @@ export type Database = {
           hero_blob_2_light: string | null
           hero_blob_3_dark: string | null
           hero_blob_3_light: string | null
+          hero_button_bg_end_dark: string | null
+          hero_button_bg_end_light: string | null
+          hero_button_bg_start_dark: string | null
+          hero_button_bg_start_light: string | null
           hero_text_primary_dark: string | null
           hero_text_primary_light: string | null
           hero_text_secondary_dark: string | null
           hero_text_secondary_light: string | null
           id: string
+          input_dark: string | null
+          input_light: string | null
           is_active: boolean
+          muted_dark: string | null
+          muted_foreground_dark: string | null
+          muted_foreground_light: string | null
+          muted_light: string | null
+          nav_bg_active_dark: string | null
+          nav_bg_active_light: string | null
           nav_bg_dark: string | null
+          nav_bg_hover_dark: string | null
+          nav_bg_hover_light: string | null
           nav_bg_light: string | null
+          nav_border_dark: string | null
+          nav_border_light: string | null
+          nav_button_bg_end_dark: string | null
+          nav_button_bg_end_light: string | null
+          nav_button_bg_start_dark: string | null
+          nav_button_bg_start_light: string | null
           nav_text_active_dark: string | null
           nav_text_active_light: string | null
           nav_text_dark: string | null
           nav_text_hover_dark: string | null
           nav_text_hover_light: string | null
           nav_text_light: string | null
+          popover_dark: string | null
+          popover_foreground_dark: string | null
+          popover_foreground_light: string | null
+          popover_light: string | null
           portfolio_bg_end_dark: string | null
           portfolio_bg_end_light: string | null
           portfolio_bg_start_dark: string | null
           portfolio_bg_start_light: string | null
+          portfolio_button_bg_end_dark: string | null
+          portfolio_button_bg_end_light: string | null
+          portfolio_button_bg_start_dark: string | null
+          portfolio_button_bg_start_light: string | null
+          portfolio_card_bg_dark: string | null
+          portfolio_card_bg_light: string | null
+          portfolio_card_border_dark: string | null
+          portfolio_card_border_light: string | null
+          portfolio_tag_bg_dark: string | null
+          portfolio_tag_bg_light: string | null
+          portfolio_tag_text_dark: string | null
+          portfolio_tag_text_light: string | null
           portfolio_text_primary_dark: string | null
           portfolio_text_primary_light: string | null
+          portfolio_text_secondary_dark: string | null
+          portfolio_text_secondary_light: string | null
+          primary_dark: string | null
+          primary_foreground_dark: string | null
+          primary_foreground_light: string | null
+          primary_light: string | null
+          radius_dark: string | null
+          radius_light: string | null
+          ring_dark: string | null
+          ring_light: string | null
+          secondary_dark: string | null
+          secondary_foreground_dark: string | null
+          secondary_foreground_light: string | null
+          secondary_light: string | null
           skills_bg_end_dark: string | null
           skills_bg_end_light: string | null
           skills_bg_start_dark: string | null
           skills_bg_start_light: string | null
+          skills_card_bg_dark: string | null
+          skills_card_bg_light: string | null
+          skills_card_border_dark: string | null
+          skills_card_border_light: string | null
+          skills_progress_bg_dark: string | null
+          skills_progress_bg_light: string | null
+          skills_progress_fill_end_dark: string | null
+          skills_progress_fill_end_light: string | null
+          skills_progress_fill_start_dark: string | null
+          skills_progress_fill_start_light: string | null
           skills_text_primary_dark: string | null
           skills_text_primary_light: string | null
+          skills_text_secondary_dark: string | null
+          skills_text_secondary_light: string | null
+          success_bg_dark: string | null
+          success_bg_light: string | null
+          success_bg_light_tone_dark: string | null
+          success_bg_light_tone_light: string | null
+          success_border_dark: string | null
+          success_border_light: string | null
+          success_text_dark: string | null
+          success_text_light: string | null
+          testimonials_bg_end_dark: string | null
+          testimonials_bg_end_light: string | null
+          testimonials_bg_start_dark: string | null
+          testimonials_bg_start_light: string | null
+          testimonials_button_bg_end_dark: string | null
+          testimonials_button_bg_end_light: string | null
+          testimonials_button_bg_start_dark: string | null
+          testimonials_button_bg_start_light: string | null
+          testimonials_card_bg_dark: string | null
+          testimonials_card_bg_light: string | null
+          testimonials_card_border_dark: string | null
+          testimonials_card_border_light: string | null
+          testimonials_star_empty_dark: string | null
+          testimonials_star_empty_light: string | null
+          testimonials_star_fill_dark: string | null
+          testimonials_star_fill_light: string | null
+          testimonials_text_primary_dark: string | null
+          testimonials_text_primary_light: string | null
+          testimonials_text_secondary_dark: string | null
+          testimonials_text_secondary_light: string | null
           theme_name: string
+          tools_bg_end_dark: string | null
+          tools_bg_end_light: string | null
+          tools_bg_start_dark: string | null
+          tools_bg_start_light: string | null
+          tools_card_bg_dark: string | null
+          tools_card_bg_light: string | null
+          tools_card_border_dark: string | null
+          tools_card_border_light: string | null
+          tools_icon_bg_dark: string | null
+          tools_icon_bg_light: string | null
+          tools_icon_text_dark: string | null
+          tools_icon_text_light: string | null
+          tools_text_primary_dark: string | null
+          tools_text_primary_light: string | null
+          tools_text_secondary_dark: string | null
+          tools_text_secondary_light: string | null
           updated_at: string
+          warning_bg_dark: string | null
+          warning_bg_light: string | null
+          warning_text_dark: string | null
+          warning_text_light: string | null
         }
         Insert: {
           about_bg_end_dark?: string | null
           about_bg_end_light?: string | null
           about_bg_start_dark?: string | null
           about_bg_start_light?: string | null
+          about_card_bg_dark?: string | null
+          about_card_bg_light?: string | null
+          about_carousel_bg_end_dark?: string | null
+          about_carousel_bg_end_light?: string | null
+          about_carousel_bg_start_dark?: string | null
+          about_carousel_bg_start_light?: string | null
+          about_highlight_bg_end_dark?: string | null
+          about_highlight_bg_end_light?: string | null
+          about_highlight_bg_start_dark?: string | null
+          about_highlight_bg_start_light?: string | null
+          about_highlight_icon_bg_dark?: string | null
+          about_highlight_icon_bg_end_dark?: string | null
+          about_highlight_icon_bg_end_light?: string | null
+          about_highlight_icon_bg_light?: string | null
+          about_highlight_icon_text_dark?: string | null
+          about_highlight_icon_text_light?: string | null
+          about_hobby_bg_end_dark?: string | null
+          about_hobby_bg_end_light?: string | null
+          about_hobby_bg_start_dark?: string | null
+          about_hobby_bg_start_light?: string | null
+          about_image_overlay_dark?: string | null
+          about_image_overlay_end_dark?: string | null
+          about_image_overlay_end_light?: string | null
+          about_image_overlay_light?: string | null
           about_text_primary_dark?: string | null
           about_text_primary_light?: string | null
           about_text_secondary_dark?: string | null
           about_text_secondary_light?: string | null
+          accent_dark?: string | null
+          accent_foreground_dark?: string | null
+          accent_foreground_light?: string | null
+          accent_light?: string | null
+          background_dark?: string | null
+          background_light?: string | null
+          bg_end_dark?: string | null
+          bg_end_light?: string | null
+          bg_mid_dark?: string | null
+          bg_mid_light?: string | null
+          bg_start_dark?: string | null
+          bg_start_light?: string | null
+          blob_1_dark?: string | null
+          blob_1_light?: string | null
+          blob_2_dark?: string | null
+          blob_2_light?: string | null
+          blob_3_dark?: string | null
+          blob_3_light?: string | null
+          border_dark?: string | null
+          border_light?: string | null
+          card_dark?: string | null
+          card_foreground_dark?: string | null
+          card_foreground_light?: string | null
+          card_light?: string | null
+          certificates_badge_bg_end_dark?: string | null
+          certificates_badge_bg_end_light?: string | null
+          certificates_badge_bg_start_dark?: string | null
+          certificates_badge_bg_start_light?: string | null
+          certificates_card_border_dark?: string | null
+          certificates_card_border_light?: string | null
+          chart_1_dark?: string | null
+          chart_1_light?: string | null
+          chart_2_dark?: string | null
+          chart_2_light?: string | null
+          chart_3_dark?: string | null
+          chart_3_light?: string | null
+          chart_4_dark?: string | null
+          chart_4_light?: string | null
+          chart_5_light?: string | null
           config_bg_end_dark?: string | null
           config_bg_end_light?: string | null
           config_bg_start_dark?: string | null
           config_bg_start_light?: string | null
+          config_button_blue_end_dark?: string | null
+          config_button_blue_end_light?: string | null
+          config_button_blue_start_dark?: string | null
+          config_button_blue_start_light?: string | null
           config_button_purple_end_dark?: string | null
           config_button_purple_end_light?: string | null
           config_button_purple_start_dark?: string | null
           config_button_purple_start_light?: string | null
           config_text_primary_dark?: string | null
           config_text_primary_light?: string | null
+          config_text_secondary_dark?: string | null
+          config_text_secondary_light?: string | null
+          contact_bg_end_dark?: string | null
+          contact_bg_end_light?: string | null
+          contact_bg_start_dark?: string | null
+          contact_bg_start_light?: string | null
+          contact_button_bg_end_dark?: string | null
+          contact_button_bg_end_light?: string | null
+          contact_button_bg_start_dark?: string | null
+          contact_button_bg_start_light?: string | null
+          contact_form_bg_dark?: string | null
+          contact_form_bg_light?: string | null
+          contact_form_border_dark?: string | null
+          contact_form_border_light?: string | null
+          contact_input_bg_dark?: string | null
+          contact_input_bg_light?: string | null
+          contact_input_border_dark?: string | null
+          contact_input_border_light?: string | null
+          contact_text_primary_dark?: string | null
+          contact_text_primary_light?: string | null
+          contact_text_secondary_dark?: string | null
+          contact_text_secondary_light?: string | null
           created_at?: string
           created_by?: string | null
+          destructive_dark?: string | null
+          destructive_foreground_dark?: string | null
+          destructive_foreground_light?: string | null
+          destructive_light?: string | null
+          error_bg_dark?: string | null
+          error_bg_light?: string | null
+          error_text_dark?: string | null
+          error_text_light?: string | null
+          foreground_dark?: string | null
+          foreground_light?: string | null
+          funnel_bg_end_dark?: string | null
+          funnel_bg_end_light?: string | null
+          funnel_bg_start_dark?: string | null
+          funnel_bg_start_light?: string | null
+          funnel_container_bg_dark?: string | null
+          funnel_container_bg_dark_dark?: string | null
+          funnel_container_bg_dark_light?: string | null
+          funnel_container_bg_light?: string | null
+          funnel_device_bg_active_dark?: string | null
+          funnel_device_bg_active_light?: string | null
+          funnel_device_bg_dark?: string | null
+          funnel_device_bg_light?: string | null
+          funnel_device_text_active_dark?: string | null
+          funnel_device_text_active_light?: string | null
+          funnel_device_text_dark?: string | null
+          funnel_device_text_light?: string | null
+          funnel_screen_bg_dark?: string | null
+          funnel_screen_bg_light?: string | null
+          funnel_text_primary_dark?: string | null
+          funnel_text_primary_light?: string | null
+          funnel_text_secondary_dark?: string | null
+          funnel_text_secondary_light?: string | null
           hero_bg_end_dark?: string | null
           hero_bg_end_light?: string | null
           hero_bg_mid_dark?: string | null
@@ -552,56 +904,287 @@ export type Database = {
           hero_blob_2_light?: string | null
           hero_blob_3_dark?: string | null
           hero_blob_3_light?: string | null
+          hero_button_bg_end_dark?: string | null
+          hero_button_bg_end_light?: string | null
+          hero_button_bg_start_dark?: string | null
+          hero_button_bg_start_light?: string | null
           hero_text_primary_dark?: string | null
           hero_text_primary_light?: string | null
           hero_text_secondary_dark?: string | null
           hero_text_secondary_light?: string | null
           id?: string
+          input_dark?: string | null
+          input_light?: string | null
           is_active?: boolean
+          muted_dark?: string | null
+          muted_foreground_dark?: string | null
+          muted_foreground_light?: string | null
+          muted_light?: string | null
+          nav_bg_active_dark?: string | null
+          nav_bg_active_light?: string | null
           nav_bg_dark?: string | null
+          nav_bg_hover_dark?: string | null
+          nav_bg_hover_light?: string | null
           nav_bg_light?: string | null
+          nav_border_dark?: string | null
+          nav_border_light?: string | null
+          nav_button_bg_end_dark?: string | null
+          nav_button_bg_end_light?: string | null
+          nav_button_bg_start_dark?: string | null
+          nav_button_bg_start_light?: string | null
           nav_text_active_dark?: string | null
           nav_text_active_light?: string | null
           nav_text_dark?: string | null
           nav_text_hover_dark?: string | null
           nav_text_hover_light?: string | null
           nav_text_light?: string | null
+          popover_dark?: string | null
+          popover_foreground_dark?: string | null
+          popover_foreground_light?: string | null
+          popover_light?: string | null
           portfolio_bg_end_dark?: string | null
           portfolio_bg_end_light?: string | null
           portfolio_bg_start_dark?: string | null
           portfolio_bg_start_light?: string | null
+          portfolio_button_bg_end_dark?: string | null
+          portfolio_button_bg_end_light?: string | null
+          portfolio_button_bg_start_dark?: string | null
+          portfolio_button_bg_start_light?: string | null
+          portfolio_card_bg_dark?: string | null
+          portfolio_card_bg_light?: string | null
+          portfolio_card_border_dark?: string | null
+          portfolio_card_border_light?: string | null
+          portfolio_tag_bg_dark?: string | null
+          portfolio_tag_bg_light?: string | null
+          portfolio_tag_text_dark?: string | null
+          portfolio_tag_text_light?: string | null
           portfolio_text_primary_dark?: string | null
           portfolio_text_primary_light?: string | null
+          portfolio_text_secondary_dark?: string | null
+          portfolio_text_secondary_light?: string | null
+          primary_dark?: string | null
+          primary_foreground_dark?: string | null
+          primary_foreground_light?: string | null
+          primary_light?: string | null
+          radius_dark?: string | null
+          radius_light?: string | null
+          ring_dark?: string | null
+          ring_light?: string | null
+          secondary_dark?: string | null
+          secondary_foreground_dark?: string | null
+          secondary_foreground_light?: string | null
+          secondary_light?: string | null
           skills_bg_end_dark?: string | null
           skills_bg_end_light?: string | null
           skills_bg_start_dark?: string | null
           skills_bg_start_light?: string | null
+          skills_card_bg_dark?: string | null
+          skills_card_bg_light?: string | null
+          skills_card_border_dark?: string | null
+          skills_card_border_light?: string | null
+          skills_progress_bg_dark?: string | null
+          skills_progress_bg_light?: string | null
+          skills_progress_fill_end_dark?: string | null
+          skills_progress_fill_end_light?: string | null
+          skills_progress_fill_start_dark?: string | null
+          skills_progress_fill_start_light?: string | null
           skills_text_primary_dark?: string | null
           skills_text_primary_light?: string | null
+          skills_text_secondary_dark?: string | null
+          skills_text_secondary_light?: string | null
+          success_bg_dark?: string | null
+          success_bg_light?: string | null
+          success_bg_light_tone_dark?: string | null
+          success_bg_light_tone_light?: string | null
+          success_border_dark?: string | null
+          success_border_light?: string | null
+          success_text_dark?: string | null
+          success_text_light?: string | null
+          testimonials_bg_end_dark?: string | null
+          testimonials_bg_end_light?: string | null
+          testimonials_bg_start_dark?: string | null
+          testimonials_bg_start_light?: string | null
+          testimonials_button_bg_end_dark?: string | null
+          testimonials_button_bg_end_light?: string | null
+          testimonials_button_bg_start_dark?: string | null
+          testimonials_button_bg_start_light?: string | null
+          testimonials_card_bg_dark?: string | null
+          testimonials_card_bg_light?: string | null
+          testimonials_card_border_dark?: string | null
+          testimonials_card_border_light?: string | null
+          testimonials_star_empty_dark?: string | null
+          testimonials_star_empty_light?: string | null
+          testimonials_star_fill_dark?: string | null
+          testimonials_star_fill_light?: string | null
+          testimonials_text_primary_dark?: string | null
+          testimonials_text_primary_light?: string | null
+          testimonials_text_secondary_dark?: string | null
+          testimonials_text_secondary_light?: string | null
           theme_name?: string
+          tools_bg_end_dark?: string | null
+          tools_bg_end_light?: string | null
+          tools_bg_start_dark?: string | null
+          tools_bg_start_light?: string | null
+          tools_card_bg_dark?: string | null
+          tools_card_bg_light?: string | null
+          tools_card_border_dark?: string | null
+          tools_card_border_light?: string | null
+          tools_icon_bg_dark?: string | null
+          tools_icon_bg_light?: string | null
+          tools_icon_text_dark?: string | null
+          tools_icon_text_light?: string | null
+          tools_text_primary_dark?: string | null
+          tools_text_primary_light?: string | null
+          tools_text_secondary_dark?: string | null
+          tools_text_secondary_light?: string | null
           updated_at?: string
+          warning_bg_dark?: string | null
+          warning_bg_light?: string | null
+          warning_text_dark?: string | null
+          warning_text_light?: string | null
         }
         Update: {
           about_bg_end_dark?: string | null
           about_bg_end_light?: string | null
           about_bg_start_dark?: string | null
           about_bg_start_light?: string | null
+          about_card_bg_dark?: string | null
+          about_card_bg_light?: string | null
+          about_carousel_bg_end_dark?: string | null
+          about_carousel_bg_end_light?: string | null
+          about_carousel_bg_start_dark?: string | null
+          about_carousel_bg_start_light?: string | null
+          about_highlight_bg_end_dark?: string | null
+          about_highlight_bg_end_light?: string | null
+          about_highlight_bg_start_dark?: string | null
+          about_highlight_bg_start_light?: string | null
+          about_highlight_icon_bg_dark?: string | null
+          about_highlight_icon_bg_end_dark?: string | null
+          about_highlight_icon_bg_end_light?: string | null
+          about_highlight_icon_bg_light?: string | null
+          about_highlight_icon_text_dark?: string | null
+          about_highlight_icon_text_light?: string | null
+          about_hobby_bg_end_dark?: string | null
+          about_hobby_bg_end_light?: string | null
+          about_hobby_bg_start_dark?: string | null
+          about_hobby_bg_start_light?: string | null
+          about_image_overlay_dark?: string | null
+          about_image_overlay_end_dark?: string | null
+          about_image_overlay_end_light?: string | null
+          about_image_overlay_light?: string | null
           about_text_primary_dark?: string | null
           about_text_primary_light?: string | null
           about_text_secondary_dark?: string | null
           about_text_secondary_light?: string | null
+          accent_dark?: string | null
+          accent_foreground_dark?: string | null
+          accent_foreground_light?: string | null
+          accent_light?: string | null
+          background_dark?: string | null
+          background_light?: string | null
+          bg_end_dark?: string | null
+          bg_end_light?: string | null
+          bg_mid_dark?: string | null
+          bg_mid_light?: string | null
+          bg_start_dark?: string | null
+          bg_start_light?: string | null
+          blob_1_dark?: string | null
+          blob_1_light?: string | null
+          blob_2_dark?: string | null
+          blob_2_light?: string | null
+          blob_3_dark?: string | null
+          blob_3_light?: string | null
+          border_dark?: string | null
+          border_light?: string | null
+          card_dark?: string | null
+          card_foreground_dark?: string | null
+          card_foreground_light?: string | null
+          card_light?: string | null
+          certificates_badge_bg_end_dark?: string | null
+          certificates_badge_bg_end_light?: string | null
+          certificates_badge_bg_start_dark?: string | null
+          certificates_badge_bg_start_light?: string | null
+          certificates_card_border_dark?: string | null
+          certificates_card_border_light?: string | null
+          chart_1_dark?: string | null
+          chart_1_light?: string | null
+          chart_2_dark?: string | null
+          chart_2_light?: string | null
+          chart_3_dark?: string | null
+          chart_3_light?: string | null
+          chart_4_dark?: string | null
+          chart_4_light?: string | null
+          chart_5_light?: string | null
           config_bg_end_dark?: string | null
           config_bg_end_light?: string | null
           config_bg_start_dark?: string | null
           config_bg_start_light?: string | null
+          config_button_blue_end_dark?: string | null
+          config_button_blue_end_light?: string | null
+          config_button_blue_start_dark?: string | null
+          config_button_blue_start_light?: string | null
           config_button_purple_end_dark?: string | null
           config_button_purple_end_light?: string | null
           config_button_purple_start_dark?: string | null
           config_button_purple_start_light?: string | null
           config_text_primary_dark?: string | null
           config_text_primary_light?: string | null
+          config_text_secondary_dark?: string | null
+          config_text_secondary_light?: string | null
+          contact_bg_end_dark?: string | null
+          contact_bg_end_light?: string | null
+          contact_bg_start_dark?: string | null
+          contact_bg_start_light?: string | null
+          contact_button_bg_end_dark?: string | null
+          contact_button_bg_end_light?: string | null
+          contact_button_bg_start_dark?: string | null
+          contact_button_bg_start_light?: string | null
+          contact_form_bg_dark?: string | null
+          contact_form_bg_light?: string | null
+          contact_form_border_dark?: string | null
+          contact_form_border_light?: string | null
+          contact_input_bg_dark?: string | null
+          contact_input_bg_light?: string | null
+          contact_input_border_dark?: string | null
+          contact_input_border_light?: string | null
+          contact_text_primary_dark?: string | null
+          contact_text_primary_light?: string | null
+          contact_text_secondary_dark?: string | null
+          contact_text_secondary_light?: string | null
           created_at?: string
           created_by?: string | null
+          destructive_dark?: string | null
+          destructive_foreground_dark?: string | null
+          destructive_foreground_light?: string | null
+          destructive_light?: string | null
+          error_bg_dark?: string | null
+          error_bg_light?: string | null
+          error_text_dark?: string | null
+          error_text_light?: string | null
+          foreground_dark?: string | null
+          foreground_light?: string | null
+          funnel_bg_end_dark?: string | null
+          funnel_bg_end_light?: string | null
+          funnel_bg_start_dark?: string | null
+          funnel_bg_start_light?: string | null
+          funnel_container_bg_dark?: string | null
+          funnel_container_bg_dark_dark?: string | null
+          funnel_container_bg_dark_light?: string | null
+          funnel_container_bg_light?: string | null
+          funnel_device_bg_active_dark?: string | null
+          funnel_device_bg_active_light?: string | null
+          funnel_device_bg_dark?: string | null
+          funnel_device_bg_light?: string | null
+          funnel_device_text_active_dark?: string | null
+          funnel_device_text_active_light?: string | null
+          funnel_device_text_dark?: string | null
+          funnel_device_text_light?: string | null
+          funnel_screen_bg_dark?: string | null
+          funnel_screen_bg_light?: string | null
+          funnel_text_primary_dark?: string | null
+          funnel_text_primary_light?: string | null
+          funnel_text_secondary_dark?: string | null
+          funnel_text_secondary_light?: string | null
           hero_bg_end_dark?: string | null
           hero_bg_end_light?: string | null
           hero_bg_mid_dark?: string | null
@@ -614,34 +1197,144 @@ export type Database = {
           hero_blob_2_light?: string | null
           hero_blob_3_dark?: string | null
           hero_blob_3_light?: string | null
+          hero_button_bg_end_dark?: string | null
+          hero_button_bg_end_light?: string | null
+          hero_button_bg_start_dark?: string | null
+          hero_button_bg_start_light?: string | null
           hero_text_primary_dark?: string | null
           hero_text_primary_light?: string | null
           hero_text_secondary_dark?: string | null
           hero_text_secondary_light?: string | null
           id?: string
+          input_dark?: string | null
+          input_light?: string | null
           is_active?: boolean
+          muted_dark?: string | null
+          muted_foreground_dark?: string | null
+          muted_foreground_light?: string | null
+          muted_light?: string | null
+          nav_bg_active_dark?: string | null
+          nav_bg_active_light?: string | null
           nav_bg_dark?: string | null
+          nav_bg_hover_dark?: string | null
+          nav_bg_hover_light?: string | null
           nav_bg_light?: string | null
+          nav_border_dark?: string | null
+          nav_border_light?: string | null
+          nav_button_bg_end_dark?: string | null
+          nav_button_bg_end_light?: string | null
+          nav_button_bg_start_dark?: string | null
+          nav_button_bg_start_light?: string | null
           nav_text_active_dark?: string | null
           nav_text_active_light?: string | null
           nav_text_dark?: string | null
           nav_text_hover_dark?: string | null
           nav_text_hover_light?: string | null
           nav_text_light?: string | null
+          popover_dark?: string | null
+          popover_foreground_dark?: string | null
+          popover_foreground_light?: string | null
+          popover_light?: string | null
           portfolio_bg_end_dark?: string | null
           portfolio_bg_end_light?: string | null
           portfolio_bg_start_dark?: string | null
           portfolio_bg_start_light?: string | null
+          portfolio_button_bg_end_dark?: string | null
+          portfolio_button_bg_end_light?: string | null
+          portfolio_button_bg_start_dark?: string | null
+          portfolio_button_bg_start_light?: string | null
+          portfolio_card_bg_dark?: string | null
+          portfolio_card_bg_light?: string | null
+          portfolio_card_border_dark?: string | null
+          portfolio_card_border_light?: string | null
+          portfolio_tag_bg_dark?: string | null
+          portfolio_tag_bg_light?: string | null
+          portfolio_tag_text_dark?: string | null
+          portfolio_tag_text_light?: string | null
           portfolio_text_primary_dark?: string | null
           portfolio_text_primary_light?: string | null
+          portfolio_text_secondary_dark?: string | null
+          portfolio_text_secondary_light?: string | null
+          primary_dark?: string | null
+          primary_foreground_dark?: string | null
+          primary_foreground_light?: string | null
+          primary_light?: string | null
+          radius_dark?: string | null
+          radius_light?: string | null
+          ring_dark?: string | null
+          ring_light?: string | null
+          secondary_dark?: string | null
+          secondary_foreground_dark?: string | null
+          secondary_foreground_light?: string | null
+          secondary_light?: string | null
           skills_bg_end_dark?: string | null
           skills_bg_end_light?: string | null
           skills_bg_start_dark?: string | null
           skills_bg_start_light?: string | null
+          skills_card_bg_dark?: string | null
+          skills_card_bg_light?: string | null
+          skills_card_border_dark?: string | null
+          skills_card_border_light?: string | null
+          skills_progress_bg_dark?: string | null
+          skills_progress_bg_light?: string | null
+          skills_progress_fill_end_dark?: string | null
+          skills_progress_fill_end_light?: string | null
+          skills_progress_fill_start_dark?: string | null
+          skills_progress_fill_start_light?: string | null
           skills_text_primary_dark?: string | null
           skills_text_primary_light?: string | null
+          skills_text_secondary_dark?: string | null
+          skills_text_secondary_light?: string | null
+          success_bg_dark?: string | null
+          success_bg_light?: string | null
+          success_bg_light_tone_dark?: string | null
+          success_bg_light_tone_light?: string | null
+          success_border_dark?: string | null
+          success_border_light?: string | null
+          success_text_dark?: string | null
+          success_text_light?: string | null
+          testimonials_bg_end_dark?: string | null
+          testimonials_bg_end_light?: string | null
+          testimonials_bg_start_dark?: string | null
+          testimonials_bg_start_light?: string | null
+          testimonials_button_bg_end_dark?: string | null
+          testimonials_button_bg_end_light?: string | null
+          testimonials_button_bg_start_dark?: string | null
+          testimonials_button_bg_start_light?: string | null
+          testimonials_card_bg_dark?: string | null
+          testimonials_card_bg_light?: string | null
+          testimonials_card_border_dark?: string | null
+          testimonials_card_border_light?: string | null
+          testimonials_star_empty_dark?: string | null
+          testimonials_star_empty_light?: string | null
+          testimonials_star_fill_dark?: string | null
+          testimonials_star_fill_light?: string | null
+          testimonials_text_primary_dark?: string | null
+          testimonials_text_primary_light?: string | null
+          testimonials_text_secondary_dark?: string | null
+          testimonials_text_secondary_light?: string | null
           theme_name?: string
+          tools_bg_end_dark?: string | null
+          tools_bg_end_light?: string | null
+          tools_bg_start_dark?: string | null
+          tools_bg_start_light?: string | null
+          tools_card_bg_dark?: string | null
+          tools_card_bg_light?: string | null
+          tools_card_border_dark?: string | null
+          tools_card_border_light?: string | null
+          tools_icon_bg_dark?: string | null
+          tools_icon_bg_light?: string | null
+          tools_icon_text_dark?: string | null
+          tools_icon_text_light?: string | null
+          tools_text_primary_dark?: string | null
+          tools_text_primary_light?: string | null
+          tools_text_secondary_dark?: string | null
+          tools_text_secondary_light?: string | null
           updated_at?: string
+          warning_bg_dark?: string | null
+          warning_bg_light?: string | null
+          warning_text_dark?: string | null
+          warning_text_light?: string | null
         }
         Relationships: []
       }
