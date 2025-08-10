@@ -44,6 +44,8 @@ const VideoIntroModal: React.FC<VideoIntroModalProps> = ({ open, onOpenChange, v
               playsInline
               preload="metadata"
               className="w-full h-full object-contain bg-black"
+              controlsList="nodownload"
+              onContextMenu={(e) => e.preventDefault()}
             >
               {captionsUrl && (
                 <track kind="captions" srcLang="en" src={captionsUrl} default />
