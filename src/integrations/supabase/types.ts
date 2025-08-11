@@ -405,9 +405,11 @@ export type Database = {
           image_link: string | null
           link: string | null
           months: string
+          problem: string | null
           project_card_image: string
           results: string
           skills_used: string
+          solution: string | null
           title: string
           updated_at: string
           user_id: string | null
@@ -422,9 +424,11 @@ export type Database = {
           image_link?: string | null
           link?: string | null
           months: string
+          problem?: string | null
           project_card_image: string
           results: string
           skills_used: string
+          solution?: string | null
           title: string
           updated_at?: string
           user_id?: string | null
@@ -439,9 +443,11 @@ export type Database = {
           image_link?: string | null
           link?: string | null
           months?: string
+          problem?: string | null
           project_card_image?: string
           results?: string
           skills_used?: string
+          solution?: string | null
           title?: string
           updated_at?: string
           user_id?: string | null
