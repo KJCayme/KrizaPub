@@ -38,6 +38,8 @@ export const transformProject = (dbProject: Tables<'projects'>): Project => {
     icon: getCategoryIcon(dbProject.category),
     detailedProcess: dbProject.detailed_process || undefined,
     detailedResults: dbProject.detailed_results || undefined,
+    problem: dbProject.problem || undefined,
+    solution: dbProject.solution || undefined,
   };
 };
 

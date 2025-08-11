@@ -56,6 +56,24 @@ const ProjectInfoSection = ({ project }: ProjectInfoSectionProps) => {
           </div>
         </div>
       )}
+
+      {project.problem && (
+        <div>
+          <h3 className="text-lg font-semibold text-funnel-text-primary mb-3">Problem</h3>
+          <p className="text-funnel-text-secondary leading-relaxed">
+            {project.problem}
+          </p>
+        </div>
+      )}
+
+      {project.solution && (
+        <div>
+          <h3 className="text-lg font-semibold text-funnel-text-primary mb-3">Solution</h3>
+          <p className="text-funnel-text-secondary leading-relaxed">
+            {project.solution}
+          </p>
+        </div>
+      )}
     </div>
   );
 };

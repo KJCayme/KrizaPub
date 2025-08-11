@@ -13,6 +13,8 @@ export type Project = Tables<'projects'> & {
   icon: React.ReactNode;
   detailedProcess?: string;
   detailedResults?: string;
+  problem?: string;
+  solution?: string;
 };
 
 export const useProjects = () => {

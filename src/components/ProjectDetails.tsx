@@ -76,9 +76,20 @@ const ProjectDetails = ({ project, onBack, source = 'section' }: ProjectDetailsP
           </div>
         </div>
 
-        {(project.detailedProcess || project.detailedResults) && (
+        {(project.problem || project.solution || project.detailedProcess || project.detailedResults) && (
           <div className="border-t border-slate-200 dark:border-slate-700 p-8">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="space-y-8">
+              {project.problem && (
+                <div>
+                  <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-4">
+                    Problem
+                  </h3>
+                  <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+                    {project.problem}
+                  </p>
+                </div>
+              )}
+
               {project.detailedProcess && (
                 <div>
                   <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-4">
@@ -89,7 +100,18 @@ const ProjectDetails = ({ project, onBack, source = 'section' }: ProjectDetailsP
                   </p>
                 </div>
               )}
-              
+
+              {project.solution && (
+                <div>
+                  <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-4">
+                    Solution
+                  </h3>
+                  <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+                    {project.solution}
+                  </p>
+                </div>
+              )}
+
               {project.detailedResults && (
                 <div>
                   <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-4">

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { X, Upload, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -28,6 +27,8 @@ const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps
     results: '',
     skills_used: '',
     category: '',
+    problem: '',
+    solution: '',
     detailed_process: '',
     detailed_results: '',
     link: ''
@@ -276,6 +277,8 @@ const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps
         results: '',
         skills_used: '',
         category: '',
+        problem: '',
+        solution: '',
         detailed_process: '',
         detailed_results: '',
         link: ''
@@ -539,6 +542,28 @@ const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps
               )}
             </div>
           )}
+
+          <div>
+            <Label htmlFor="problem">Problem (optional)</Label>
+            <textarea
+              id="problem"
+              value={formData.problem}
+              onChange={(e) => handleInputChange('problem', e.target.value)}
+              className="w-full min-h-[100px] p-2 border border-input rounded-md bg-background"
+              placeholder="Describe the problem this project addressed..."
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="solution">Solution (optional)</Label>
+            <textarea
+              id="solution"
+              value={formData.solution}
+              onChange={(e) => handleInputChange('solution', e.target.value)}
+              className="w-full min-h-[100px] p-2 border border-input rounded-md bg-background"
+              placeholder="Describe the solution you provided..."
+            />
+          </div>
 
           <div>
             <Label htmlFor="detailed_process">Detailed Process</Label>
