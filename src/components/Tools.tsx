@@ -5,6 +5,7 @@ import { Button } from './ui/button';
 import { useAuth } from '../hooks/useAuth';
 import { useTools } from '../hooks/useTools';
 import AddToolForm from './AddToolForm';
+import ToolIcon from './ToolIcon';
 
 const Tools = () => {
   const { user } = useAuth();
@@ -61,25 +62,21 @@ const Tools = () => {
             {tools.map((tool) => (
               <div
                 key={tool.id}
-                className={`group p-3 rounded-xl ${tool.color} shadow-lg transform transition-all duration-300 cursor-pointer backdrop-blur-sm bg-white/90 dark:bg-white/95`}
+                className={`group p-3 rounded-xl ${tool.color} shadow-lg transform transition-all duration-300 cursor-pointer backdrop-blur-sm bg-white/90 dark:bg-white/95 relative`}
                 title={`${tool.name} - ${tool.category}`}
               >
-              <div className="flex flex-col items-center">
-                <div className="w-10 h-10 mb-2 rounded-lg bg-white/80 flex items-center justify-center shadow-sm transition-transform duration-1000 ease-in-out">
-                  <img
-                    src={tool.icon}
-                    alt={tool.name}
-                    className="w-6 h-6 object-contain"
-                    onError={(e) => {
-                      const target = e.currentTarget as HTMLImageElement;
-                      target.src = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>`;
-                    }}
-                  />
+                <div className="flex flex-col items-center">
+                  <div className="w-10 h-10 mb-2 rounded-lg bg-white/80 flex items-center justify-center shadow-sm transition-transform duration-1000 ease-in-out relative">
+                    <ToolIcon 
+                      tool={tool}
+                      className="w-6 h-6"
+                      showUpload={user && user.id === tool.user_id}
+                    />
+                  </div>
+                  <span className="text-xs font-medium text-slate-700 dark:text-slate-800 text-center leading-tight">
+                    {tool.name}
+                  </span>
                 </div>
-                <span className="text-xs font-medium text-slate-700 dark:text-slate-800 text-center leading-tight">
-                  {tool.name}
-                </span>
-               </div>
               </div>
             ))}
           </div>

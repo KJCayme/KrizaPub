@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { X, Trash2 } from 'lucide-react';
 import { Button } from './ui/button';
@@ -7,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '.
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { useAuth } from '../hooks/useAuth';
 import { useTools, useAddTool, useUpdateTool, useDeleteTool, type Tool } from '../hooks/useTools';
+import ToolIcon from './ToolIcon';
 
 interface AddToolFormProps {
   isOpen: boolean;
@@ -25,7 +27,6 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
     icon: '',
     color: 'bg-blue-100'
   });
-
 
   const colors = [
     'bg-white',
@@ -124,6 +125,8 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
                   />
                   <p className="text-xs text-slate-400 mt-1">
                     Tip: You can use favicons from websites (e.g., https://notion.so/favicon.ico)
+                    <br />
+                    Note: You can upload a fallback icon after creating the tool if the URL fails to load.
                   </p>
                 </div>
 
@@ -167,19 +170,18 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
                   className="bg-slate-700 p-4 rounded-lg border border-slate-600 flex items-center justify-between"
                 >
                   <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-lg ${tool.color} flex items-center justify-center`}>
-                      <img
-                        src={tool.icon}
-                        alt={tool.name}
-                        className="w-6 h-6 object-contain"
-                        onError={(e) => {
-                          const target = e.currentTarget as HTMLImageElement;
-                          target.src = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21,15 16,10 5,21"/></svg>`;
-                        }}
+                    <div className={`w-10 h-10 rounded-lg ${tool.color} flex items-center justify-center relative`}>
+                      <ToolIcon 
+                        tool={tool}
+                        className="w-6 h-6"
+                        showUpload={user && user.id === tool.user_id}
                       />
                     </div>
                     <div>
                       <h4 className="text-white font-medium">{tool.name}</h4>
+                      <p className="text-xs text-slate-400">
+                        {tool.uploaded_icon ? 'Custom icon uploaded' : 'Using URL icon'}
+                      </p>
                     </div>
                   </div>
                   {user && user.id === tool.user_id && (

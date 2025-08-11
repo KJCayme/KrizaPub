@@ -13,6 +13,7 @@ export interface Tool {
   user_id?: string;
   created_at?: string;
   updated_at?: string;
+  uploaded_icon?: string;
 }
 
 // Fetch all tools
