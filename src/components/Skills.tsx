@@ -110,7 +110,7 @@ const Skills = () => {
                   )}
 
                   {skill.badge && (
-                    <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full">
+                    <div className={`absolute ${user ? 'top-16 right-4' : 'top-4 right-4'} bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs font-bold px-2 py-1 rounded-full`}>
                       {skill.badge}
                     </div>
                   )}
