@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { X, Upload, Trash2, Eye, ExternalLink } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -7,22 +8,22 @@ import { Textarea } from '../ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
 import { useAuth } from '../../hooks/useAuth';
-import { useAddProject, useUpdateProject, useDeleteProject, type Project } from '../../hooks/useProjects';
+import { useAddProject, useUpdateProject, useDeleteProject, useProjects, type Project } from '../../hooks/useProjects';
 import { usePortfolioCategories } from '../../hooks/usePortfolioCategories';
-import { useCarouselImages } from '../../hooks/useCarouselImages';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 interface AddProjectFormProps {
   isOpen: boolean;
   onClose: () => void;
+  onProjectAdded?: () => void;
 }
 
-const AddProjectForm = ({ isOpen, onClose }: AddProjectFormProps) => {
+const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const { data: categories = [] } = usePortfolioCategories();
-  const { data: projects = [] } = useCarouselImages();
+  const { data: projects = [] } = useProjects();
   const addProjectMutation = useAddProject();
   const updateProjectMutation = useUpdateProject();
   const deleteProjectMutation = useDeleteProject();
@@ -168,6 +169,9 @@ const AddProjectForm = ({ isOpen, onClose }: AddProjectFormProps) => {
         detailed_results: ''
       });
       
+      if (onProjectAdded) {
+        onProjectAdded();
+      }
       onClose();
     } catch (error) {
       console.error('Error saving project:', error);
