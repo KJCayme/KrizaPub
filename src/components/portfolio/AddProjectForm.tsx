@@ -1,491 +1,603 @@
 import React, { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { X, Upload, Trash2 } from 'lucide-react';
-import { Button } from '../ui/button';
-import { Input } from '../ui/input';
-import { Textarea } from '../ui/textarea';
-import { Label } from '../ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../ui/select';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '../ui/form';
-import { supabase } from '../../integrations/supabase/client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/hooks/useAuth';
+import { usePortfolioCategories } from '@/hooks/usePortfolioCategories';
 import { toast } from 'sonner';
-import { useQueryClient, useMutation } from '@tanstack/react-query';
-import { usePortfolioCategories } from '../../hooks/usePortfolioCategories';
-
-// Create a dynamic schema that makes link optional for funnel and web categories
-const createProjectSchema = (category: string) => z.object({
-  title: z.string().min(1, 'Title is required'),
-  category: z.string().min(1, 'Category is required'),
-  caption: z.string().min(1, 'Caption is required'),
-  results: z.string().min(1, 'Results are required'),
-  skills_used: z.string().min(1, 'Skills used are required'),
-  months: z.string().min(1, 'Duration is required'),
-  detailed_process: z.string().optional(),
-  detailed_results: z.string().optional(),
-  problem: z.string().optional(),
-  solution: z.string().optional(),
-  project_card_image: z.any().refine((files) => files?.length > 0, 'Project card image is required'),
-  link: category === 'funnel' || category === 'web' 
-    ? z.string().optional() 
-    : z.string().min(1, 'Live link is required'),
-  image_link: z.string().optional(),
-});
 
 interface AddProjectFormProps {
-  isOpen?: boolean;
+  isOpen: boolean;
   onClose: () => void;
-  onProjectAdded?: () => void;
+  onProjectAdded: () => void;
 }
 
-const AddProjectForm = ({ isOpen = true, onClose, onProjectAdded }: AddProjectFormProps) => {
-  const [selectedImages, setSelectedImages] = useState<File[]>([]);
-  const [watchedCategory, setWatchedCategory] = useState<string>('');
-  const queryClient = useQueryClient();
-  const { data: categories = [] } = usePortfolioCategories();
-
-  // Don't render if not open
-  if (!isOpen) return null;
-
-  // Create form with dynamic schema
-  const form = useForm({
-    resolver: zodResolver(createProjectSchema(watchedCategory)),
-    defaultValues: {
-      title: '',
-      category: '',
-      caption: '',
-      results: '',
-      skills_used: '',
-      months: '',
-      detailed_process: '',
-      detailed_results: '',
-      problem: '',
-      solution: '',
-      link: '',
-      image_link: '',
-    },
+const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps) => {
+  const { user } = useAuth();
+  const { data: categoriesData, isLoading: categoriesLoading } = usePortfolioCategories();
+  
+  const [formData, setFormData] = useState({
+    title: '',
+    months: '',
+    caption: '',
+    results: '',
+    skills_used: '',
+    category: '',
+    problem: '',
+    solution: '',
+    detailed_process: '',
+    detailed_results: '',
+    link: ''
   });
+  const [projectCardImage, setProjectCardImage] = useState<File | null>(null);
+  const [carouselImages, setCarouselImages] = useState<File[]>([]);
+  const [funnelImages, setFunnelImages] = useState<{
+    desktop: File | null;
+    tablet: File | null;
+    mobile: File | null;
+  }>({
+    desktop: null,
+    tablet: null,
+    mobile: null
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Watch category changes to update validation
-  const category = form.watch('category');
-  React.useEffect(() => {
-    if (category !== watchedCategory) {
-      setWatchedCategory(category);
-      // Re-create the form with new schema
-      form.clearErrors();
-    }
-  }, [category, watchedCategory, form]);
+  // Transform categories data for the form
+  const categories = categoriesData?.map(cat => ({
+    value: cat.category_key,
+    label: cat.name
+  })) || [];
 
-  const uploadFile = async (file: File, path: string): Promise<string> => {
-    const { data, error } = await supabase.storage
-      .from('portfolio')
-      .upload(path, file, {
-        cacheControl: '3600',
-        upsert: false
-      });
+  const isFunnelCategory = formData.category === 'funnel' || formData.category === 'funnel-design';
+  const isWebDevCategory = formData.category === 'webdev' || formData.category === 'web-development';
 
-    if (error) {
-      console.error('Upload error:', error);
-      throw error;
-    }
-
-    const { data: { publicUrl } } = supabase.storage
-      .from('portfolio')
-      .getPublicUrl(data.path);
-
-    return publicUrl;
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const addProjectMutation = useMutation({
-    mutationFn: async (projectData: any) => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
+  const handleProjectCardImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setProjectCardImage(e.target.files[0]);
+    }
+  };
 
-      const { data, error } = await supabase
+  const handleCarouselImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const newImages = Array.from(e.target.files);
+      setCarouselImages(prev => [...prev, ...newImages]);
+    }
+  };
+
+  const handleFunnelImageChange = (device: 'desktop' | 'tablet' | 'mobile', file: File | null) => {
+    setFunnelImages(prev => ({
+      ...prev,
+      [device]: file
+    }));
+  };
+
+  const removeCarouselImage = (index: number) => {
+    setCarouselImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const uploadFile = async (file: File, bucket: string, path: string) => {
+    console.log(`Uploading file to ${bucket}/${path}`);
+    console.log('Current user:', user?.id);
+    
+    try {
+      // Verify session before upload
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !session) {
+        console.error('Session error before upload:', sessionError);
+        throw new Error('Authentication session expired. Please sign in again.');
+      }
+      
+      console.log('Session verified for upload, uploading as user:', session.user.id);
+      
+      const { data, error } = await supabase.storage
+        .from(bucket)
+        .upload(path, file, { 
+          upsert: true,
+          contentType: file.type
+        });
+
+      if (error) {
+        console.error('Storage upload error:', error);
+        console.error('Error details:', {
+          message: error.message
+        });
+        throw error;
+      }
+
+      console.log('Upload successful:', data);
+      
+      // Get the public URL for the uploaded file
+      const { data: urlData } = supabase.storage.from(bucket).getPublicUrl(path);
+      console.log('Generated public URL:', urlData.publicUrl);
+      
+      return urlData.publicUrl;
+    } catch (error) {
+      console.error('Upload function error:', error);
+      throw error;
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!projectCardImage) {
+      toast.error('Please upload a project card image');
+      return;
+    }
+
+    if (isFunnelCategory) {
+      if (!funnelImages.desktop || !funnelImages.tablet || !funnelImages.mobile) {
+        toast.error('Please upload all three funnel images (desktop, tablet, mobile)');
+        return;
+      }
+    }
+
+    if (!user) {
+      toast.error('You must be signed in to add projects');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      console.log('Starting project submission...');
+      console.log('User ID:', user.id);
+      
+      // Verify current session before proceeding
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError || !session) {
+        console.error('Session error:', sessionError);
+        throw new Error('Authentication session expired. Please sign in again.');
+      }
+      
+      console.log('Session verified, user authenticated:', session.user.id);
+      
+      // Upload project card image
+      const cardImagePath = `cards/${Date.now()}-${projectCardImage.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+      const projectCardImageUrl = await uploadFile(projectCardImage, 'portfolio', cardImagePath);
+
+      console.log('Card image uploaded, URL:', projectCardImageUrl);
+
+      // Insert project into database with verified user session
+      const projectData = {
+        ...formData,
+        project_card_image: projectCardImageUrl,
+        user_id: session.user.id, // Use session user ID to ensure consistency
+      };
+      
+      console.log('Inserting project with data:', projectData);
+      
+      const { data: project, error: projectError } = await supabase
         .from('projects')
-        .insert([{ ...projectData, user_id: user.id }])
+        .insert(projectData)
         .select()
         .single();
 
-      if (error) throw error;
-      return data;
-    },
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ['projects'] });
-      queryClient.invalidateQueries({ queryKey: ['projects', data.category] });
-      toast.success('Project added successfully!');
-      if (onProjectAdded) {
-        onProjectAdded();
-      }
-      onClose();
-    },
-    onError: (error) => {
-      console.error('Error adding project:', error);
-      toast.error('Failed to add project. Please try again.');
-    },
-  });
-
-  const onSubmit = async (data: any) => {
-    try {
-      let projectCardImageUrl = '';
-      let carouselImageUrls: string[] = [];
-
-      // Upload project card image
-      if (data.project_card_image?.[0]) {
-        const timestamp = Date.now();
-        const fileName = `project_card_${timestamp}_${data.project_card_image[0].name}`;
-        projectCardImageUrl = await uploadFile(data.project_card_image[0], `projects/cards/${fileName}`);
-      }
-
-      // Upload carousel images
-      if (selectedImages.length > 0) {
-        const timestamp = Date.now();
-        const uploadPromises = selectedImages.map((file, index) => {
-          const fileName = `carousel_${timestamp}_${index}_${file.name}`;
-          return uploadFile(file, `projects/carousel/${fileName}`);
+      if (projectError) {
+        console.error('Project insert error:', projectError);
+        console.error('Error details:', {
+          message: projectError.message,
+          details: projectError.details,
+          hint: projectError.hint,
+          code: projectError.code
         });
-        carouselImageUrls = await Promise.all(uploadPromises);
+        throw projectError;
       }
 
-      const projectData = {
-        title: data.title,
-        category: data.category,
-        caption: data.caption,
-        results: data.results,
-        skills_used: data.skills_used,
-        months: data.months,
-        detailed_process: data.detailed_process || '',
-        detailed_results: data.detailed_results || '',
-        problem: data.problem || '',
-        solution: data.solution || '',
-        project_card_image: projectCardImageUrl,
-        link: data.link || '',
-        image_link: carouselImageUrls.length > 0 ? carouselImageUrls.join(',') : '',
-      };
+      console.log('Project inserted successfully:', project);
 
-      await addProjectMutation.mutateAsync(projectData);
+      // Handle funnel images or regular carousel images
+      if (isFunnelCategory) {
+        console.log('Uploading funnel images...');
+        
+        const funnelUploads = await Promise.all([
+          {
+            device: 'desktop',
+            file: funnelImages.desktop!,
+            order: 0
+          },
+          {
+            device: 'tablet', 
+            file: funnelImages.tablet!,
+            order: 1
+          },
+          {
+            device: 'mobile',
+            file: funnelImages.mobile!,
+            order: 2
+          }
+        ].map(async ({ device, file, order }) => {
+          const imagePath = `carousel/${project.id}/${device}-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+          const imageUrl = await uploadFile(file, 'portfolio', imagePath);
+          
+          return {
+            project_id: project.id,
+            image_url: imageUrl,
+            alt_text: `${project.title} ${device} view`,
+            sort_order: order
+          };
+        }));
+
+        const { error: carouselError } = await supabase
+          .from('project_carousel_images')
+          .insert(funnelUploads);
+
+        if (carouselError) {
+          console.error('Funnel images insert error:', carouselError);
+          throw carouselError;
+        }
+
+        console.log('Funnel images uploaded successfully');
+      } else if (carouselImages.length > 0) {
+        console.log(`Uploading ${carouselImages.length} carousel images...`);
+        
+        const carouselUploads = await Promise.all(
+          carouselImages.map(async (image, index) => {
+            const imagePath = `carousel/${project.id}/${Date.now()}-${index}-${image.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+            const imageUrl = await uploadFile(image, 'portfolio', imagePath);
+            
+            return {
+              project_id: project.id,
+              image_url: imageUrl,
+              alt_text: `${project.title} carousel image ${index + 1}`,
+              sort_order: index
+            };
+          })
+        );
+
+        const { error: carouselError } = await supabase
+          .from('project_carousel_images')
+          .insert(carouselUploads);
+
+        if (carouselError) {
+          console.error('Carousel images insert error:', carouselError);
+          throw carouselError;
+        }
+
+        console.log('Carousel images uploaded successfully');
+      }
+
+      toast.success('Project added successfully!');
+      onProjectAdded();
+      onClose();
+      
+      // Reset form
+      setFormData({
+        title: '',
+        months: '',
+        caption: '',
+        results: '',
+        skills_used: '',
+        category: '',
+        problem: '',
+        solution: '',
+        detailed_process: '',
+        detailed_results: '',
+        link: ''
+      });
+      setProjectCardImage(null);
+      setCarouselImages([]);
+      setFunnelImages({
+        desktop: null,
+        tablet: null,
+        mobile: null
+      });
+
     } catch (error) {
-      console.error('Error in form submission:', error);
-      toast.error('Failed to add project. Please try again.');
+      console.error('Error adding project:', error);
+      
+      // Provide more specific error messages
+      let errorMessage = 'Please try again.';
+      if (error.message?.includes('row-level security')) {
+        errorMessage = 'Authentication error. Please sign out and sign in again.';
+      } else if (error.message?.includes('session')) {
+        errorMessage = 'Session expired. Please sign in again.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      toast.error(`Failed to add project: ${errorMessage}`);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    setSelectedImages(prev => [...prev, ...files]);
-  };
+  // Only show auth required dialog if form is open AND user is not authenticated
+  if (isOpen && !user) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Authentication Required</DialogTitle>
+          </DialogHeader>
+          <p className="text-center py-4">
+            You need to be signed in to add projects.
+          </p>
+          <Button onClick={onClose} className="w-full">
+            Close
+          </Button>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
-  const removeImage = (index: number) => {
-    setSelectedImages(prev => prev.filter((_, i) => i !== index));
-  };
+  // Don't render anything if dialog is not open
+  if (!isOpen) {
+    return null;
+  }
 
-  const isLinkOptional = category === 'funnel' || category === 'web';
+  // Show loading state if categories are still loading
+  if (categoriesLoading) {
+    return (
+      <Dialog open={isOpen} onOpenChange={onClose}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Loading...</DialogTitle>
+          </DialogHeader>
+          <p className="text-center py-4">
+            Loading categories...
+          </p>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-        <div className="flex justify-between items-center p-6 border-b border-gray-200 dark:border-gray-700">
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Add New Project</h2>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
-          >
-            <X className="w-5 h-5" />
-          </Button>
-        </div>
-
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="p-6 space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Project Title</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Enter project title" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="category"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Category</FormLabel>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select category" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {categories.map((cat) => (
-                          <SelectItem key={cat.id} value={cat.category_key}>
-                            {cat.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
+    <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Add New Project</DialogTitle>
+        </DialogHeader>
+        
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <Label htmlFor="title">Title *</Label>
+              <Input
+                id="title"
+                value={formData.title}
+                onChange={(e) => handleInputChange('title', e.target.value)}
+                required
               />
             </div>
+            
+            <div>
+              <Label htmlFor="months">Duration *</Label>
+              <Input
+                id="months"
+                value={formData.months}
+                onChange={(e) => handleInputChange('months', e.target.value)}
+                placeholder="e.g., 3 months"
+                required
+              />
+            </div>
+          </div>
 
-            <FormField
-              control={form.control}
-              name="caption"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Caption</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Brief description of the project" 
-                      className="min-h-[100px]"
-                      {...field} 
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+          <div>
+            <Label htmlFor="caption">Caption *</Label>
+            <Input
+              id="caption"
+              value={formData.caption}
+              onChange={(e) => handleInputChange('caption', e.target.value)}
+              required
             />
+          </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField
-                control={form.control}
-                name="results"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Results</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="What were the outcomes?" 
-                        className="min-h-[100px]"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="skills_used"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Skills Used</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Technologies, tools, methodologies used" 
-                        className="min-h-[100px]"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField
-                control={form.control}
-                name="months"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Duration</FormLabel>
-                    <FormControl>
-                      <Input placeholder="e.g., 3 months, 2 weeks" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="link"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>
-                      Live Link {isLinkOptional && <span className="text-gray-500">(Optional)</span>}
-                    </FormLabel>
-                    <FormControl>
-                      <Input 
-                        placeholder={isLinkOptional ? "https://example.com (optional)" : "https://example.com"} 
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField
-                control={form.control}
-                name="problem"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Problem (Optional)</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="What problem did this project solve?" 
-                        className="min-h-[100px]"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="solution"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Solution (Optional)</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="How did you solve it?" 
-                        className="min-h-[100px]"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <FormField
-                control={form.control}
-                name="detailed_process"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Detailed Process (Optional)</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Detailed description of the process" 
-                        className="min-h-[120px]"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="detailed_results"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Detailed Results (Optional)</FormLabel>
-                    <FormControl>
-                      <Textarea 
-                        placeholder="Detailed description of the results" 
-                        className="min-h-[120px]"
-                        {...field} 
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <FormField
-              control={form.control}
-              name="project_card_image"
-              render={({ field: { onChange, ...field } }) => (
-                <FormItem>
-                  <FormLabel>Project Card Image *</FormLabel>
-                  <FormControl>
-                    <Input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => onChange(e.target.files)}
-                      {...field}
-                      value={undefined}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
+          <div>
+            <Label htmlFor="results">Results *</Label>
+            <Input
+              id="results"
+              value={formData.results}
+              onChange={(e) => handleInputChange('results', e.target.value)}
+              required
             />
+          </div>
 
+          <div>
+            <Label htmlFor="skills_used">{isFunnelCategory ? 'Technologies *' : 'Skills Used *'}</Label>
+            <Input
+              id="skills_used"
+              value={formData.skills_used}
+              onChange={(e) => handleInputChange('skills_used', e.target.value)}
+              placeholder="Separate with commas"
+              required
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="category">Category *</Label>
+            <Select onValueChange={(value) => handleInputChange('category', value)} required>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a category" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((category) => (
+                  <SelectItem key={category.value} value={category.value}>
+                    {category.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Link field - Show for web development (optional) and funnel design categories */}
+          {(isWebDevCategory || isFunnelCategory) && (
+            <div>
+              <Label htmlFor="link">Live Link {isFunnelCategory ? '*' : '(optional)'}</Label>
+              <Input
+                id="link"
+                type="url"
+                value={formData.link}
+                onChange={(e) => handleInputChange('link', e.target.value)}
+                placeholder="https://example.com"
+                required={isFunnelCategory}
+              />
+            </div>
+          )}
+
+          <div>
+            <Label htmlFor="project_card_image">Project Card Image *</Label>
+            <Input
+              id="project_card_image"
+              type="file"
+              accept="image/*"
+              onChange={handleProjectCardImageChange}
+              required
+            />
+            {projectCardImage && (
+              <p className="text-sm text-green-600 mt-1">
+                Selected: {projectCardImage.name}
+              </p>
+            )}
+          </div>
+
+          {/* Funnel Design specific image uploads */}
+          {isFunnelCategory ? (
             <div className="space-y-4">
-              <Label>Carousel Images (Optional)</Label>
-              <div className="flex items-center gap-4">
-                <Input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={handleImageSelect}
-                  className="flex-1"
-                />
-                <Upload className="w-5 h-5 text-gray-400" />
-              </div>
-              
-              {selectedImages.length > 0 && (
+              <div>
+                <Label className="text-base font-semibold">Funnel Images (Desktop, Tablet, Mobile) *</Label>
+                <p className="text-sm text-slate-600 mb-3">Upload one image for each device view</p>
+                
+                {/* Desktop Image */}
                 <div className="space-y-2">
-                  <p className="text-sm text-gray-600 dark:text-gray-400">
-                    Selected images ({selectedImages.length}):
-                  </p>
-                  <div className="space-y-2 max-h-32 overflow-y-auto">
-                    {selectedImages.map((file, index) => (
-                      <div key={index} className="flex items-center justify-between p-2 bg-gray-50 dark:bg-gray-700 rounded">
-                        <span className="text-sm truncate">{file.name}</span>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => removeImage(index)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
+                  <Label htmlFor="desktop_image">Desktop View *</Label>
+                  <Input
+                    id="desktop_image"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFunnelImageChange('desktop', e.target.files?.[0] || null)}
+                    required
+                  />
+                  {funnelImages.desktop && (
+                    <p className="text-sm text-green-600">Selected: {funnelImages.desktop.name}</p>
+                  )}
+                </div>
+
+                {/* Tablet Image */}
+                <div className="space-y-2">
+                  <Label htmlFor="tablet_image">Tablet View *</Label>
+                  <Input
+                    id="tablet_image"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFunnelImageChange('tablet', e.target.files?.[0] || null)}
+                    required
+                  />
+                  {funnelImages.tablet && (
+                    <p className="text-sm text-green-600">Selected: {funnelImages.tablet.name}</p>
+                  )}
+                </div>
+
+                {/* Mobile Image */}
+                <div className="space-y-2">
+                  <Label htmlFor="mobile_image">Mobile View *</Label>
+                  <Input
+                    id="mobile_image"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFunnelImageChange('mobile', e.target.files?.[0] || null)}
+                    required
+                  />
+                  {funnelImages.mobile && (
+                    <p className="text-sm text-green-600">Selected: {funnelImages.mobile.name}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          ) : (
+            /* Regular carousel images for other categories */
+            <div>
+              <Label htmlFor="carousel_images">Carousel Images</Label>
+              <Input
+                id="carousel_images"
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleCarouselImagesChange}
+              />
+              {carouselImages.length > 0 && (
+                <div className="mt-2 space-y-1">
+                  {carouselImages.map((image, index) => (
+                    <div key={index} className="flex items-center justify-between bg-slate-50 dark:bg-slate-800 p-2 rounded">
+                      <span className="text-sm">{image.name}</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeCarouselImage(index)}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
+          )}
 
-            <div className="flex justify-end gap-4 pt-6">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onClose}
-                disabled={addProjectMutation.isPending}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                disabled={addProjectMutation.isPending}
-                className="bg-gradient-to-r from-blue-600 to-purple-600 text-white"
-              >
-                {addProjectMutation.isPending ? 'Adding...' : 'Add Project'}
-              </Button>
-            </div>
-          </form>
-        </Form>
-      </div>
-    </div>
+          <div>
+            <Label htmlFor="problem">Problem (optional)</Label>
+            <textarea
+              id="problem"
+              value={formData.problem}
+              onChange={(e) => handleInputChange('problem', e.target.value)}
+              className="w-full min-h-[100px] p-2 border border-input rounded-md bg-background"
+              placeholder="Describe the problem this project addressed..."
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="solution">Solution (optional)</Label>
+            <textarea
+              id="solution"
+              value={formData.solution}
+              onChange={(e) => handleInputChange('solution', e.target.value)}
+              className="w-full min-h-[100px] p-2 border border-input rounded-md bg-background"
+              placeholder="Describe the solution you provided..."
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="detailed_process">Detailed Process</Label>
+            <textarea
+              id="detailed_process"
+              value={formData.detailed_process}
+              onChange={(e) => handleInputChange('detailed_process', e.target.value)}
+              className="w-full min-h-[100px] p-2 border border-input rounded-md bg-background"
+              placeholder="Describe your process in detail..."
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="detailed_results">Detailed Results</Label>
+            <textarea
+              id="detailed_results"
+              value={formData.detailed_results}
+              onChange={(e) => handleInputChange('detailed_results', e.target.value)}
+              className="w-full min-h-[100px] p-2 border border-input rounded-md bg-background"
+              placeholder="Describe the detailed results and impact..."
+            />
+          </div>
+
+          <div className="flex justify-end gap-2 pt-4">
+            <Button type="button" variant="outline" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting ? 'Adding Project...' : 'Add Project'}
+            </Button>
+          </div>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 };
 
