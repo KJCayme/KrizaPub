@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -35,14 +34,19 @@ const createProjectSchema = (category: string) => z.object({
 });
 
 interface AddProjectFormProps {
+  isOpen?: boolean;
   onClose: () => void;
+  onProjectAdded?: () => void;
 }
 
-const AddProjectForm = ({ onClose }: AddProjectFormProps) => {
+const AddProjectForm = ({ isOpen = true, onClose, onProjectAdded }: AddProjectFormProps) => {
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [watchedCategory, setWatchedCategory] = useState<string>('');
   const queryClient = useQueryClient();
   const { data: categories = [] } = usePortfolioCategories();
+
+  // Don't render if not open
+  if (!isOpen) return null;
 
   // Create form with dynamic schema
   const form = useForm({
@@ -111,6 +115,9 @@ const AddProjectForm = ({ onClose }: AddProjectFormProps) => {
       queryClient.invalidateQueries({ queryKey: ['projects'] });
       queryClient.invalidateQueries({ queryKey: ['projects', data.category] });
       toast.success('Project added successfully!');
+      if (onProjectAdded) {
+        onProjectAdded();
+      }
       onClose();
     },
     onError: (error) => {
