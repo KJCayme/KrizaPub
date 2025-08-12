@@ -72,8 +72,8 @@ const ToolIcon = ({ tool, className = "w-6 h-6", showUpload = false }: ToolIconP
     }
   };
 
-  // Use uploaded icon if available, otherwise use URL icon
-  const iconSrc = tool.uploaded_icon || tool.icon;
+  // Use uploaded icon only if main icon fails and uploaded icon exists
+  const iconSrc = imageError && tool.uploaded_icon ? tool.uploaded_icon : tool.icon;
   const shouldShowFallback = imageError && !tool.uploaded_icon;
 
   return (
@@ -86,6 +86,7 @@ const ToolIcon = ({ tool, className = "w-6 h-6", showUpload = false }: ToolIconP
         </div>
       ) : (
         <img
+          key={iconSrc}
           src={iconSrc}
           alt={tool.name}
           className={`${className} object-contain`}
