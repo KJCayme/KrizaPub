@@ -24,6 +24,7 @@ const ToolIcon = ({ tool, className = "w-6 h-6", showUpload = false }: ToolIconP
   const [isUploading, setIsUploading] = useState(false);
 
   const handleImageError = () => {
+    console.log('Image error for tool:', tool.name, 'URL:', tool.icon);
     setImageError(true);
   };
 
@@ -31,6 +32,7 @@ const ToolIcon = ({ tool, className = "w-6 h-6", showUpload = false }: ToolIconP
     const file = event.target.files?.[0];
     if (!file || !user) return;
 
+    console.log('Uploading file for tool:', tool.name);
     setIsUploading(true);
     
     try {
@@ -38,6 +40,7 @@ const ToolIcon = ({ tool, className = "w-6 h-6", showUpload = false }: ToolIconP
       const reader = new FileReader();
       reader.onload = async (e) => {
         const base64 = e.target?.result as string;
+        console.log('File converted to base64, updating tool...');
         
         await updateToolMutation.mutateAsync({
           id: tool.id,
@@ -46,6 +49,7 @@ const ToolIcon = ({ tool, className = "w-6 h-6", showUpload = false }: ToolIconP
           }
         });
         
+        console.log('Tool updated successfully');
         setImageError(false);
         setIsUploading(false);
       };
@@ -59,6 +63,7 @@ const ToolIcon = ({ tool, className = "w-6 h-6", showUpload = false }: ToolIconP
   const handleRemoveUploadedIcon = async () => {
     if (!user) return;
     
+    console.log('Removing uploaded icon for tool:', tool.name);
     try {
       await updateToolMutation.mutateAsync({
         id: tool.id,
@@ -66,16 +71,30 @@ const ToolIcon = ({ tool, className = "w-6 h-6", showUpload = false }: ToolIconP
           uploaded_icon: null
         }
       });
+      console.log('Uploaded icon removed successfully');
       setImageError(false);
     } catch (error) {
       console.error('Error removing uploaded icon:', error);
     }
   };
 
-  // Determine which icon to display and if fallback is needed
-  const shouldShowUploadedIcon = tool.uploaded_icon && (imageError || !tool.icon);
-  const shouldShowFallback = imageError && !tool.uploaded_icon;
-  const shouldShowUploadButton = showUpload && user && user.id === tool.user_id && (imageError || tool.uploaded_icon);
+  // Determine what to display
+  const hasUploadedIcon = tool.uploaded_icon && tool.uploaded_icon.trim() !== '';
+  const shouldShowFallback = imageError && !hasUploadedIcon;
+  const shouldShowUploadedIcon = hasUploadedIcon;
+  const shouldShowOriginalIcon = !imageError && !hasUploadedIcon;
+  const isOwner = user && user.id === tool.user_id;
+  const shouldShowUploadControls = showUpload && isOwner && (imageError || hasUploadedIcon);
+
+  console.log('Tool render state:', {
+    toolName: tool.name,
+    imageError,
+    hasUploadedIcon,
+    shouldShowFallback,
+    shouldShowUploadedIcon,
+    shouldShowOriginalIcon,
+    shouldShowUploadControls
+  });
 
   return (
     <div className="relative">
@@ -85,18 +104,28 @@ const ToolIcon = ({ tool, className = "w-6 h-6", showUpload = false }: ToolIconP
             {tool.name.charAt(0).toUpperCase()}
           </span>
         </div>
+      ) : shouldShowUploadedIcon ? (
+        <img
+          src={tool.uploaded_icon}
+          alt={tool.name}
+          className={`${className} object-contain`}
+          onError={() => {
+            console.log('Uploaded icon failed to load for:', tool.name);
+            setImageError(true);
+          }}
+        />
       ) : (
         <img
-          src={shouldShowUploadedIcon ? tool.uploaded_icon : tool.icon}
+          src={tool.icon}
           alt={tool.name}
           className={`${className} object-contain`}
           onError={handleImageError}
         />
       )}
       
-      {shouldShowUploadButton && (
+      {shouldShowUploadControls && (
         <div className="absolute -top-2 -right-2 flex gap-1">
-          {tool.uploaded_icon && (
+          {hasUploadedIcon && (
             <Button
               onClick={handleRemoveUploadedIcon}
               variant="ghost"
@@ -115,7 +144,7 @@ const ToolIcon = ({ tool, className = "w-6 h-6", showUpload = false }: ToolIconP
               size="icon"
               className="w-6 h-6 bg-blue-500 hover:bg-blue-600 text-white rounded-full pointer-events-none"
               disabled={isUploading}
-              title={tool.uploaded_icon ? "Replace uploaded icon" : "Upload fallback icon"}
+              title={hasUploadedIcon ? "Replace uploaded icon" : "Upload fallback icon"}
             >
               <Upload className="w-3 h-3" />
             </Button>

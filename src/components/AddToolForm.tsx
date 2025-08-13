@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Trash2, AlertCircle } from 'lucide-react';
+import { X, Trash2, AlertCircle, CheckCircle } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -81,12 +81,12 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
     if (tool.uploaded_icon) {
       return {
         status: 'Has fallback icon',
-        icon: AlertCircle,
+        icon: CheckCircle,
         color: 'text-green-400'
       };
     }
     return {
-      status: 'Using URL icon only',
+      status: 'URL icon only',
       icon: AlertCircle,
       color: 'text-yellow-400'
     };
@@ -197,7 +197,7 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
                         <ToolIcon 
                           tool={tool}
                           className="w-6 h-6"
-                          showUpload={user && user.id === tool.user_id}
+                          showUpload={true}
                         />
                       </div>
                       <div>
