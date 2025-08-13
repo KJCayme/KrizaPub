@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { X, Trash2, AlertCircle, CheckCircle } from 'lucide-react';
+import { X, Trash2, AlertCircle, CheckCircle, Clock } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -77,18 +78,65 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
     }));
   };
 
+  // Test icon loading status
+  const [iconStatuses, setIconStatuses] = useState<Record<string, 'loading' | 'success' | 'error'>>({});
+
+  const testIconLoad = (tool: Tool) => {
+    if (iconStatuses[tool.id]) return iconStatuses[tool.id];
+    
+    setIconStatuses(prev => ({ ...prev, [tool.id]: 'loading' }));
+    
+    const img = new Image();
+    img.onload = () => {
+      setIconStatuses(prev => ({ ...prev, [tool.id]: 'success' }));
+    };
+    img.onerror = () => {
+      setIconStatuses(prev => ({ ...prev, [tool.id]: 'error' }));
+    };
+    img.src = tool.icon;
+    
+    return 'loading';
+  };
+
   const getIconStatus = (tool: Tool) => {
+    const status = testIconLoad(tool);
+    
     if (tool.uploaded_icon) {
+      if (status === 'error') {
+        return {
+          status: 'URL failed, using fallback',
+          icon: CheckCircle,
+          color: 'text-green-400'
+        };
+      } else {
+        return {
+          status: 'Has fallback icon',
+          icon: CheckCircle,
+          color: 'text-green-400'
+        };
+      }
+    }
+    
+    if (status === 'loading') {
       return {
-        status: 'Has fallback icon',
-        icon: CheckCircle,
-        color: 'text-green-400'
+        status: 'Testing icon...',
+        icon: Clock,
+        color: 'text-blue-400'
       };
     }
+    
+    if (status === 'error') {
+      return {
+        status: 'Icon URL failed - upload needed',
+        icon: AlertCircle,
+        color: 'text-red-400'
+      };
+    }
+    
     return {
-      status: 'URL icon only',
-      icon: AlertCircle,
-      color: 'text-yellow-400'
+      status: 'URL icon working',
+      icon: CheckCircle,
+      color: 'text-green-400'
     };
   };
 
@@ -179,7 +227,7 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
             <h3 className="text-lg font-semibold text-white mb-4">
               Existing Tools
               <span className="text-sm font-normal text-slate-400 ml-2">
-                (Hover over tools to upload fallback icons if URL fails)
+                (Hover over tools with failed icons to upload fallback images)
               </span>
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Upload, X } from 'lucide-react';
 import { Button } from './ui/button';
 import { useAuth } from '../hooks/useAuth';
@@ -20,13 +20,26 @@ interface ToolIconProps {
 const ToolIcon = ({ tool, className = "w-6 h-6", showUpload = false }: ToolIconProps) => {
   const { user } = useAuth();
   const updateToolMutation = useUpdateTool();
-  const [imageError, setImageError] = useState(false);
+  const [originalIconError, setOriginalIconError] = useState(false);
+  const [uploadedIconError, setUploadedIconError] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [iconLoaded, setIconLoaded] = useState(false);
 
-  const handleImageError = () => {
-    console.log('Image error for tool:', tool.name, 'URL:', tool.icon);
-    setImageError(true);
-  };
+  // Test if the original icon URL loads
+  useEffect(() => {
+    const testImage = new Image();
+    testImage.onload = () => {
+      console.log(`✅ Icon loaded successfully for ${tool.name}: ${tool.icon}`);
+      setOriginalIconError(false);
+      setIconLoaded(true);
+    };
+    testImage.onerror = () => {
+      console.log(`❌ Icon failed to load for ${tool.name}: ${tool.icon}`);
+      setOriginalIconError(true);
+      setIconLoaded(true);
+    };
+    testImage.src = tool.icon;
+  }, [tool.icon, tool.name]);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -36,7 +49,6 @@ const ToolIcon = ({ tool, className = "w-6 h-6", showUpload = false }: ToolIconP
     setIsUploading(true);
     
     try {
-      // Convert file to base64
       const reader = new FileReader();
       reader.onload = async (e) => {
         const base64 = e.target?.result as string;
@@ -50,8 +62,10 @@ const ToolIcon = ({ tool, className = "w-6 h-6", showUpload = false }: ToolIconP
         });
         
         console.log('Tool updated successfully');
-        setImageError(false);
+        setUploadedIconError(false);
         setIsUploading(false);
+        // Reset the file input
+        event.target.value = '';
       };
       reader.readAsDataURL(file);
     } catch (error) {
@@ -72,28 +86,34 @@ const ToolIcon = ({ tool, className = "w-6 h-6", showUpload = false }: ToolIconP
         }
       });
       console.log('Uploaded icon removed successfully');
-      setImageError(false);
     } catch (error) {
       console.error('Error removing uploaded icon:', error);
     }
   };
 
+  const handleUploadedIconError = () => {
+    console.log('Uploaded icon failed to load for:', tool.name);
+    setUploadedIconError(true);
+  };
+
   // Determine what to display
   const hasUploadedIcon = tool.uploaded_icon && tool.uploaded_icon.trim() !== '';
-  const shouldShowFallback = imageError && !hasUploadedIcon;
-  const shouldShowUploadedIcon = hasUploadedIcon;
-  const shouldShowOriginalIcon = !imageError && !hasUploadedIcon;
+  const shouldShowFallback = (originalIconError || !iconLoaded) && (!hasUploadedIcon || uploadedIconError);
+  const shouldShowUploadedIcon = hasUploadedIcon && !uploadedIconError;
+  const shouldShowOriginalIcon = !originalIconError && iconLoaded && !hasUploadedIcon;
   const isOwner = user && user.id === tool.user_id;
-  const shouldShowUploadControls = showUpload && isOwner && (imageError || hasUploadedIcon);
+  const shouldShowUploadControls = showUpload && isOwner && (originalIconError || hasUploadedIcon);
 
   console.log('Tool render state:', {
     toolName: tool.name,
-    imageError,
+    originalIconError,
+    uploadedIconError,
     hasUploadedIcon,
     shouldShowFallback,
     shouldShowUploadedIcon,
     shouldShowOriginalIcon,
-    shouldShowUploadControls
+    shouldShowUploadControls,
+    iconLoaded
   });
 
   return (
@@ -109,18 +129,24 @@ const ToolIcon = ({ tool, className = "w-6 h-6", showUpload = false }: ToolIconP
           src={tool.uploaded_icon}
           alt={tool.name}
           className={`${className} object-contain`}
-          onError={() => {
-            console.log('Uploaded icon failed to load for:', tool.name);
-            setImageError(true);
-          }}
+          onError={handleUploadedIconError}
         />
-      ) : (
+      ) : shouldShowOriginalIcon ? (
         <img
           src={tool.icon}
           alt={tool.name}
           className={`${className} object-contain`}
-          onError={handleImageError}
+          onError={() => {
+            console.log('Original icon failed to load on render for:', tool.name);
+            setOriginalIconError(true);
+          }}
         />
+      ) : (
+        <div className={`${className} bg-slate-200 dark:bg-slate-700 rounded flex items-center justify-center`}>
+          <span className="text-xs font-medium text-slate-600 dark:text-slate-400">
+            {tool.name.charAt(0).toUpperCase()}
+          </span>
+        </div>
       )}
       
       {shouldShowUploadControls && (
@@ -143,7 +169,7 @@ const ToolIcon = ({ tool, className = "w-6 h-6", showUpload = false }: ToolIconP
               variant="ghost"
               size="icon"
               className="w-6 h-6 bg-blue-500 hover:bg-blue-600 text-white rounded-full pointer-events-none"
-              disabled={isUploading}
+              disabled={isUploading || updateToolMutation.isPending}
               title={hasUploadedIcon ? "Replace uploaded icon" : "Upload fallback icon"}
             >
               <Upload className="w-3 h-3" />
@@ -153,7 +179,7 @@ const ToolIcon = ({ tool, className = "w-6 h-6", showUpload = false }: ToolIconP
               accept="image/*"
               onChange={handleFileUpload}
               className="hidden"
-              disabled={isUploading}
+              disabled={isUploading || updateToolMutation.isPending}
             />
           </label>
         </div>
