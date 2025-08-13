@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { X, Trash2, AlertCircle, CheckCircle, Clock } from 'lucide-react';
+import { X, Trash2, AlertCircle, CheckCircle, Clock, Upload } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { useAuth } from '../hooks/useAuth';
 import { useTools, useAddTool, useUpdateTool, useDeleteTool, type Tool } from '../hooks/useTools';
 import ToolIcon from './ToolIcon';
+import { supabase } from '@/integrations/supabase/client';
 
 interface AddToolFormProps {
   isOpen: boolean;
@@ -25,8 +26,11 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
   const [formData, setFormData] = useState({
     name: '',
     icon: '',
-    color: 'bg-blue-100'
+    color: 'bg-blue-100',
+    fallbackIcon: null as File | null
   });
+
+  const [isUploading, setIsUploading] = useState(false);
 
   const colors = [
     'bg-white',
@@ -44,20 +48,50 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
     e.preventDefault();
     if (!user) return;
 
+    setIsUploading(true);
     try {
+      let uploadedIconUrl = null;
+
+      // Upload fallback icon if provided
+      if (formData.fallbackIcon) {
+        const fileExt = formData.fallbackIcon.name.split('.').pop();
+        const fileName = `${Date.now()}-${Math.random()}.${fileExt}`;
+        
+        const { data: uploadData, error: uploadError } = await supabase.storage
+          .from('portfolio')
+          .upload(`tool-icons/${fileName}`, formData.fallbackIcon);
+
+        if (uploadError) {
+          console.error('Error uploading fallback icon:', uploadError);
+          throw uploadError;
+        }
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('portfolio')
+          .getPublicUrl(uploadData.path);
+        
+        uploadedIconUrl = publicUrl;
+      }
+
       await addToolMutation.mutateAsync({
-        ...formData,
+        name: formData.name,
+        icon: formData.icon,
+        color: formData.color,
+        uploaded_icon: uploadedIconUrl,
         user_id: user.id
       });
       
       setFormData({
         name: '',
         icon: '',
-        color: 'bg-blue-100'
+        color: 'bg-blue-100',
+        fallbackIcon: null
       });
       onClose();
     } catch (error) {
       console.error('Error adding tool:', error);
+    } finally {
+      setIsUploading(false);
     }
   };
 
@@ -76,6 +110,16 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
       ...prev,
       [field]: value
     }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFormData(prev => ({
+        ...prev,
+        fallbackIcon: file
+      }));
+    }
   };
 
   // Test icon loading status
@@ -187,12 +231,10 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
                   />
                   <p className="text-xs text-slate-400 mt-1">
                     Tip: You can use favicons from websites (e.g., https://notion.so/favicon.ico)
-                    <br />
-                    Note: If the URL fails to load, you can upload a fallback icon after creating the tool.
                   </p>
                 </div>
 
-                <div className="md:col-span-2">
+                <div>
                   <Label htmlFor="color" className="text-slate-300">Background Color</Label>
                   <Select value={formData.color} onValueChange={(value) => handleInputChange('color', value)}>
                     <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
@@ -210,14 +252,41 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
                     </SelectContent>
                   </Select>
                 </div>
+
+                <div>
+                  <Label htmlFor="fallbackIcon" className="text-slate-300">Fallback Icon (Optional)</Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      id="fallbackIcon"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileChange}
+                      className="bg-slate-700 border-slate-600 text-white file:bg-slate-600 file:text-white file:border-0 file:rounded file:px-3 file:py-1"
+                    />
+                    {formData.fallbackIcon && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setFormData(prev => ({ ...prev, fallbackIcon: null }))}
+                        className="text-red-400 hover:text-red-300"
+                      >
+                        <X className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
+                  <p className="text-xs text-slate-400 mt-1">
+                    Upload a backup icon that will be used if the main icon URL fails to load
+                  </p>
+                </div>
               </div>
 
               <Button 
                 type="submit" 
-                disabled={addToolMutation.isPending}
+                disabled={addToolMutation.isPending || isUploading}
                 className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
               >
-                {addToolMutation.isPending ? 'Adding...' : 'Add Tool'}
+                {isUploading ? 'Uploading...' : addToolMutation.isPending ? 'Adding...' : 'Add Tool'}
               </Button>
             </form>
           </div>
@@ -227,7 +296,7 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
             <h3 className="text-lg font-semibold text-white mb-4">
               Existing Tools
               <span className="text-sm font-normal text-slate-400 ml-2">
-                (Hover over tools with failed icons to upload fallback images)
+                (Icons are automatically tested and fallbacks are used when needed)
               </span>
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -245,7 +314,7 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
                         <ToolIcon 
                           tool={tool}
                           className="w-6 h-6"
-                          showUpload={true}
+                          showUpload={false}
                         />
                       </div>
                       <div>
