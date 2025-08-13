@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { X, Upload, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -13,7 +14,7 @@ import { toast } from 'sonner';
 interface AddProjectFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onProjectAdded: () => void;
+  onProjectAdded?: () => void;
 }
 
 const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps) => {
@@ -133,13 +134,6 @@ const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps
       return;
     }
 
-    if (isFunnelCategory) {
-      if (!funnelImages.desktop || !funnelImages.tablet || !funnelImages.mobile) {
-        toast.error('Please upload all three funnel images (desktop, tablet, mobile)');
-        return;
-      }
-    }
-
     if (!user) {
       toast.error('You must be signed in to add projects');
       return;
@@ -169,6 +163,8 @@ const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps
       // Insert project into database with verified user session
       const projectData = {
         ...formData,
+        link: formData.link || null,
+        image_link: null,
         project_card_image: projectCardImageUrl,
         user_id: session.user.id, // Use session user ID to ensure consistency
       };
@@ -195,47 +191,60 @@ const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps
       console.log('Project inserted successfully:', project);
 
       // Handle funnel images or regular carousel images
-      if (isFunnelCategory) {
+      if (isFunnelCategory && (funnelImages.desktop || funnelImages.tablet || funnelImages.mobile)) {
         console.log('Uploading funnel images...');
         
-        const funnelUploads = await Promise.all([
-          {
-            device: 'desktop',
-            file: funnelImages.desktop!,
-            order: 0
-          },
-          {
-            device: 'tablet', 
-            file: funnelImages.tablet!,
-            order: 1
-          },
-          {
-            device: 'mobile',
-            file: funnelImages.mobile!,
-            order: 2
-          }
-        ].map(async ({ device, file, order }) => {
-          const imagePath = `carousel/${project.id}/${device}-${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-          const imageUrl = await uploadFile(file, 'portfolio', imagePath);
+        const funnelUploads = [];
+        let order = 0;
+
+        if (funnelImages.desktop) {
+          const imagePath = `carousel/${project.id}/desktop-${Date.now()}-${funnelImages.desktop.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+          const imageUrl = await uploadFile(funnelImages.desktop, 'portfolio', imagePath);
           
-          return {
+          funnelUploads.push({
             project_id: project.id,
             image_url: imageUrl,
-            alt_text: `${project.title} ${device} view`,
-            sort_order: order
-          };
-        }));
-
-        const { error: carouselError } = await supabase
-          .from('project_carousel_images')
-          .insert(funnelUploads);
-
-        if (carouselError) {
-          console.error('Funnel images insert error:', carouselError);
-          throw carouselError;
+            alt_text: `${project.title} desktop view`,
+            sort_order: order++
+          });
         }
 
-        console.log('Funnel images uploaded successfully');
+        if (funnelImages.tablet) {
+          const imagePath = `carousel/${project.id}/tablet-${Date.now()}-${funnelImages.tablet.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+          const imageUrl = await uploadFile(funnelImages.tablet, 'portfolio', imagePath);
+          
+          funnelUploads.push({
+            project_id: project.id,
+            image_url: imageUrl,
+            alt_text: `${project.title} tablet view`,
+            sort_order: order++
+          });
+        }
+
+        if (funnelImages.mobile) {
+          const imagePath = `carousel/${project.id}/mobile-${Date.now()}-${funnelImages.mobile.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+          const imageUrl = await uploadFile(funnelImages.mobile, 'portfolio', imagePath);
+          
+          funnelUploads.push({
+            project_id: project.id,
+            image_url: imageUrl,
+            alt_text: `${project.title} mobile view`,
+            sort_order: order++
+          });
+        }
+
+        if (funnelUploads.length > 0) {
+          const { error: carouselError } = await supabase
+            .from('project_carousel_images')
+            .insert(funnelUploads);
+
+          if (carouselError) {
+            console.error('Funnel images insert error:', carouselError);
+            throw carouselError;
+          }
+
+          console.log('Funnel images uploaded successfully');
+        }
       } else if (carouselImages.length > 0) {
         console.log(`Uploading ${carouselImages.length} carousel images...`);
         
@@ -266,7 +275,7 @@ const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps
       }
 
       toast.success('Project added successfully!');
-      onProjectAdded();
+      onProjectAdded?.();
       onClose();
       
       // Reset form
@@ -428,17 +437,16 @@ const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps
             </Select>
           </div>
 
-          {/* Link field - Show for web development (optional) and funnel design categories */}
+          {/* Link field - Show for web development (optional) and funnel design categories (optional) */}
           {(isWebDevCategory || isFunnelCategory) && (
             <div>
-              <Label htmlFor="link">Live Link {isFunnelCategory ? '*' : '(optional)'}</Label>
+              <Label htmlFor="link">Live Link (optional)</Label>
               <Input
                 id="link"
                 type="url"
                 value={formData.link}
                 onChange={(e) => handleInputChange('link', e.target.value)}
                 placeholder="https://example.com"
-                required={isFunnelCategory}
               />
             </div>
           )}
@@ -459,22 +467,21 @@ const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps
             )}
           </div>
 
-          {/* Funnel Design specific image uploads */}
+          {/* Funnel Design specific image uploads - Now optional */}
           {isFunnelCategory ? (
             <div className="space-y-4">
               <div>
-                <Label className="text-base font-semibold">Funnel Images (Desktop, Tablet, Mobile) *</Label>
-                <p className="text-sm text-slate-600 mb-3">Upload one image for each device view</p>
+                <Label className="text-base font-semibold">Funnel Images (Desktop, Tablet, Mobile) - Optional</Label>
+                <p className="text-sm text-slate-600 mb-3">Upload images for each device view (all optional)</p>
                 
                 {/* Desktop Image */}
                 <div className="space-y-2">
-                  <Label htmlFor="desktop_image">Desktop View *</Label>
+                  <Label htmlFor="desktop_image">Desktop View (optional)</Label>
                   <Input
                     id="desktop_image"
                     type="file"
                     accept="image/*"
                     onChange={(e) => handleFunnelImageChange('desktop', e.target.files?.[0] || null)}
-                    required
                   />
                   {funnelImages.desktop && (
                     <p className="text-sm text-green-600">Selected: {funnelImages.desktop.name}</p>
@@ -483,13 +490,12 @@ const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps
 
                 {/* Tablet Image */}
                 <div className="space-y-2">
-                  <Label htmlFor="tablet_image">Tablet View *</Label>
+                  <Label htmlFor="tablet_image">Tablet View (optional)</Label>
                   <Input
                     id="tablet_image"
                     type="file"
                     accept="image/*"
                     onChange={(e) => handleFunnelImageChange('tablet', e.target.files?.[0] || null)}
-                    required
                   />
                   {funnelImages.tablet && (
                     <p className="text-sm text-green-600">Selected: {funnelImages.tablet.name}</p>
@@ -498,13 +504,12 @@ const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps
 
                 {/* Mobile Image */}
                 <div className="space-y-2">
-                  <Label htmlFor="mobile_image">Mobile View *</Label>
+                  <Label htmlFor="mobile_image">Mobile View (optional)</Label>
                   <Input
                     id="mobile_image"
                     type="file"
                     accept="image/*"
                     onChange={(e) => handleFunnelImageChange('mobile', e.target.files?.[0] || null)}
-                    required
                   />
                   {funnelImages.mobile && (
                     <p className="text-sm text-green-600">Selected: {funnelImages.mobile.name}</p>
