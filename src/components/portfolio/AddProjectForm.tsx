@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { X, Upload, Trash2, Eye, ExternalLink } from 'lucide-react';
 import { Button } from '../ui/button';
@@ -140,6 +139,9 @@ const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps
     try {
       const projectData = {
         ...formData,
+        // Convert empty strings to null for optional fields
+        link: formData.link.trim() || null,
+        image_link: formData.image_link.trim() || null,
         user_id: user.id
       };
 
@@ -278,15 +280,12 @@ const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps
                 </div>
 
                 <div>
-                  <Label htmlFor="link" className="text-slate-300">
-                    Live Link {isLiveLinkOptional ? '(optional)' : '*'}
-                  </Label>
+                  <Label htmlFor="link" className="text-slate-300">Live Link (optional)</Label>
                   <Input
                     id="link"
                     value={formData.link}
                     onChange={(e) => handleInputChange('link', e.target.value)}
                     placeholder="https://example.com"
-                    required={!isLiveLinkOptional}
                     className="bg-slate-700 border-slate-600 text-white"
                   />
                 </div>
