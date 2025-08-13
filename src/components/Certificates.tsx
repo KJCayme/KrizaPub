@@ -1,8 +1,8 @@
-
 import React, { useState } from 'react';
 import { Award, ExternalLink, Calendar, Plus, Edit3, Trash2 } from 'lucide-react';
 import { Button } from './ui/button';
 import { useIsMobile } from '../hooks/use-mobile';
+import { useIsTablet } from '../hooks/use-tablet';
 import { useCertificates, Certificate } from '../hooks/useCertificates';
 import { useAuth } from '../hooks/useAuth';
 import AddCertificateForm from './AddCertificateForm';
@@ -16,6 +16,7 @@ interface CertificatesProps {
 
 const Certificates = ({ onShowCertificatesOnly }: CertificatesProps) => {
   const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
   const [showAddForm, setShowAddForm] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
   const [editingCertificate, setEditingCertificate] = useState<Certificate | null>(null);
@@ -23,6 +24,27 @@ const Certificates = ({ onShowCertificatesOnly }: CertificatesProps) => {
   
   const { certificates, loading, error, deleteCertificate } = useCertificates(3);
   const { user } = useAuth();
+
+  // Function to get Add Certificate button content based on viewport
+  const getAddCertificateButtonContent = () => {
+    if (isMobile) {
+      return <Plus className="w-5 h-5" />;
+    } else if (isTablet) {
+      return (
+        <>
+          <Plus className="w-5 h-5" />
+          <span>Add</span>
+        </>
+      );
+    } else {
+      return (
+        <>
+          <Plus className="w-5 h-5" />
+          <span>Add Certificate</span>
+        </>
+      );
+    }
+  };
 
   const handleViewCertificate = (url: string) => {
     if (url && url !== '#') {
@@ -94,8 +116,7 @@ const Certificates = ({ onShowCertificatesOnly }: CertificatesProps) => {
                   onClick={handleAddCertificate}
                   className="absolute right-0 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-semibold hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 flex items-center gap-2"
                 >
-                  <Plus className="w-5 h-5" />
-                  <span>Add Certificate</span>
+                  {getAddCertificateButtonContent()}
                 </Button>
               )}
             </div>
