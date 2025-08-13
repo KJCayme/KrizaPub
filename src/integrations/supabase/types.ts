@@ -1528,7 +1528,6 @@ export type Database = {
           id: string
           name: string
           updated_at: string
-          uploaded_icon: string | null
           user_id: string | null
         }
         Insert: {
@@ -1539,7 +1538,6 @@ export type Database = {
           id?: string
           name: string
           updated_at?: string
-          uploaded_icon?: string | null
           user_id?: string | null
         }
         Update: {
@@ -1550,7 +1548,6 @@ export type Database = {
           id?: string
           name?: string
           updated_at?: string
-          uploaded_icon?: string | null
           user_id?: string | null
         }
         Relationships: []
