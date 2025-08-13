@@ -8,6 +8,7 @@ import AddCategoryForm from './portfolio/AddCategoryForm';
 import ManageCategoriesForm from './portfolio/ManageCategoriesForm';
 import { handleBookCall } from '../utils/bookCall';
 import { useIsMobile } from '../hooks/use-mobile';
+import { useIsTablet } from '../hooks/use-tablet';
 import { useProjects } from '../hooks/useProjects';
 import { useProjectsByCategory } from '../hooks/useProjectsByCategory';
 import { usePrefetchProjects } from '../hooks/usePrefetchProjects';
@@ -37,6 +38,7 @@ const Portfolio = ({ onShowAllProjectsChange }: PortfolioProps) => {
   const [hasTriggeredPrefetch, setHasTriggeredPrefetch] = useState(false);
   const projectGridRef = useRef<{ scrollToProject: (projectId: number) => void }>(null);
   const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
   const { user } = useAuth();
 
   // Use intersection observer to detect when portfolio section is reached
@@ -252,6 +254,48 @@ const Portfolio = ({ onShowAllProjectsChange }: PortfolioProps) => {
     toast.success('Category added successfully!');
   };
 
+  // Function to get Add Project button content based on viewport
+  const getAddProjectButtonContent = () => {
+    if (isMobile) {
+      return <Plus className="w-5 h-5" />;
+    } else if (isTablet) {
+      return (
+        <>
+          <Plus className="w-5 h-5" />
+          Add
+        </>
+      );
+    } else {
+      return (
+        <>
+          <Plus className="w-5 h-5" />
+          Add Project
+        </>
+      );
+    }
+  };
+
+  // Function to get Manage button content based on viewport
+  const getManageButtonContent = () => {
+    if (isMobile) {
+      return <Settings className="w-5 h-5" />;
+    } else if (isTablet) {
+      return (
+        <>
+          <Settings className="w-5 h-5" />
+          Manage
+        </>
+      );
+    } else {
+      return (
+        <>
+          <Settings className="w-5 h-5" />
+          Manage
+        </>
+      );
+    }
+  };
+
   // Error state
   if (error || categoriesError) {
     return (
@@ -307,15 +351,13 @@ const Portfolio = ({ onShowAllProjectsChange }: PortfolioProps) => {
                 onClick={() => setShowAddProjectForm(true)}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold rounded-lg shadow-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl"
               >
-                <Plus className="w-5 h-5" />
-                Add Project
+                {getAddProjectButtonContent()}
               </button>
               <button
                 onClick={() => setShowManageCategoriesForm(true)}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-lg shadow-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl"
               >
-                <Settings className="w-5 h-5" />
-                Manage
+                {getManageButtonContent()}
               </button>
             </div>
           )}
