@@ -72,9 +72,10 @@ const ToolIcon = ({ tool, className = "w-6 h-6", showUpload = false }: ToolIconP
     }
   };
 
-  // Use uploaded icon if available, otherwise use URL icon
-  const iconSrc = tool.uploaded_icon || tool.icon;
+  // Determine which icon to display and if fallback is needed
+  const shouldShowUploadedIcon = tool.uploaded_icon && (imageError || !tool.icon);
   const shouldShowFallback = imageError && !tool.uploaded_icon;
+  const shouldShowUploadButton = showUpload && user && user.id === tool.user_id && (imageError || tool.uploaded_icon);
 
   return (
     <div className="relative">
@@ -86,14 +87,14 @@ const ToolIcon = ({ tool, className = "w-6 h-6", showUpload = false }: ToolIconP
         </div>
       ) : (
         <img
-          src={iconSrc}
+          src={shouldShowUploadedIcon ? tool.uploaded_icon : tool.icon}
           alt={tool.name}
           className={`${className} object-contain`}
           onError={handleImageError}
         />
       )}
       
-      {showUpload && user && user.id === tool.user_id && (
+      {shouldShowUploadButton && (
         <div className="absolute -top-2 -right-2 flex gap-1">
           {tool.uploaded_icon && (
             <Button
@@ -102,6 +103,7 @@ const ToolIcon = ({ tool, className = "w-6 h-6", showUpload = false }: ToolIconP
               size="icon"
               className="w-6 h-6 bg-red-500 hover:bg-red-600 text-white rounded-full"
               disabled={updateToolMutation.isPending}
+              title="Remove uploaded icon"
             >
               <X className="w-3 h-3" />
             </Button>
@@ -113,6 +115,7 @@ const ToolIcon = ({ tool, className = "w-6 h-6", showUpload = false }: ToolIconP
               size="icon"
               className="w-6 h-6 bg-blue-500 hover:bg-blue-600 text-white rounded-full pointer-events-none"
               disabled={isUploading}
+              title={tool.uploaded_icon ? "Replace uploaded icon" : "Upload fallback icon"}
             >
               <Upload className="w-3 h-3" />
             </Button>
