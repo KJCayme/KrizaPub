@@ -5,6 +5,8 @@ import { Button } from './ui/button';
 import { useAuth } from '../hooks/useAuth';
 import { useSkillsWithExpertise } from '../hooks/useSkills';
 import { useIntersectionObserver } from '../hooks/useIntersectionObserver';
+import { useIsMobile } from '../hooks/use-mobile';
+import { useIsTablet } from '../hooks/use-tablet';
 import AddSkillForm from './AddSkillForm';
 import EditSkillForm from './EditSkillForm';
 import SkillActions from './SkillActions';
@@ -13,6 +15,8 @@ import type { SkillWithExpertise } from '../hooks/useSkills';
 
 const Skills = () => {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
   const [showAddSkillForm, setShowAddSkillForm] = useState(false);
   const [showEditSkillForm, setShowEditSkillForm] = useState(false);
   const [editingSkill, setEditingSkill] = useState<SkillWithExpertise | null>(null);
@@ -48,6 +52,27 @@ const Skills = () => {
     console.log('Skill updated - skills list will update automatically');
   };
 
+  // Function to get button content based on viewport
+  const getAddSkillButtonContent = () => {
+    if (isMobile) {
+      return <Plus className="w-5 h-5" />;
+    } else if (isTablet) {
+      return (
+        <>
+          <Plus className="w-5 h-5 mr-2" />
+          Add
+        </>
+      );
+    } else {
+      return (
+        <>
+          <Plus className="w-5 h-5 mr-2" />
+          Add Skills
+        </>
+      );
+    }
+  };
+
   return (
     <>
       <section id="skills" className="py-20 bg-white dark:bg-slate-900 transition-colors duration-300">
@@ -64,8 +89,7 @@ const Skills = () => {
                     onClick={() => setShowAddSkillForm(true)}
                     className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                   >
-                    <Plus className="w-5 h-5 mr-2" />
-                    Add Skills
+                    {getAddSkillButtonContent()}
                   </Button>
                 )}
               </div>
@@ -168,8 +192,7 @@ const Skills = () => {
                     onClick={() => setShowAddSkillForm(true)}
                     className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300"
                   >
-                    <Plus className="w-5 h-5 mr-2" />
-                    Add Your First Skill
+                    {getAddSkillButtonContent()}
                   </Button>
                 )}
               </div>
