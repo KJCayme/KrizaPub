@@ -1,9 +1,11 @@
 
 import React, { useState } from 'react';
-import { Plus } from 'lucide-react';
+import { Settings } from 'lucide-react';
 import { Button } from './ui/button';
 import { useAuth } from '../hooks/useAuth';
 import { useTools } from '../hooks/useTools';
+import { useIsMobile } from '../hooks/use-mobile';
+import { useIsTablet } from '../hooks/use-tablet';
 import AddToolForm from './AddToolForm';
 import ToolIcon from './ToolIcon';
 
@@ -11,6 +13,29 @@ const Tools = () => {
   const { user } = useAuth();
   const { data: tools = [], isLoading } = useTools();
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const isMobile = useIsMobile();
+  const isTablet = useIsTablet();
+
+  // Function to get Manage Tools button content based on viewport
+  const getManageButtonContent = () => {
+    if (isMobile) {
+      return <Settings className="w-5 h-5" />;
+    } else if (isTablet) {
+      return (
+        <>
+          <Settings className="w-5 h-5 mr-2" />
+          Manage
+        </>
+      );
+    } else {
+      return (
+        <>
+          <Settings className="w-5 h-5 mr-2" />
+          Manage Tools
+        </>
+      );
+    }
+  };
 
   return (
     <section id="tools" className="py-20 bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 dark:from-slate-950 dark:via-purple-950 dark:to-indigo-950 relative overflow-hidden transition-colors duration-300">
@@ -43,8 +68,7 @@ const Tools = () => {
                   onClick={() => setIsFormOpen(true)}
                   className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
                 >
-                  <Plus className="w-5 h-5 mr-2" />
-                  Manage Tools
+                  {getManageButtonContent()}
                 </Button>
               )}
             </div>
