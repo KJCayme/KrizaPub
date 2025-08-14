@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { X, Trash2, AlertCircle, CheckCircle, Clock, Upload } from 'lucide-react';
 import { Button } from './ui/button';
@@ -122,11 +121,20 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
     }
   };
 
-  // Test icon loading status
+  // Improved icon status checking
   const [iconStatuses, setIconStatuses] = useState<Record<string, 'loading' | 'success' | 'error'>>({});
 
   const testIconLoad = (tool: Tool) => {
-    if (iconStatuses[tool.id]) return iconStatuses[tool.id];
+    // If no icon URL or empty/whitespace only, return error immediately
+    if (!tool.icon || tool.icon.trim() === '') {
+      setIconStatuses(prev => ({ ...prev, [tool.id]: 'error' }));
+      return 'error';
+    }
+
+    // If already tested, return cached result
+    if (iconStatuses[tool.id]) {
+      return iconStatuses[tool.id];
+    }
     
     setIconStatuses(prev => ({ ...prev, [tool.id]: 'loading' }));
     
@@ -137,33 +145,67 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
     img.onerror = () => {
       setIconStatuses(prev => ({ ...prev, [tool.id]: 'error' }));
     };
+    
+    // Set a timeout to handle cases where the image never loads or errors
+    setTimeout(() => {
+      if (!iconStatuses[tool.id] || iconStatuses[tool.id] === 'loading') {
+        setIconStatuses(prev => ({ ...prev, [tool.id]: 'error' }));
+      }
+    }, 5000);
+    
     img.src = tool.icon;
     
     return 'loading';
   };
 
   const getIconStatus = (tool: Tool) => {
+    // Check if tool has a valid icon URL
+    const hasValidIconUrl = tool.icon && tool.icon.trim() !== '';
+    const hasUploadedIcon = tool.uploaded_icon && tool.uploaded_icon.trim() !== '';
+    
+    if (!hasValidIconUrl && !hasUploadedIcon) {
+      return {
+        status: 'No icon URL - upload needed',
+        icon: AlertCircle,
+        color: 'text-red-400'
+      };
+    }
+    
+    if (!hasValidIconUrl && hasUploadedIcon) {
+      return {
+        status: 'Using fallback icon only',
+        icon: CheckCircle,
+        color: 'text-green-400'
+      };
+    }
+    
     const status = testIconLoad(tool);
     
-    if (tool.uploaded_icon) {
+    if (hasUploadedIcon) {
       if (status === 'error') {
         return {
           status: 'URL failed, using fallback',
           icon: CheckCircle,
           color: 'text-green-400'
         };
-      } else {
+      } else if (status === 'success') {
         return {
-          status: 'Has fallback icon',
+          status: 'URL working, has fallback',
           icon: CheckCircle,
           color: 'text-green-400'
+        };
+      } else {
+        return {
+          status: 'Testing URL, has fallback',
+          icon: Clock,
+          color: 'text-blue-400'
         };
       }
     }
     
     if (status === 'loading') {
       return {
-        status: 'Testing icon...',
+        status: 'Testing icon URL...',
         icon: Clock,
         color: 'text-blue-400'
       };
