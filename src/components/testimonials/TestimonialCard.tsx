@@ -159,6 +159,7 @@ const TestimonialCard = ({ testimonial, padding = 24 }: TestimonialCardProps) =>
               <video
                 src={testimonial.feedback_picture}
                 controls
+                controlsList="nodownload"
                 className="max-w-full max-h-full object-contain rounded-lg"
                 preload="metadata"
               />
