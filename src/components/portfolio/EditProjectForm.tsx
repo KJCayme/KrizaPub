@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Upload, Loader2, Plus, X, Image as ImageIcon } from 'lucide-react';
 import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
@@ -197,19 +198,42 @@ const EditProjectForm = ({ isOpen, onClose, project, onProjectUpdated }: EditPro
     setUploading(true);
     
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Date.now()}.${fileExt}`;
+      console.log('Starting image upload:', { fileName: file.name, size: file.size, isCarousel });
+      
+      // Validate file
+      if (!file.type.startsWith('image/')) {
+        throw new Error('Please select a valid image file');
+      }
+      
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        throw new Error('Image size must be less than 10MB');
+      }
+
+      const fileExt = file.name.split('.').pop()?.toLowerCase();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
       const filePath = isCarousel ? `carousel/${fileName}` : `project-cards/${fileName}`;
 
+      console.log('Uploading to path:', filePath);
+
+      // Upload to the portfolio bucket (not project-images)
       const { error: uploadError } = await supabase.storage
-        .from('project-images')
-        .upload(filePath, file);
+        .from('portfolio')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: false
+        });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Upload error:', uploadError);
+        throw new Error(`Upload failed: ${uploadError.message}`);
+      }
 
+      // Get public URL
       const { data: { publicUrl } } = supabase.storage
-        .from('project-images')
+        .from('portfolio')
         .getPublicUrl(filePath);
+
+      console.log('Upload successful, public URL:', publicUrl);
 
       if (isCarousel) {
         setNewCarouselImage(publicUrl);
@@ -220,7 +244,8 @@ const EditProjectForm = ({ isOpen, onClose, project, onProjectUpdated }: EditPro
       toast.success('Image uploaded successfully!');
     } catch (error) {
       console.error('Error uploading image:', error);
-      toast.error('Failed to upload image. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to upload image. Please try again.';
+      toast.error(errorMessage);
     } finally {
       setUploading(false);
     }
