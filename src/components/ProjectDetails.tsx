@@ -90,17 +90,6 @@ const ProjectDetails = ({ project, onBack, source = 'section' }: ProjectDetailsP
                 </div>
               )}
 
-              {project.detailedProcess && (
-                <div>
-                  <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-4">
-                    Detailed Process
-                  </h3>
-                  <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
-                    {project.detailedProcess}
-                  </p>
-                </div>
-              )}
-
               {project.solution && (
                 <div>
                   <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-4">
@@ -108,6 +97,17 @@ const ProjectDetails = ({ project, onBack, source = 'section' }: ProjectDetailsP
                   </h3>
                   <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
                     {project.solution}
+                  </p>
+                </div>
+              )}
+
+              {project.detailedProcess && (
+                <div>
+                  <h3 className="text-xl font-bold text-slate-800 dark:text-white mb-4">
+                    Detailed Process
+                  </h3>
+                  <p className="text-slate-600 dark:text-slate-300 leading-relaxed">
+                    {project.detailedProcess}
                   </p>
                 </div>
               )}
