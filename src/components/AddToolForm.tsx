@@ -121,7 +121,7 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
     }
   };
 
-  // Improved icon status checking with better fallback detection
+  // Improved icon status checking with conservative fallback detection
   const [iconStatuses, setIconStatuses] = useState<Record<string, 'loading' | 'success' | 'error'>>({});
   const [iconDimensions, setIconDimensions] = useState<Record<string, {width: number, height: number}>>({});
 
@@ -147,15 +147,12 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
         [tool.id]: { width: img.naturalWidth, height: img.naturalHeight } 
       }));
 
-      // Check if this might be a generic/fallback icon
-      // Many generic icons are very small (16x16) or have specific common dimensions
+      // Only flag as generic/fallback in very obvious cases
+      // Be much more conservative - only flag truly problematic icons
       const isLikelyGeneric = (
-        (img.naturalWidth === 16 && img.naturalHeight === 16) || // Very common generic size
-        (img.naturalWidth === 32 && img.naturalHeight === 32 && tool.icon.includes('generic')) || // Generic in URL
-        (img.naturalWidth === 1 && img.naturalHeight === 1) || // 1x1 pixel fallback
-        img.src.includes('generic') || // Generic in final URL
-        img.src.includes('default') || // Default in final URL
-        img.src.includes('placeholder') // Placeholder in final URL
+        (img.naturalWidth === 1 && img.naturalHeight === 1) || // 1x1 pixel fallback (common generic)
+        (img.src.includes('generic') || img.src.includes('default') || img.src.includes('placeholder')) || // Generic/default/placeholder in URL
+        (img.naturalWidth === 0 || img.naturalHeight === 0) // Invalid dimensions
       );
 
       if (isLikelyGeneric) {
