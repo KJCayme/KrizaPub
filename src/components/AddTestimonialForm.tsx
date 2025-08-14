@@ -4,7 +4,7 @@ import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Textarea } from './ui/textarea';
 import { Checkbox } from './ui/checkbox';
-import { Upload, X, Star, Eye, Quote } from 'lucide-react';
+import { Upload, X, Star, Eye, Quote, Image as ImageIcon, Video } from 'lucide-react';
 import { StarRating } from './ui/star-rating';
 import { useAddTestimonial } from '../hooks/useTestimonials';
 import { useAuth } from '../hooks/useAuth';
@@ -30,8 +30,11 @@ const AddTestimonialForm: React.FC<AddTestimonialFormProps> = ({ onClose }) => {
   const [rating, setRating] = useState(5);
   const [image, setImage] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [feedbackMediaType, setFeedbackMediaType] = useState<'image' | 'video'>('image');
   const [feedbackImage, setFeedbackImage] = useState<File | null>(null);
   const [feedbackImagePreview, setFeedbackImagePreview] = useState<string | null>(null);
+  const [feedbackVideo, setFeedbackVideo] = useState<File | null>(null);
+  const [feedbackVideoPreview, setFeedbackVideoPreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
@@ -62,10 +65,19 @@ const AddTestimonialForm: React.FC<AddTestimonialFormProps> = ({ onClose }) => {
     }
   };
 
-  const uploadImage = async (file: File): Promise<string> => {
+  const handleFeedbackVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFeedbackVideo(file);
+      const url = URL.createObjectURL(file);
+      setFeedbackVideoPreview(url);
+    }
+  };
+
+  const uploadFile = async (file: File, folder: string): Promise<string> => {
     const fileExt = file.name.split('.').pop();
     const fileName = `${Math.random()}.${fileExt}`;
-    const filePath = `testimonials/${fileName}`;
+    const filePath = `${folder}/${fileName}`;
 
     const { error: uploadError } = await supabase.storage
       .from('portfolio')
@@ -94,14 +106,16 @@ const AddTestimonialForm: React.FC<AddTestimonialFormProps> = ({ onClose }) => {
       setIsUploading(true);
       
       let imageUrl = '';
-      let feedbackImageUrl = '';
+      let feedbackMediaUrl = '';
       
       if (image) {
-        imageUrl = await uploadImage(image);
+        imageUrl = await uploadFile(image, 'testimonials');
       }
       
-      if (feedbackImage) {
-        feedbackImageUrl = await uploadImage(feedbackImage);
+      if (feedbackMediaType === 'image' && feedbackImage) {
+        feedbackMediaUrl = await uploadFile(feedbackImage, 'testimonials');
+      } else if (feedbackMediaType === 'video' && feedbackVideo) {
+        feedbackMediaUrl = await uploadFile(feedbackVideo, 'testimonials/videos');
       }
 
       await addTestimonialMutation.mutateAsync({
@@ -114,7 +128,7 @@ const AddTestimonialForm: React.FC<AddTestimonialFormProps> = ({ onClose }) => {
         rate: rating,
         feedback: formData.feedback.trim(),
         image: imageUrl || undefined,
-        feedback_picture: feedbackImageUrl || undefined,
+        feedback_picture: feedbackMediaUrl || undefined,
       });
 
       onClose();
@@ -208,7 +222,7 @@ const AddTestimonialForm: React.FC<AddTestimonialFormProps> = ({ onClose }) => {
 
         {/* Feedback Section */}
         {formData.feedback && (
-          <div className={feedbackImagePreview ? 'mb-6' : ''}>
+          <div className={(feedbackImagePreview || feedbackVideoPreview) ? 'mb-6' : ''}>
             <p className="text-slate-700 dark:text-slate-300 leading-relaxed italic text-base">
               "{formData.feedback || 'Your testimonial will appear here...'}"
             </p>
@@ -216,14 +230,22 @@ const AddTestimonialForm: React.FC<AddTestimonialFormProps> = ({ onClose }) => {
         )}
 
         {/* Evidence Section */}
-        {feedbackImagePreview && (
+        {(feedbackImagePreview || feedbackVideoPreview) && (
           <div className="flex-grow flex items-center justify-center overflow-hidden">
             <div className="w-full rounded-lg overflow-hidden flex items-center justify-center bg-gray-50 dark:bg-gray-900 h-64">
-              <img
-                src={feedbackImagePreview}
-                alt="Feedback Evidence"
-                className="max-w-full max-h-full object-contain rounded-lg"
-              />
+              {feedbackMediaType === 'image' && feedbackImagePreview ? (
+                <img
+                  src={feedbackImagePreview}
+                  alt="Feedback Evidence"
+                  className="max-w-full max-h-full object-contain rounded-lg"
+                />
+              ) : feedbackMediaType === 'video' && feedbackVideoPreview ? (
+                <video
+                  src={feedbackVideoPreview}
+                  controls
+                  className="max-w-full max-h-full object-contain rounded-lg"
+                />
+              ) : null}
             </div>
           </div>
         )}
@@ -391,7 +413,7 @@ const AddTestimonialForm: React.FC<AddTestimonialFormProps> = ({ onClose }) => {
             </div>
 
             <div>
-              <Label htmlFor="image">Profile Picture (Optional) - 150x150px recommended</Label>
+              <Label htmlFor="image">Profile Picture (Optional)</Label>
               <div className="mt-1">
                 <input
                   id="image"
@@ -422,32 +444,87 @@ const AddTestimonialForm: React.FC<AddTestimonialFormProps> = ({ onClose }) => {
             </div>
 
             <div>
-              <Label htmlFor="feedback-image">Feedback Picture (Optional) - 400x300px recommended</Label>
-              <div className="mt-1">
-                <input
-                  id="feedback-image"
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFeedbackImageChange}
-                  className="hidden"
-                />
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => document.getElementById('feedback-image')?.click()}
-                  className="w-full"
-                >
-                  <Upload className="w-4 h-4 mr-2" />
-                  Upload Feedback Picture
-                </Button>
-                {feedbackImagePreview && (
-                  <div className="mt-2">
-                    <img
-                      src={feedbackImagePreview}
-                      alt="Feedback Preview"
-                      className="w-24 h-24 rounded object-cover"
+              <Label>Feedback Media (Optional)</Label>
+              <div className="mt-1 space-y-3">
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant={feedbackMediaType === 'image' ? 'default' : 'outline'}
+                    onClick={() => setFeedbackMediaType('image')}
+                    className="flex-1"
+                  >
+                    <ImageIcon className="w-4 h-4 mr-2" />
+                    Image
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={feedbackMediaType === 'video' ? 'default' : 'outline'}
+                    onClick={() => setFeedbackMediaType('video')}
+                    className="flex-1"
+                  >
+                    <Video className="w-4 h-4 mr-2" />
+                    Video
+                  </Button>
+                </div>
+
+                {feedbackMediaType === 'image' && (
+                  <>
+                    <input
+                      id="feedback-image"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFeedbackImageChange}
+                      className="hidden"
                     />
-                  </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => document.getElementById('feedback-image')?.click()}
+                      className="w-full"
+                    >
+                      <Upload className="w-4 h-4 mr-2" />
+                      Upload Feedback Image
+                    </Button>
+                    {feedbackImagePreview && (
+                      <div className="mt-2">
+                        <img
+                          src={feedbackImagePreview}
+                          alt="Feedback Preview"
+                          className="w-24 h-24 rounded object-cover"
+                        />
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {feedbackMediaType === 'video' && (
+                  <>
+                    <input
+                      id="feedback-video"
+                      type="file"
+                      accept="video/*"
+                      onChange={handleFeedbackVideoChange}
+                      className="hidden"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => document.getElementById('feedback-video')?.click()}
+                      className="w-full"
+                    >
+                      <Upload className="w-4 h-4 mr-2" />
+                      Upload Feedback Video
+                    </Button>
+                    {feedbackVideoPreview && (
+                      <div className="mt-2">
+                        <video
+                          src={feedbackVideoPreview}
+                          controls
+                          className="w-full max-w-xs h-24 rounded object-cover"
+                        />
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </div>

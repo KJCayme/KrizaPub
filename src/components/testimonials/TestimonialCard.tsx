@@ -69,6 +69,14 @@ const TestimonialCard = ({ testimonial, padding = 24 }: TestimonialCardProps) =>
     return stars;
   };
 
+  // Check if feedback_picture is a video file
+  const isVideo = testimonial.feedback_picture && (
+    testimonial.feedback_picture.includes('.mp4') ||
+    testimonial.feedback_picture.includes('.webm') ||
+    testimonial.feedback_picture.includes('.ogg') ||
+    testimonial.feedback_picture.includes('video')
+  );
+
   return (
     <div
       className={`bg-white dark:bg-slate-800 rounded-2xl shadow-lg transition-all duration-300 relative flex flex-col ${
@@ -143,15 +151,24 @@ const TestimonialCard = ({ testimonial, padding = 24 }: TestimonialCardProps) =>
         </div>
       )}
 
-      {/* Evidence Section */}
+      {/* Evidence Section - Support both images and videos */}
       {testimonial.feedback_picture && (
         <div className="flex-grow flex items-center justify-center overflow-hidden">
           <div className={`w-full rounded-lg overflow-hidden flex items-center justify-center bg-gray-50 dark:bg-gray-900 ${isMobile ? 'h-48' : 'h-64 md:h-80'}`}>
-            <img
-              src={testimonial.feedback_picture}
-              alt="Feedback Evidence"
-              className="max-w-full max-h-full object-contain rounded-lg"
-            />
+            {isVideo ? (
+              <video
+                src={testimonial.feedback_picture}
+                controls
+                className="max-w-full max-h-full object-contain rounded-lg"
+                preload="metadata"
+              />
+            ) : (
+              <img
+                src={testimonial.feedback_picture}
+                alt="Feedback Evidence"
+                className="max-w-full max-h-full object-contain rounded-lg"
+              />
+            )}
           </div>
         </div>
       )}
