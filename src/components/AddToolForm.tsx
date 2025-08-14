@@ -121,9 +121,8 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
     }
   };
 
-  // Improved icon status checking with conservative fallback detection
+  // Improved icon status checking
   const [iconStatuses, setIconStatuses] = useState<Record<string, 'loading' | 'success' | 'error'>>({});
-  const [iconDimensions, setIconDimensions] = useState<Record<string, {width: number, height: number}>>({});
 
   const testIconLoad = (tool: Tool) => {
     // If no icon URL or empty/whitespace only, return error immediately
@@ -141,37 +140,15 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
     
     const img = new Image();
     img.onload = () => {
-      // Store dimensions for analysis
-      setIconDimensions(prev => ({ 
-        ...prev, 
-        [tool.id]: { width: img.naturalWidth, height: img.naturalHeight } 
-      }));
-
-      // Only flag as generic/fallback in very obvious cases
-      // Be much more conservative - only flag truly problematic icons
-      const isLikelyGeneric = (
-        (img.naturalWidth === 1 && img.naturalHeight === 1) || // 1x1 pixel fallback (common generic)
-        (img.src.includes('generic') || img.src.includes('default') || img.src.includes('placeholder')) || // Generic/default/placeholder in URL
-        (img.naturalWidth === 0 || img.naturalHeight === 0) // Invalid dimensions
-      );
-
-      if (isLikelyGeneric) {
-        console.log(`⚠️ Generic/fallback icon detected for ${tool.name}: ${img.src} (${img.naturalWidth}x${img.naturalHeight})`);
-        setIconStatuses(prev => ({ ...prev, [tool.id]: 'error' }));
-      } else {
-        console.log(`✅ Valid icon loaded for ${tool.name}: ${img.src} (${img.naturalWidth}x${img.naturalHeight})`);
-        setIconStatuses(prev => ({ ...prev, [tool.id]: 'success' }));
-      }
+      setIconStatuses(prev => ({ ...prev, [tool.id]: 'success' }));
     };
     img.onerror = () => {
-      console.log(`❌ Icon failed to load for ${tool.name}: ${tool.icon}`);
       setIconStatuses(prev => ({ ...prev, [tool.id]: 'error' }));
     };
     
     // Set a timeout to handle cases where the image never loads or errors
     setTimeout(() => {
       if (!iconStatuses[tool.id] || iconStatuses[tool.id] === 'loading') {
-        console.log(`⏰ Icon load timeout for ${tool.name}: ${tool.icon}`);
         setIconStatuses(prev => ({ ...prev, [tool.id]: 'error' }));
       }
     }, 5000);
@@ -203,19 +180,17 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
     }
     
     const status = testIconLoad(tool);
-    const dimensions = iconDimensions[tool.id];
     
     if (hasUploadedIcon) {
       if (status === 'error') {
         return {
-          status: 'URL failed/generic, using fallback',
+          status: 'URL failed, using fallback',
           icon: CheckCircle,
           color: 'text-green-400'
         };
       } else if (status === 'success') {
-        const dimensionText = dimensions ? ` (${dimensions.width}x${dimensions.height})` : '';
         return {
-          status: `URL working${dimensionText}, has fallback`,
+          status: 'URL working, has fallback',
           icon: CheckCircle,
           color: 'text-green-400'
         };
@@ -238,15 +213,14 @@ const AddToolForm = ({ isOpen, onClose }: AddToolFormProps) => {
     
     if (status === 'error') {
       return {
-        status: 'Icon URL failed/generic - upload needed',
+        status: 'Icon URL failed - upload needed',
         icon: AlertCircle,
         color: 'text-red-400'
       };
     }
     
-    const dimensionText = dimensions ? ` (${dimensions.width}x${dimensions.height})` : '';
     return {
-      status: `URL icon working${dimensionText}`,
+      status: 'URL icon working',
       icon: CheckCircle,
       color: 'text-green-400'
     };
