@@ -222,9 +222,9 @@ const AddClientTestimonialForm: React.FC<AddClientTestimonialFormProps> = ({ onC
 
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-slate-800 rounded-lg max-w-7xl w-full max-h-[90vh] overflow-hidden flex flex-col xl:flex-row">
+      <div className="bg-white dark:bg-slate-800 rounded-lg max-w-7xl w-full max-h-[90vh] overflow-y-auto flex flex-col xl:flex-row">
         {/* Form Section */}
-        <div className="w-full xl:w-[500px] p-6 overflow-y-auto xl:border-r border-slate-200 dark:border-slate-700">
+        <div className="w-full xl:w-[500px] p-6 xl:border-r border-slate-200 dark:border-slate-700">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-semibold text-slate-800 dark:text-white">
               Add Client Testimonial
@@ -501,7 +501,7 @@ const AddClientTestimonialForm: React.FC<AddClientTestimonialFormProps> = ({ onC
         </div>
 
         {/* Preview Section */}
-        <div className={`flex-1 p-6 overflow-y-auto ${showPreview ? 'block' : 'hidden xl:block'}`}>
+        <div className={`flex-1 p-6 ${showPreview ? 'block' : 'hidden xl:block'}`}>
           <PreviewCard />
         </div>
       </div>
