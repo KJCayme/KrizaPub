@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -21,19 +21,23 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
   currentIndex
 }) => {
   const [activeIndex, setActiveIndex] = useState(currentIndex);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
   const isTablet = useIsTablet();
   const isDesktop = !isMobile && !isTablet;
 
-  // Update activeIndex when currentIndex changes and scroll immediately
+  // Update activeIndex when currentIndex changes and set initial scroll position
   useEffect(() => {
     if (isOpen) {
       console.log('Popup opened with currentIndex:', currentIndex);
       setActiveIndex(currentIndex);
-      // Small delay to ensure DOM is ready
-      setTimeout(() => {
-        scrollToImage(currentIndex);
-      }, 100);
+      
+      // Set initial scroll position immediately without animation
+      if (scrollContainerRef.current) {
+        const imageWidth = scrollContainerRef.current.clientWidth;
+        console.log('Setting initial scroll position to image', currentIndex, 'with width', imageWidth);
+        scrollContainerRef.current.scrollLeft = currentIndex * imageWidth;
+      }
     }
   }, [currentIndex, isOpen]);
 
@@ -50,11 +54,10 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
   };
 
   const scrollToImage = (index: number) => {
-    const container = document.querySelector('.carousel-scroll-container');
-    if (container) {
-      const imageWidth = container.clientWidth;
+    if (scrollContainerRef.current) {
+      const imageWidth = scrollContainerRef.current.clientWidth;
       console.log('Scrolling to image', index, 'with width', imageWidth);
-      container.scrollTo({
+      scrollContainerRef.current.scrollTo({
         left: index * imageWidth,
         behavior: 'smooth'
       });
@@ -166,6 +169,7 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
       {/* Main image container with scroll */}
       <div className="flex items-center justify-center w-full h-full p-8">
         <div 
+          ref={scrollContainerRef}
           className="carousel-scroll-container flex overflow-x-scroll scrollbar-hide snap-x snap-mandatory w-full h-full"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           onScroll={handleScroll}
