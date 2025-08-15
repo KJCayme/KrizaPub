@@ -515,6 +515,9 @@ const AddTestimonialForm: React.FC<AddTestimonialFormProps> = ({ onClose }) => {
                       <Upload className="w-4 h-4 mr-2" />
                       Upload Feedback Video
                     </Button>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      50 MB maximum
+                    </p>
                     {feedbackVideoPreview && (
                       <div className="mt-2">
                         <video
