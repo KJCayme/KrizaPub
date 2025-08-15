@@ -15,6 +15,7 @@ interface ProjectImageCarouselProps {
 const ProjectImageCarousel = ({ projectTitle, mainImage, projectType = 'general', projectId }: ProjectImageCarouselProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [popupStartIndex, setPopupStartIndex] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   
   // Fetch carousel images from database
@@ -118,6 +119,8 @@ const ProjectImageCarousel = ({ projectTitle, mainImage, projectType = 'general'
   };
 
   const handleImageClick = () => {
+    console.log('Opening popup with current index:', currentImageIndex);
+    setPopupStartIndex(currentImageIndex);
     setIsPopupOpen(true);
   };
 
@@ -128,8 +131,14 @@ const ProjectImageCarousel = ({ projectTitle, mainImage, projectType = 'general'
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const target = e.target as HTMLDivElement;
     const imageWidth = target.clientWidth;
-    const newIndex = Math.round(target.scrollLeft / imageWidth);
-    setCurrentImageIndex(newIndex);
+    const scrollLeft = target.scrollLeft;
+    const newIndex = Math.round(scrollLeft / imageWidth);
+    
+    // Only update if the index actually changed and is valid
+    if (newIndex !== currentImageIndex && newIndex >= 0 && newIndex < projectImages.length) {
+      console.log('Scroll update: changing index from', currentImageIndex, 'to', newIndex);
+      setCurrentImageIndex(newIndex);
+    }
   };
 
   if (isLoading) {
@@ -200,7 +209,7 @@ const ProjectImageCarousel = ({ projectTitle, mainImage, projectType = 'general'
         onClose={() => setIsPopupOpen(false)}
         images={projectImages}
         projectTitle={projectTitle}
-        currentIndex={currentImageIndex}
+        currentIndex={popupStartIndex}
       />
     </>
   );
