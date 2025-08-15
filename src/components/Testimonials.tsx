@@ -61,7 +61,7 @@ const Testimonials = ({ onShowTestimonialsOnly }: TestimonialsProps) => {
   }
 
   // Show no data message if offline with no cache or if no testimonials exist
-  if (isOfflineWithNoCache || (testimonials.length === 0 && !user)) {
+  if (isOfflineWithNoCache) {
     return (
       <TestimonialsSkeleton 
         showNoDataMessage={true} 
@@ -113,17 +113,14 @@ const Testimonials = ({ onShowTestimonialsOnly }: TestimonialsProps) => {
             </p>
           </div>
 
-          {/* Add Client Testimonial Button - positioned below caption - public use */}
+          {/* Add Client Testimonial Button - prominently positioned and always visible for public use */}
           <div className="mb-12 flex justify-center">
             <Button
               onClick={() => setShowClientForm(true)}
-              variant="outline"
-              className="bg-white/80 backdrop-blur-sm border-2 border-blue-200 text-blue-600 font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:bg-blue-50"
+              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-base px-8 py-4"
             >
-              <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
-              <span className="text-sm sm:text-base whitespace-nowrap">
-                Add Client Testimonial
-              </span>
+              <Plus className="w-5 h-5 mr-2" />
+              Add Your Testimonial
             </Button>
           </div>
 

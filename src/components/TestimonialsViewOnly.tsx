@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, Plus, Code } from 'lucide-react';
 import { Button } from './ui/button';
@@ -142,18 +143,16 @@ const TestimonialsViewOnly = ({ isDarkMode, onToggleDarkMode, onBack }: Testimon
                 showAddButton={false}
               />
 
-              {!hasNoDataOffline && (
-                <div className="mb-12 flex justify-center">
-                  <Button
-                    onClick={() => setShowClientForm(true)}
-                    variant="outline"
-                    className="bg-white/80 backdrop-blur-sm border-2 border-blue-200 text-blue-600 font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:bg-blue-50"
-                  >
-                    <Plus className="w-5 h-5 mr-2" />
-                    Add Client Testimonial
-                  </Button>
-                </div>
-              )}
+              {/* Add Client Testimonial Button - prominently positioned and always visible for public use */}
+              <div className="mb-12 flex justify-center">
+                <Button
+                  onClick={() => setShowClientForm(true)}
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-base px-8 py-4"
+                >
+                  <Plus className="w-5 h-5 mr-2" />
+                  Add Your Testimonial
+                </Button>
+              </div>
 
               <TestimonialsGrid testimonials={testimonials} isLoading={isLoading} />
 
@@ -163,20 +162,6 @@ const TestimonialsViewOnly = ({ isDarkMode, onToggleDarkMode, onBack }: Testimon
                   <p className="text-slate-500 dark:text-slate-400 text-sm">
                     Failed to load more testimonials
                   </p>
-                </div>
-              )}
-
-              {/* Show add buttons only when online or when there's cached data */}
-              {!isLoading && !hasNoDataOffline && (
-                <div className="mt-8 flex justify-center">
-                  <Button
-                    onClick={() => setShowClientForm(true)}
-                    variant="outline"
-                    className="bg-white/80 backdrop-blur-sm border-2 border-blue-200 text-blue-600 font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 hover:bg-blue-50"
-                  >
-                    <Plus className="w-5 h-5 mr-2" />
-                    Add Client Testimonial
-                  </Button>
                 </div>
               )}
 
@@ -199,10 +184,10 @@ const TestimonialsViewOnly = ({ isDarkMode, onToggleDarkMode, onBack }: Testimon
                       <div className="flex justify-center">
                         <Button
                           onClick={() => setShowClientForm(true)}
-                          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
+                          className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 text-base px-8 py-4"
                         >
                           <Plus className="w-5 h-5 mr-2" />
-                          Add Client Testimonial
+                          Add Your Testimonial
                         </Button>
                       </div>
                     </>
