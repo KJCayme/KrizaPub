@@ -26,47 +26,72 @@ const ToolIcon = ({ tool, className = "w-6 h-6", showUpload = false }: ToolIconP
   const [isUploading, setIsUploading] = useState(false);
   const [iconTested, setIconTested] = useState(false);
 
-  // Test if the main icon URL loads with better error detection
+  // Test if the main icon URL loads with proper 404 detection
   useEffect(() => {
     if (!tool.icon || iconTested) return;
 
-    const testImage = new Image();
+    let timeoutId: NodeJS.Timeout;
     
-    // Set a timeout to catch cases where the image never loads
-    const timeout = setTimeout(() => {
-      console.log(`⏰ Icon loading timeout for ${tool.name}: ${tool.icon}`);
-      setIconError(true);
-      setIconTested(true);
-    }, 5000);
-    
-    testImage.onload = () => {
-      clearTimeout(timeout);
-      console.log(`✅ Icon loaded successfully for ${tool.name}: ${tool.icon}`);
-      setIconError(false);
-      setIconTested(true);
-    };
-    
-    testImage.onerror = (e) => {
-      clearTimeout(timeout);
-      console.log(`❌ Icon failed to load for ${tool.name}: ${tool.icon}`, e);
-      setIconError(true);
-      setIconTested(true);
-    };
-    
-    // Handle network errors by checking if the image src is set properly
-    try {
+    const testImageLoad = async () => {
+      try {
+        // First, try to fetch the URL to check for 404
+        const response = await fetch(tool.icon, { 
+          method: 'HEAD',
+          mode: 'no-cors' // Allow cross-origin requests
+        });
+        
+        // If we can check the response and it's a 404, mark as error
+        if (response.status === 404) {
+          console.log(`❌ Icon 404 error for ${tool.name}: ${tool.icon}`);
+          setIconError(true);
+          setIconTested(true);
+          return;
+        }
+      } catch (fetchError) {
+        // If fetch fails (CORS, network, etc.), fall back to image loading test
+        console.log(`⚠️ Fetch failed for ${tool.name}, trying image load test:`, fetchError);
+      }
+
+      // Fallback to image loading test
+      const testImage = new Image();
+      
+      // Set a timeout for slow-loading images
+      timeoutId = setTimeout(() => {
+        console.log(`⏰ Icon loading timeout for ${tool.name}: ${tool.icon}`);
+        setIconError(true);
+        setIconTested(true);
+        testImage.onload = null;
+        testImage.onerror = null;
+      }, 10000); // Increased to 10 seconds for slower networks
+      
+      testImage.onload = () => {
+        clearTimeout(timeoutId);
+        console.log(`✅ Icon loaded successfully for ${tool.name}: ${tool.icon}`);
+        setIconError(false);
+        setIconTested(true);
+        testImage.onload = null;
+        testImage.onerror = null;
+      };
+      
+      testImage.onerror = (e) => {
+        clearTimeout(timeoutId);
+        console.log(`❌ Icon failed to load for ${tool.name}: ${tool.icon}`, e);
+        setIconError(true);
+        setIconTested(true);
+        testImage.onload = null;
+        testImage.onerror = null;
+      };
+      
+      // Set the src to start loading
       testImage.src = tool.icon;
-    } catch (error) {
-      clearTimeout(timeout);
-      console.log(`❌ Icon URL error for ${tool.name}: ${tool.icon}`, error);
-      setIconError(true);
-      setIconTested(true);
-    }
+    };
+
+    testImageLoad();
 
     return () => {
-      clearTimeout(timeout);
-      testImage.onload = null;
-      testImage.onerror = null;
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
     };
   }, [tool.icon, tool.name, iconTested]);
 
@@ -144,14 +169,13 @@ const ToolIcon = ({ tool, className = "w-6 h-6", showUpload = false }: ToolIconP
   const hasUploadedIcon = tool.uploaded_icon && tool.uploaded_icon.trim() !== '';
   const hasValidMainIcon = tool.icon && tool.icon.trim() !== '';
   
-  // Show fallback if: main icon failed to load OR main icon hasn't been tested yet but we have fallback
-  const shouldUseFallback = (iconError && hasUploadedIcon && !fallbackError) || 
-                           (!iconTested && hasUploadedIcon && hasValidMainIcon);
+  // Show fallback if main icon failed and we have a fallback that hasn't failed
+  const shouldUseFallback = iconError && hasUploadedIcon && !fallbackError;
   
-  // Show main icon only if it passed the test and no error occurred
+  // Show main icon if no error and it's been tested successfully
   const shouldShowMainIcon = !iconError && hasValidMainIcon && iconTested;
   
-  // Show placeholder if no valid options are available
+  // Show placeholder if no valid options or while testing (before iconTested is true)
   const shouldShowPlaceholder = !shouldShowMainIcon && !shouldUseFallback;
   
   const isOwner = user && user.id === tool.user_id;
