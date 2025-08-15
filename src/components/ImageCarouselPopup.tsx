@@ -25,9 +25,17 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
   const isTablet = useIsTablet();
   const isDesktop = !isMobile && !isTablet;
 
+  // Update activeIndex when currentIndex changes and scroll immediately
   useEffect(() => {
-    setActiveIndex(currentIndex);
-  }, [currentIndex]);
+    if (isOpen) {
+      console.log('Popup opened with currentIndex:', currentIndex);
+      setActiveIndex(currentIndex);
+      // Small delay to ensure DOM is ready
+      setTimeout(() => {
+        scrollToImage(currentIndex);
+      }, 100);
+    }
+  }, [currentIndex, isOpen]);
 
   const showPrev = () => {
     const newIndex = activeIndex > 0 ? activeIndex - 1 : images.length - 1;
@@ -45,6 +53,7 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
     const container = document.querySelector('.carousel-scroll-container');
     if (container) {
       const imageWidth = container.clientWidth;
+      console.log('Scrolling to image', index, 'with width', imageWidth);
       container.scrollTo({
         left: index * imageWidth,
         behavior: 'smooth'
@@ -59,6 +68,7 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
     const newIndex = Math.round(scrollLeft / imageWidth);
     
     if (newIndex !== activeIndex && newIndex >= 0 && newIndex < images.length) {
+      console.log('Popup scroll update: changing index from', activeIndex, 'to', newIndex);
       setActiveIndex(newIndex);
     }
   };
