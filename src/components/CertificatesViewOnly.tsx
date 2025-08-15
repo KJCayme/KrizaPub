@@ -5,22 +5,22 @@ import { Button } from './ui/button';
 import { useIsMobile } from '../hooks/use-mobile';
 import { useCertificates } from '../hooks/useCertificates';
 import { useAuth } from '../hooks/useAuth';
+import { useDarkMode } from '../hooks/useDarkMode';
 import AddCertificateForm from './AddCertificateForm';
 import AuthRequiredDialog from './auth/AuthRequiredDialog';
 
 interface CertificatesViewOnlyProps {
-  isDarkMode: boolean;
-  onToggleDarkMode: () => void;
   onBack: () => void;
 }
 
-const CertificatesViewOnly = ({ isDarkMode, onToggleDarkMode, onBack }: CertificatesViewOnlyProps) => {
+const CertificatesViewOnly = ({ onBack }: CertificatesViewOnlyProps) => {
   const isMobile = useIsMobile();
   const [showAddForm, setShowAddForm] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
   
   const { certificates, loading, error } = useCertificates();
   const { user } = useAuth();
+  const { isDarkMode, toggleDarkMode } = useDarkMode();
 
   const handleBack = () => {
     onBack();
@@ -102,7 +102,7 @@ const CertificatesViewOnly = ({ isDarkMode, onToggleDarkMode, onBack }: Certific
               </div>
               
               <Button
-                onClick={onToggleDarkMode}
+                onClick={toggleDarkMode}
                 variant="ghost"
                 size="icon"
                 className="text-white hover:bg-white/20 transition-colors"

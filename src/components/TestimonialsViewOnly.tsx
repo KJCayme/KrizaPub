@@ -4,6 +4,7 @@ import { ArrowLeft, Plus, Code } from 'lucide-react';
 import { Button } from './ui/button';
 import { useTestimonials } from '../hooks/useTestimonials';
 import { useAuth } from '../hooks/useAuth';
+import { useDarkMode } from '../hooks/useDarkMode';
 import { useGenerateCode } from '../hooks/useClientTestimonials';
 import AddTestimonialForm from './AddTestimonialForm';
 import AddClientTestimonialForm from './AddClientTestimonialForm';
@@ -13,12 +14,10 @@ import TestimonialsGrid from './testimonials/TestimonialsGrid';
 import AuthRequiredDialog from './auth/AuthRequiredDialog';
 
 interface TestimonialsViewOnlyProps {
-  isDarkMode: boolean;
-  onToggleDarkMode: () => void;
   onBack: () => void;
 }
 
-const TestimonialsViewOnly = ({ isDarkMode, onToggleDarkMode, onBack }: TestimonialsViewOnlyProps) => {
+const TestimonialsViewOnly = ({ onBack }: TestimonialsViewOnlyProps) => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [showClientForm, setShowClientForm] = useState(false);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
@@ -27,6 +26,7 @@ const TestimonialsViewOnly = ({ isDarkMode, onToggleDarkMode, onBack }: Testimon
   const [isOffline, setIsOffline] = useState(false);
   const { data: testimonials = [], isLoading, error } = useTestimonials();
   const { user } = useAuth();
+  const { isDarkMode, toggleDarkMode } = useDarkMode();
   const generateCode = useGenerateCode();
 
   // Track online/offline status
@@ -119,7 +119,7 @@ const TestimonialsViewOnly = ({ isDarkMode, onToggleDarkMode, onBack }: Testimon
               </div>
               
               <Button
-                onClick={onToggleDarkMode}
+                onClick={toggleDarkMode}
                 variant="ghost"
                 size="icon"
                 className="text-white hover:bg-white/20 transition-colors"
