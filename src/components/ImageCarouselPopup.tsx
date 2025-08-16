@@ -5,10 +5,17 @@ import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useIsTablet } from '@/hooks/use-tablet';
 
+type MediaItem = {
+  type: 'image' | 'video';
+  url: string;
+  alt?: string;
+  thumbnailUrl?: string;
+};
+
 interface ImageCarouselPopupProps {
   isOpen: boolean;
   onClose: () => void;
-  images: string[];
+  media: MediaItem[];
   projectTitle: string;
   currentIndex: number;
 }
@@ -16,7 +23,7 @@ interface ImageCarouselPopupProps {
 const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
   isOpen,
   onClose,
-  images,
+  media,
   projectTitle,
   currentIndex
 }) => {
@@ -35,28 +42,28 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
       // Set initial scroll position immediately without animation
       if (scrollContainerRef.current) {
         const imageWidth = scrollContainerRef.current.clientWidth;
-        console.log('Setting initial scroll position to image', currentIndex, 'with width', imageWidth);
+        console.log('Setting initial scroll position to item', currentIndex, 'with width', imageWidth);
         scrollContainerRef.current.scrollLeft = currentIndex * imageWidth;
       }
     }
   }, [currentIndex, isOpen]);
 
   const showPrev = () => {
-    const newIndex = activeIndex > 0 ? activeIndex - 1 : images.length - 1;
+    const newIndex = activeIndex > 0 ? activeIndex - 1 : media.length - 1;
     setActiveIndex(newIndex);
-    scrollToImage(newIndex);
+    scrollToItem(newIndex);
   };
 
   const showNext = () => {
-    const newIndex = activeIndex < images.length - 1 ? activeIndex + 1 : 0;
+    const newIndex = activeIndex < media.length - 1 ? activeIndex + 1 : 0;
     setActiveIndex(newIndex);
-    scrollToImage(newIndex);
+    scrollToItem(newIndex);
   };
 
-  const scrollToImage = (index: number) => {
+  const scrollToItem = (index: number) => {
     if (scrollContainerRef.current) {
       const imageWidth = scrollContainerRef.current.clientWidth;
-      console.log('Scrolling to image', index, 'with width', imageWidth);
+      console.log('Scrolling to item', index, 'with width', imageWidth);
       scrollContainerRef.current.scrollTo({
         left: index * imageWidth,
         behavior: 'smooth'
@@ -70,7 +77,7 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
     const imageWidth = container.clientWidth;
     const newIndex = Math.round(scrollLeft / imageWidth);
     
-    if (newIndex !== activeIndex && newIndex >= 0 && newIndex < images.length) {
+    if (newIndex !== activeIndex && newIndex >= 0 && newIndex < media.length) {
       console.log('Popup scroll update: changing index from', activeIndex, 'to', newIndex);
       setActiveIndex(newIndex);
     }
@@ -111,7 +118,7 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
     };
   }, [isOpen]);
 
-  if (!images.length) return null;
+  if (!media.length) return null;
 
   if (!isOpen) return null;
 
@@ -131,7 +138,7 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
       </button>
 
       {/* Desktop Navigation Buttons */}
-      {isDesktop && images.length > 1 && (
+      {isDesktop && media.length > 1 && (
         <>
           {/* Previous Button */}
           <button
@@ -140,7 +147,7 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
               showPrev();
             }}
             className="absolute left-6 top-1/2 -translate-y-1/2 z-[10000] text-white hover:text-gray-300 transition-colors p-3 rounded-full bg-black/30 hover:bg-black/50"
-            aria-label="Previous image"
+            aria-label="Previous media"
           >
             <ChevronLeft className="w-8 h-8" />
           </button>
@@ -152,21 +159,21 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
               showNext();
             }}
             className="absolute right-6 top-1/2 -translate-y-1/2 z-[10000] text-white hover:text-gray-300 transition-colors p-3 rounded-full bg-black/30 hover:bg-black/50"
-            aria-label="Next image"
+            aria-label="Next media"
           >
             <ChevronRight className="w-8 h-8" />
           </button>
         </>
       )}
 
-      {/* Image counter */}
-      {images.length > 1 && (
+      {/* Media counter */}
+      {media.length > 1 && (
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-[10001] bg-black/50 text-white px-4 py-2 rounded-full text-sm font-medium">
-          {activeIndex + 1} / {images.length}
+          {activeIndex + 1} / {media.length}
         </div>
       )}
 
-      {/* Main image container with scroll */}
+      {/* Main media container with scroll */}
       <div className="flex items-center justify-center w-full h-full p-8">
         <div 
           ref={scrollContainerRef}
@@ -175,14 +182,22 @@ const ImageCarouselPopup: React.FC<ImageCarouselPopupProps> = ({
           onScroll={handleScroll}
           onClick={(e) => e.stopPropagation()}
         >
-          {images.map((image, index) => (
+          {media.map((item, index) => (
             <div key={index} className="flex-shrink-0 w-full h-full flex items-center justify-center snap-center">
-              <img
-                src={image}
-                alt={`${projectTitle} - Image ${index + 1}`}
-                className="max-w-[calc(100vw-128px)] max-h-[calc(100vh-64px)] object-contain select-none"
-                draggable={false}
-              />
+              {item.type === 'video' ? (
+                <video
+                  src={item.url}
+                  controls
+                  className="max-w-[calc(100vw-128px)] max-h-[calc(100vh-64px)] object-contain select-none"
+                />
+              ) : (
+                <img
+                  src={item.url}
+                  alt={item.alt || `${projectTitle} - Image ${index + 1}`}
+                  className="max-w-[calc(100vw-128px)] max-h-[calc(100vh-64px)] object-contain select-none"
+                  draggable={false}
+                />
+              )}
             </div>
           ))}
         </div>

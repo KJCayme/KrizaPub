@@ -16,7 +16,7 @@ interface ProjectCardProps {
   onProjectDeleted?: () => void;
 }
 
-const ProjectCard = ({ project, onViewProject, source = 'section', isHovered = false, onHover, onProjectDeleted }: ProjectCardProps) => {
+const ProjectCard = ({ project, onViewProject, source = 'section', isHovered = false, onHover, onProjectDeleted }: any) => {
   const isMobile = useIsMobile();
   const { data: carouselImages = [] } = useCarouselImages(project.id);
   const [isInternalHovered, setIsInternalHovered] = useState(false);
@@ -78,7 +78,6 @@ const ProjectCard = ({ project, onViewProject, source = 'section', isHovered = f
     link: project.link
   });
 
-  // Sequential animation control for funnel projects - Fixed to restart from first project
   useEffect(() => {
     if (isFunnelDesignProject && source === 'section') {
       // Get all funnel projects on the page
@@ -134,16 +133,28 @@ const ProjectCard = ({ project, onViewProject, source = 'section', isHovered = f
 
   // Special card for Funnel Design category
   if (isFunnelDesignProject) {
-    // Use first carousel image if available, otherwise fall back to project image
-    const funnelImage = carouselImages.length > 0 ? carouselImages[0].image_url : project.image;
+    // Use first carousel media; for videos prefer thumbnail; otherwise fall back to project image
+    const firstMedia = carouselImages && carouselImages.length > 0 ? carouselImages[0] : null as any;
+    const funnelImage =
+      firstMedia
+        ? (firstMedia.media_type === 'video'
+            ? (firstMedia.video_thumbnail_url || project.image)
+            : firstMedia.image_url)
+        : project.image;
     
     return (
       <>
         <div
           data-project-id={project.id}
           onClick={() => onViewProject(project, source)}
-          onMouseEnter={handleMouseEnter}
-          onMouseLeave={handleMouseLeave}
+          onMouseEnter={() => {
+            setIsInternalHovered(true);
+            if (onHover) onHover(project.id, true);
+          }}
+          onMouseLeave={() => {
+            setIsInternalHovered(false);
+            if (onHover) onHover(project.id, false);
+          }}
           className={`group bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-lg transition-all duration-300 relative cursor-pointer h-full ${
             !isMobile ? 'hover:shadow-xl hover:transform hover:-translate-y-2' : ''
           }`}
@@ -170,7 +181,7 @@ const ProjectCard = ({ project, onViewProject, source = 'section', isHovered = f
 
           {/* Funnel Design Image with sequential auto scroll animation */}
           <div className="relative h-96 md:h-[600px] bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900 dark:to-pink-900 overflow-hidden">
-            <div className={`w-full h-full ${isAnimating ? 'animate-[funnelSequentialScroll_12s_ease-in-out_forwards]' : ''}`}>
+            <div className={`${isAnimating ? 'animate-[funnelSequentialScroll_12s_ease-in-out_forwards]' : ''} w-full h-full`}>
               <img
                 src={funnelImage}
                 alt={project.title}
@@ -208,18 +219,16 @@ const ProjectCard = ({ project, onViewProject, source = 'section', isHovered = f
           }} />
         </div>
 
-        {/* Edit Project Form */}
         <EditProjectForm
           isOpen={showEditForm}
           onClose={() => setShowEditForm(false)}
           project={project}
-          onProjectUpdated={handleProjectUpdated}
+          onProjectUpdated={() => onProjectDeleted?.()}
         />
       </>
     );
   }
 
-  // Regular project card for other categories
   return (
     <>
       <div
