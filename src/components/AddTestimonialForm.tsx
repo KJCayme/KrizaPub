@@ -36,7 +36,7 @@ const AddTestimonialForm: React.FC<AddTestimonialFormProps> = ({ onClose }) => {
   const [feedbackVideo, setFeedbackVideo] = useState<File | null>(null);
   const [feedbackVideoPreview, setFeedbackVideoPreview] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
+  const [showPreview, setShowPreview] = useState(true);
 
   const addTestimonialMutation = useAddTestimonial();
   const { user } = useAuth();
@@ -286,9 +286,9 @@ const AddTestimonialForm: React.FC<AddTestimonialFormProps> = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-slate-800 rounded-lg max-w-7xl w-full max-h-[90vh] overflow-y-auto flex flex-col xl:flex-row">
+      <div className="bg-white dark:bg-slate-800 rounded-lg max-w-7xl w-full max-h-[90vh] overflow-y-auto flex flex-col lg:flex-row">
         {/* Form Section */}
-        <div className="w-full xl:w-[500px] p-6 xl:border-r border-slate-200 dark:border-slate-700">
+        <div className="w-full lg:w-[500px] p-6 lg:border-r border-slate-200 dark:border-slate-700">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-semibold text-slate-800 dark:text-white">
               Add Testimonial
@@ -299,7 +299,7 @@ const AddTestimonialForm: React.FC<AddTestimonialFormProps> = ({ onClose }) => {
                 variant="outline"
                 size="sm"
                 onClick={() => setShowPreview(!showPreview)}
-                className="xl:hidden"
+                className="lg:hidden"
               >
                 <Eye className="w-4 h-4 mr-2" />
                 {showPreview ? 'Hide Preview' : 'Show Preview'}
@@ -553,7 +553,7 @@ const AddTestimonialForm: React.FC<AddTestimonialFormProps> = ({ onClose }) => {
         </div>
 
         {/* Preview Section */}
-        <div className={`flex-1 p-6 ${showPreview ? 'block' : 'hidden xl:block'}`}>
+        <div className={`flex-1 p-6 ${showPreview ? 'block' : 'hidden lg:block'}`}>
           <PreviewCard />
         </div>
       </div>
