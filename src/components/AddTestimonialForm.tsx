@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
@@ -40,6 +40,16 @@ const AddTestimonialForm: React.FC<AddTestimonialFormProps> = ({ onClose }) => {
 
   const addTestimonialMutation = useAddTestimonial();
   const { user } = useAuth();
+
+  useEffect(() => {
+    // Prevent body scroll
+    document.body.style.overflow = 'hidden';
+    
+    return () => {
+      // Re-enable body scroll
+      document.body.style.overflow = '';
+    };
+  }, []);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -253,6 +263,22 @@ const AddTestimonialForm: React.FC<AddTestimonialFormProps> = ({ onClose }) => {
     </div>
   );
 
+  const handleOverlayClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
+
+  const handleOverlayWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleOverlayTouchMove = (e: React.TouchEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
   // Don't render the form if user is not authenticated  
   if (!user) {
     return (
@@ -285,8 +311,16 @@ const AddTestimonialForm: React.FC<AddTestimonialFormProps> = ({ onClose }) => {
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
-      <div className="bg-white dark:bg-slate-800 rounded-lg max-w-7xl w-full max-h-[90vh] overflow-y-auto flex flex-col lg:flex-row">
+    <div 
+      className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4"
+      onClick={handleOverlayClick}
+      onWheel={handleOverlayWheel}
+      onTouchMove={handleOverlayTouchMove}
+    >
+      <div 
+        className="bg-white dark:bg-slate-800 rounded-lg max-w-7xl w-full max-h-[90vh] overflow-y-auto flex flex-col lg:flex-row"
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Form Section */}
         <div className="w-full lg:w-[500px] p-6 lg:border-r border-slate-200 dark:border-slate-700">
           <div className="flex justify-between items-center mb-6">
