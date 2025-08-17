@@ -5,6 +5,7 @@ import { getProjectCardImage } from '../../utils/imageMap';
 import { useCarouselImages } from '../../hooks/useCarouselImages';
 import { useAuth } from '../../hooks/useAuth';
 import { useDeleteProject } from '../../hooks/useDeleteProject';
+import { ConfirmationDialog } from '../ui/confirmation-dialog';
 import EditProjectForm from './EditProjectForm';
 
 interface ProjectCardProps {
@@ -22,6 +23,7 @@ const ProjectCard = ({ project, onViewProject, source = 'section', isHovered = f
   const [isInternalHovered, setIsInternalHovered] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [showEditForm, setShowEditForm] = useState(false);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const { user } = useAuth();
   const deleteProject = useDeleteProject();
 
@@ -34,13 +36,15 @@ const ProjectCard = ({ project, onViewProject, source = 'section', isHovered = f
 
   const handleDeleteClick = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (window.confirm('Are you sure you want to delete this project?')) {
-      deleteProject.mutate(project.id, {
-        onSuccess: () => {
-          onProjectDeleted?.();
-        }
-      });
-    }
+    setShowDeleteDialog(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    deleteProject.mutate(project.id, {
+      onSuccess: () => {
+        onProjectDeleted?.();
+      }
+    });
   };
 
   const handleEditClick = (e: React.MouseEvent) => {
@@ -363,6 +367,16 @@ const ProjectCard = ({ project, onViewProject, source = 'section', isHovered = f
           )}
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmationDialog
+        isOpen={showDeleteDialog}
+        onClose={() => setShowDeleteDialog(false)}
+        onConfirm={handleDeleteConfirm}
+        title="Delete Project"
+        description={`Are you sure you want to delete "${project.title}"? This action cannot be undone.`}
+        confirmText="Delete Project"
+      />
 
       {/* Edit Project Form */}
       <EditProjectForm
