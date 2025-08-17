@@ -8,6 +8,7 @@ import { useAuth } from '../hooks/useAuth';
 import AddCertificateForm from './AddCertificateForm';
 import EditCertificateForm from './EditCertificateForm';
 import AuthRequiredDialog from './auth/AuthRequiredDialog';
+import { ConfirmationDialog } from './ui/confirmation-dialog';
 import { toast } from 'sonner';
 
 interface CertificatesProps {
@@ -21,9 +22,15 @@ const Certificates = ({ onShowCertificatesOnly }: CertificatesProps) => {
   const [showEditForm, setShowEditForm] = useState(false);
   const [editingCertificate, setEditingCertificate] = useState<Certificate | null>(null);
   const [showAuthDialog, setShowAuthDialog] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [certificateToDelete, setCertificateToDelete] = useState<string | null>(null);
+  const [hiddenCertificates, setHiddenCertificates] = useState<Set<string>>(new Set());
   
   const { certificates, loading, error, deleteCertificate } = useCertificates(3);
   const { user } = useAuth();
+
+  // Filter out hidden certificates from display
+  const visibleCertificates = certificates.filter(cert => !hiddenCertificates.has(cert.id));
 
   // Function to get Add Certificate button content based on viewport
   const getAddCertificateButtonContent = () => {
@@ -69,20 +76,99 @@ const Certificates = ({ onShowCertificatesOnly }: CertificatesProps) => {
     setShowEditForm(true);
   };
 
-  const handleDeleteCertificate = async (certificateId: string) => {
+  const handleDeleteCertificate = (certificateId: string) => {
     if (!user) {
       setShowAuthDialog(true);
       return;
     }
+    setCertificateToDelete(certificateId);
+    setShowDeleteConfirmation(true);
+  };
+
+  const confirmDelete = () => {
+    if (!certificateToDelete) return;
+
+    const certificateId = certificateToDelete;
     
-    if (window.confirm('Are you sure you want to delete this certificate?')) {
+    // Hide the certificate immediately from UI
+    setHiddenCertificates(prev => new Set([...prev, certificateId]));
+    
+    let countdown = 5;
+    let countdownInterval: NodeJS.Timeout;
+    let deletionTimeout: NodeJS.Timeout;
+
+    const updateToast = (secondsLeft: number) => {
+      return `Certificate deleted. Undoing in ${secondsLeft}s`;
+    };
+
+    // Show toast with countdown and undo button
+    const toastId = toast(updateToast(countdown), {
+      duration: 5000,
+      action: {
+        label: 'Undo',
+        onClick: () => {
+          // Cancel deletion and show certificate again
+          clearInterval(countdownInterval);
+          clearTimeout(deletionTimeout);
+          setHiddenCertificates(prev => {
+            const newSet = new Set(prev);
+            newSet.delete(certificateId);
+            return newSet;
+          });
+          toast.success('Certificate deletion cancelled');
+        },
+      },
+    });
+
+    // Update countdown every second
+    countdownInterval = setInterval(() => {
+      countdown--;
+      if (countdown > 0) {
+        toast(updateToast(countdown), {
+          id: toastId,
+          duration: 1000,
+          action: {
+            label: 'Undo',
+            onClick: () => {
+              clearInterval(countdownInterval);
+              clearTimeout(deletionTimeout);
+              setHiddenCertificates(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(certificateId);
+                return newSet;
+              });
+              toast.success('Certificate deletion cancelled');
+            },
+          },
+        });
+      } else {
+        clearInterval(countdownInterval);
+      }
+    }, 1000);
+
+    // Delete from database after 5 seconds
+    deletionTimeout = setTimeout(async () => {
       try {
         await deleteCertificate(certificateId);
-        toast.success('Certificate deleted successfully!');
+        setHiddenCertificates(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(certificateId);
+          return newSet;
+        });
+        toast.success('Certificate permanently deleted');
       } catch (error: any) {
+        // If deletion fails, show the certificate again
+        setHiddenCertificates(prev => {
+          const newSet = new Set(prev);
+          newSet.delete(certificateId);
+          return newSet;
+        });
         toast.error(error.message || 'Failed to delete certificate');
       }
-    }
+    }, 5000);
+
+    setCertificateToDelete(null);
+    setShowDeleteConfirmation(false);
   };
 
   if (loading) {
@@ -132,7 +218,7 @@ const Certificates = ({ onShowCertificatesOnly }: CertificatesProps) => {
           )}
 
           <div className="flex flex-wrap gap-8 justify-center mb-12">
-            {certificates.map((cert) => (
+            {visibleCertificates.map((cert) => (
               <div
                 key={cert.id}
                 className={`group bg-white dark:bg-slate-800 rounded-2xl shadow-lg transition-all duration-300 overflow-hidden border border-slate-200 dark:border-slate-700 flex flex-col w-full max-w-sm flex-shrink-0 ${
@@ -276,6 +362,20 @@ const Certificates = ({ onShowCertificatesOnly }: CertificatesProps) => {
           certificate={editingCertificate}
         />
       )}
+
+      <ConfirmationDialog
+        isOpen={showDeleteConfirmation}
+        onClose={() => {
+          setShowDeleteConfirmation(false);
+          setCertificateToDelete(null);
+        }}
+        onConfirm={confirmDelete}
+        title="Delete Certificate"
+        description="Are you sure you want to delete this certificate? This action cannot be undone."
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="destructive"
+      />
 
       <AuthRequiredDialog
         isOpen={showAuthDialog}
