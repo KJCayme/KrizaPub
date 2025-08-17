@@ -182,21 +182,6 @@ const Navigation = () => {
           {/* Desktop Right Side */}
           {!isTablet && !isMobile && (
             <div className="flex items-center gap-3 flex-shrink-0">
-              {!authLoading && (
-                <>
-                  {user ? (
-                    <UserMenu />
-                  ) : (
-                    <Button 
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => setShowAuthDialog(true)}
-                    >
-                      Sign In
-                    </Button>
-                  )}
-                </>
-              )}
               <BookCallButton isVisible={true} />
             </div>
           )}
