@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { X, Upload, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -14,6 +15,12 @@ interface AddProjectFormProps {
   isOpen: boolean;
   onClose: () => void;
   onProjectAdded?: () => void;
+}
+
+interface MediaFile {
+  file: File;
+  type: 'image' | 'video';
+  thumbnail?: File;
 }
 
 const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps) => {
@@ -34,7 +41,7 @@ const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps
     link: ''
   });
   const [projectCardImage, setProjectCardImage] = useState<File | null>(null);
-  const [carouselImages, setCarouselImages] = useState<File[]>([]);
+  const [carouselMedia, setCarouselMedia] = useState<MediaFile[]>([]);
   const [funnelImages, setFunnelImages] = useState<{
     desktop: File | null;
     tablet: File | null;
@@ -65,10 +72,14 @@ const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps
     }
   };
 
-  const handleCarouselImagesChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCarouselMediaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
-      const newImages = Array.from(e.target.files);
-      setCarouselImages(prev => [...prev, ...newImages]);
+      const newFiles = Array.from(e.target.files);
+      const newMedia = newFiles.map(file => ({
+        file,
+        type: file.type.startsWith('video/') ? 'video' as const : 'image' as const
+      }));
+      setCarouselMedia(prev => [...prev, ...newMedia]);
     }
   };
 
@@ -79,8 +90,8 @@ const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps
     }));
   };
 
-  const removeCarouselImage = (index: number) => {
-    setCarouselImages(prev => prev.filter((_, i) => i !== index));
+  const removeCarouselMedia = (index: number) => {
+    setCarouselMedia(prev => prev.filter((_, i) => i !== index));
   };
 
   const uploadFile = async (file: File, bucket: string, path: string) => {
@@ -189,7 +200,7 @@ const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps
 
       console.log('Project inserted successfully:', project);
 
-      // Handle funnel images or regular carousel images
+      // Handle funnel images or regular carousel media
       if (isFunnelCategory && (funnelImages.desktop || funnelImages.tablet || funnelImages.mobile)) {
         console.log('Uploading funnel images...');
         
@@ -204,7 +215,8 @@ const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps
             project_id: project.id,
             image_url: imageUrl,
             alt_text: `${project.title} desktop view`,
-            sort_order: order++
+            sort_order: order++,
+            media_type: 'image'
           });
         }
 
@@ -216,7 +228,8 @@ const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps
             project_id: project.id,
             image_url: imageUrl,
             alt_text: `${project.title} tablet view`,
-            sort_order: order++
+            sort_order: order++,
+            media_type: 'image'
           });
         }
 
@@ -228,7 +241,8 @@ const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps
             project_id: project.id,
             image_url: imageUrl,
             alt_text: `${project.title} mobile view`,
-            sort_order: order++
+            sort_order: order++,
+            media_type: 'image'
           });
         }
 
@@ -244,19 +258,28 @@ const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps
 
           console.log('Funnel images uploaded successfully');
         }
-      } else if (carouselImages.length > 0) {
-        console.log(`Uploading ${carouselImages.length} carousel images...`);
+      } else if (carouselMedia.length > 0) {
+        console.log(`Uploading ${carouselMedia.length} carousel media files...`);
         
         const carouselUploads = await Promise.all(
-          carouselImages.map(async (image, index) => {
-            const imagePath = `carousel/${project.id}/${Date.now()}-${index}-${image.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
-            const imageUrl = await uploadFile(image, 'portfolio', imagePath);
+          carouselMedia.map(async (media, index) => {
+            const isVideo = media.type === 'video';
+            const mediaPath = `carousel/${project.id}/${Date.now()}-${index}-${media.file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+            const mediaUrl = await uploadFile(media.file, 'portfolio', mediaPath);
+            
+            let thumbnailUrl = null;
+            if (isVideo && media.thumbnail) {
+              const thumbnailPath = `carousel/${project.id}/thumbnail-${Date.now()}-${index}-${media.thumbnail.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+              thumbnailUrl = await uploadFile(media.thumbnail, 'portfolio', thumbnailPath);
+            }
             
             return {
               project_id: project.id,
-              image_url: imageUrl,
-              alt_text: `${project.title} carousel image ${index + 1}`,
-              sort_order: index
+              image_url: mediaUrl,
+              alt_text: `${project.title} ${isVideo ? 'video' : 'image'} ${index + 1}`,
+              sort_order: index,
+              media_type: isVideo ? 'video' : 'image',
+              video_thumbnail_url: thumbnailUrl
             };
           })
         );
@@ -266,11 +289,11 @@ const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps
           .insert(carouselUploads);
 
         if (carouselError) {
-          console.error('Carousel images insert error:', carouselError);
+          console.error('Carousel media insert error:', carouselError);
           throw carouselError;
         }
 
-        console.log('Carousel images uploaded successfully');
+        console.log('Carousel media uploaded successfully');
       }
 
       toast.success('Project added successfully!');
@@ -292,7 +315,7 @@ const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps
         link: ''
       });
       setProjectCardImage(null);
-      setCarouselImages([]);
+      setCarouselMedia([]);
       setFunnelImages({
         desktop: null,
         tablet: null,
@@ -517,26 +540,36 @@ const AddProjectForm = ({ isOpen, onClose, onProjectAdded }: AddProjectFormProps
               </div>
             </div>
           ) : (
-            /* Regular carousel images for other categories */
+            /* Regular carousel media for other categories - now supports videos */
             <div>
-              <Label htmlFor="carousel_images">Carousel Images</Label>
+              <Label htmlFor="carousel_media">Carousel Images & Videos</Label>
               <Input
-                id="carousel_images"
+                id="carousel_media"
                 type="file"
-                accept="image/*"
+                accept="image/*,video/*"
                 multiple
-                onChange={handleCarouselImagesChange}
+                onChange={handleCarouselMediaChange}
               />
-              {carouselImages.length > 0 && (
+              <p className="text-sm text-slate-600 mt-1">
+                You can upload both images and videos. Videos will be displayed with controls in the carousel.
+              </p>
+              {carouselMedia.length > 0 && (
                 <div className="mt-2 space-y-1">
-                  {carouselImages.map((image, index) => (
+                  {carouselMedia.map((media, index) => (
                     <div key={index} className="flex items-center justify-between bg-slate-50 dark:bg-slate-800 p-2 rounded">
-                      <span className="text-sm">{image.name}</span>
+                      <span className="text-sm flex items-center gap-2">
+                        {media.type === 'video' ? (
+                          <span className="bg-blue-100 dark:bg-blue-900 px-2 py-1 rounded text-xs">VIDEO</span>
+                        ) : (
+                          <span className="bg-green-100 dark:bg-green-900 px-2 py-1 rounded text-xs">IMAGE</span>
+                        )}
+                        {media.file.name}
+                      </span>
                       <Button
                         type="button"
                         variant="ghost"
                         size="sm"
-                        onClick={() => removeCarouselImage(index)}
+                        onClick={() => removeCarouselMedia(index)}
                       >
                         <Trash2 className="w-4 h-4" />
                       </Button>
